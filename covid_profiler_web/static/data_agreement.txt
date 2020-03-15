@@ -1,0 +1,3 @@
+Raw sequenced data will be aligned to the H37Rv reference genome.
+Unmapped reads will not be analysed.
+Variant positions and alleles will be aggregated across all eligible submitted data and analysed to look for changes in population structure.

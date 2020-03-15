@@ -1,0 +1,149 @@
+{% import 'utils.html' as utils %}
+{% extends 'base.html' %}
+
+{% block header %}
+
+
+{% endblock %}
+
+{% block content %}
+	<div class="row text-center mx-auto">
+		<div class="col-md-1">
+
+		</div>
+		<div class="col-md-10 pt-4">
+			<h3>COVID-Profiler</h3>
+			<div class="pb-4">
+				Welcome to the COVID-Profiler - a pipeline which allows users
+				to analyse <i>COVID-19</i> sequencing data to place isolates within
+                a real-time tree.
+			</div>
+
+
+
+			<h5 class="">How does it work?</h5>
+			<div class="pb-4">
+				The pipeline searches for SNPs associated with branches on the tree.
+                It then uses the variants to find the closest neightbours on the tree.
+                In parallel it classifies the strains into S/L types as defined by  <a href="https://academic.oup.com/nsr/advance-article/doi/10.1093/nsr/nwaa036/5775463">Tang et al</a>.
+			</div>
+
+
+
+            <div class="row justify-content-md-center">
+                <div class="col-md-10 pb-4">
+                    <div class="card border-dark text-center">
+                      <div class="card-header">
+                        Live tree
+                      </div>
+                      <div class="card-body">
+                        <svg id="tree_display"></svg>
+                      </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+			<div class="row justify-content-md-center">
+				<div class="col-md-6 pb-4">
+					<div class="card border-dark text-center">
+					  <div class="card-header">
+					    Step 1
+					  </div>
+					  <div class="card-body">
+					    <h5 class="card-title">Profile your sample</h5>
+
+									<p class="card-text">
+										Upload your sequencing data in <b>fasta</b> format.
+									</p>
+
+
+					    <a class="btn btn-primary" href="{{ url_for('upload.upload') }}">Upload</a>
+					  </div>
+					</div>
+				</div>
+			</div>
+
+
+			<div class="row justify-content-md-center">
+				<div class="col-md-6 pb-4">
+					<div class="card border-dark text-center">
+					  <div class="card-header">
+					    Step 2
+					  </div>
+					  <div class="card-body">
+					    <h5 class="card-title">View the results</h5>
+
+									<p class="card-text">
+										Find your results by entering your unique run ID directly into the search box below.
+									</p>
+
+							<form method="post" enctype=multipart/form-data>
+								<div class="row justify-content-md-center">
+									<div class="col-md-6">
+										<input type="text" name="sample_id" class="form-control" placeholder="Sample ID">
+									</div>
+									<button type="submit" class="btn btn-primary">Submit</button>
+								</div>
+							</form>
+					  </div>
+					</div>
+				</div>
+			</div>
+
+
+
+
+
+
+			<hr>
+			<h6 class="">Disclaimer</h6>
+			<div class="">
+				This tool is for Research Use Only. It has not been approved, cleared,
+				or licensed by any regulatory authority. By submitting sequence data the
+				 user acknowledges no intended medical purpose or objective such as
+				 clinical diagnosis, patient management, or human clinical trials.
+			</div>
+		</div>
+	</div>
+
+    <script type="text/javascript">
+    // var tree = d3.layout.phylotree()
+    //     .svg(d3.select("#tree_display"));
+    //     tree("{{tree}}")
+    //     .layout();
+    var example_tree = "{{tree}}"
+    // tree from Yokoyama et al http://www.ncbi.nlm.nih.gov/pubmed/18768804
+    var height = 500;
+    var width = $( "#tree_display" ).parent().width()-40;
+    var tree = d3.layout.phylotree()
+      // create a tree layout object
+      .svg(d3.select("#tree_display"))
+      // .radial(true)
+      .options({
+    'left-right-spacing': 'fit-to-size',
+    // fit to given size top-to-bottom
+    'top-bottom-spacing': 'fit-to-size',
+    // fit to given size left-to-right
+
+    // make nodes and branches not selectable
+    'collapsible': false,
+    // turn off the menu on internal nodes
+    'transitions': false,
+    // turn off d3 animations
+    'zoom':true
+  })
+  .size([height, width])
+      // render to this SVG element
+
+    tree(example_tree)
+      // parse the Newick into a d3 hierarchy object with additional fields
+      // .style_nodes(nodeStyler)
+
+      .layout()
+
+
+    </script>
+
+{% endblock %}

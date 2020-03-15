@@ -1,0 +1,24 @@
+{% macro drtype_button(drtype) -%}
+	{% if drtype=="Sensitive" %}
+		<button type="button" class="btn btn-success">Sensitive</button>
+	{% elif drtype=="Drug-resistant" %}
+		<button type="button" class="btn btn-info">Drug-resistant</button>
+	{% elif drtype=="XDR" %}
+		<button type="button" class="btn btn-danger">XDR-TB</button>
+	{% elif drtype=="MDR" %}
+		<button type="button" class="btn btn-warning">MDR-TB</button>
+	{% endif %}
+{%- endmacro %}
+
+
+{% macro drtype_badge(drtype) -%}
+	{% if drtype=="Sensitive" %}
+		<span class="badge badge-success">Sensitive</span>
+	{% elif drtype=="Drug-resistant" %}
+		<span class="badge badge-info">Drug-resistant</span>
+	{% elif drtype=="XDR" %}
+		<span class="badge badge-danger">XDR-TB</span>
+	{% elif drtype=="MDR" %}
+		<span class="badge badge-warning">MDR-TB</span>
+	{% endif %}
+{%- endmacro %}

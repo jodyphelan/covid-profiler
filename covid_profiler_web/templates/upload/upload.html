@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+
+{% block header %}
+
+
+{% endblock %}
+
+{% block content %}
+<div class="pt-4 pb-4">
+	Upload your next sequencing data in <b>fasta</b> format. Files will
+	be processed using the tb-profiler pipeline with default parameters. You may
+	select the technology used to generate the data (Illumina or Oxford Nanopore).
+	Samples will be process with a first in first out policy so please be patient
+	as there may be runs waiting to be processed before yours.
+
+</div>
+<div class="pb-4">
+    <b>Please note:</b> at the moment we can only accomodate uploads of under 1GB.
+    If you have files which are larger or you require many	isolates to be processed
+    and have access to a linux or osX operating system then	it might be worthwhile
+    to run the commandline version of tb-profiler. For more information on this please visit the
+	<a href="https://github.com/jodyphelan/TBProfiler/">github repository</a>.
+</div>
+
+
+
+
+<div class="row justify-content-md-center">
+	<div class="col-md-6 pb-4">
+		<div class="card">
+			<div class="card-header">
+				Single sample
+			</div>
+			<div class="card-body">
+				<p class="card-text">
+					You can upload one or two (forward and reverse) fastq files. When you
+					upload your data, the run will be be assigned a unique ID. Please take
+					a note of this ID as you will need to to find your results later.
+				</p>
+				<form method="post" enctype=multipart/form-data>
+					{% if g.user %}
+						<input type="text" class="form-control w-50" id="sample_name" name="sample_name" placeholder="Sample name">
+					{% endif %}
+
+					<div class="form-group pt-2">
+						<label for="file1">Fasta file:</label>
+						<input type="file" name="file1" class="form-control-file" id="file1">
+					</div>
+					<hr>
+					<button type="submit" class="btn btn-primary" name="single_sample_submit" id="single_sample_submit">Submit</button>
+				</form>
+			</div>
+		</div>
+	</div>
+<!-- </div> -->
+
+
+
+{% endblock %}

@@ -1,0 +1,81 @@
+{% import 'utils.html' as utils %}
+
+{% extends 'base.html' %}
+
+{% block header %}
+{% endblock %}
+
+{% block content %}
+{% if run['result']=={} %}
+	<div class="alert alert-warning mt-4" role="alert">Your run ID is: <b>{{run["id"]}}</b>. This run is still processing. Please come back later.</div>
+{% else %}
+<div class="row justify-content-md-center">
+    <div class="col-md-10">
+        <div class="card border-dark mb-3">
+    		<div class="card-header">Summary</div>
+    		<div class="card-body text-dark">
+    			<p class="card-text"><b>Run ID:</b> {{ run["id"] }}</p>
+    			<p class="card-text"><b>Sample name:</b> {{ run["sample_name"] }}</p>
+    			<p class="card-text"><b>Date:</b> {{ run["created"] }}</p>
+    			<p class="card-text"><b>Strain:</b> {{ run["result"]["type"] }}</p>
+                <p class="card-text"><b>Branch:</b> {{ run["result"]["branch"] }}</p>
+    			<hr>
+    			<svg id="tree_display"></svg>
+    		</div>
+    	</div>
+    </div>
+
+</div>
+
+
+
+
+    <script type="text/javascript">
+    // var tree = d3.layout.phylotree()
+    //     .svg(d3.select("#tree_display"));
+    //     tree("{{tree}}")
+    //     .layout();
+    var example_tree = "{{tree}}"
+    // tree from Yokoyama et al http://www.ncbi.nlm.nih.gov/pubmed/18768804
+
+    var height = 500;
+    var width = $( "#tree_display" ).parent().width()-40;
+    var tree = d3.layout.phylotree()
+      .svg(d3.select("#tree_display"))
+      .options({
+          'left-right-spacing': 'fit-to-size',
+          'top-bottom-spacing': 'fit-to-size',
+          'collapsible': false,
+          'transitions': false,
+          'zoom':true
+      })
+      .size([height, width])
+
+      function nodeStyler(dom_element, node_object) {
+          if (node_object.name=="{{ run['result']['branch'] }}"){
+              console.log(node_object)
+              console.log(dom_element)
+            dom_element.append("circle").attr("fill", "red").attr("r", "4");
+            dom_element[0][0].classList.replace("internal-node","selected-node")
+            console.log(dom_element[0][0].classList)
+        }
+      }
+      function selecter(node){
+          console.log(node)
+      }
+    tree(example_tree)
+      // parse the Newick into a d3 hierarchy object with additional fields
+      .style_nodes(nodeStyler)
+      // .modify_selection(selecter)
+      .layout()
+
+
+
+
+      console.log(tree)
+    </script>
+
+
+{% endif %}
+
+{% endblock %}
