@@ -1,0 +1,4 @@
+include covid_profiler_web/schema.sql
+graft covid_profiler_web/static
+graft covid_profiler_web/templates
+global-exclude *.pyc
