@@ -39,7 +39,7 @@ def main_preprocess(args):
     refseq = pp.fasta(conf["ref"]).fa_dict
     refseqname = list(refseq.keys())[0]
 
-    # pp.run_cmd("curl 'https://www.ncbi.nlm.nih.gov/genomes/VirusVariation/vvsearch2/?q=*:*&fq=%7B!tag=SeqType_s%7DSeqType_s:(%22Nucleotide%22)&fq=VirusLineageId_ss:(2697049)&fq=%7B!tag=Flags_csv%7DFlags_csv:%22complete%22&cmd=download&sort=&dlfmt=fasta&fl=id,Definition_s,Nucleotide_seq' > temp.fa")
+    pp.run_cmd("curl 'https://www.ncbi.nlm.nih.gov/genomes/VirusVariation/vvsearch2/?q=*:*&fq=%7B!tag=SeqType_s%7DSeqType_s:(%22Nucleotide%22)&fq=VirusLineageId_ss:(2697049)&fq=%7B!tag=Flags_csv%7DFlags_csv:%22complete%22&cmd=download&sort=&dlfmt=fasta&fl=id,Definition_s,Nucleotide_seq' > temp.fa")
     pp.run_cmd("samtools faidx temp.fa")
 
     seqs = pp.fasta("temp.fa")
@@ -57,7 +57,7 @@ def main_preprocess(args):
     pp.run_cmd("rm %s" % (" ".join(vcf_files)))
     pp.run_cmd("rm %s" % (" ".join(vcf_csi_files)))
     pp.run_cmd("vcf2fasta.py --vcf merged.vcf.gz --ref %s" % conf["ref"])
-    # pp.run_cmd("iqtree -s merged.fa -bb 1000 -nt AUTO -asr -redo")
+    pp.run_cmd("iqtree -s merged.fa -bb 1000 -nt AUTO -asr -redo")
     sample_data = get_sample_meta(samples)
     with open("%s.meta.csv" % args.out,"w") as O:
         writer = csv.DictWriter(O,fieldnames=["id","country","date"])
