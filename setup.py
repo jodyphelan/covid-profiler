@@ -10,6 +10,7 @@ setup(
         'flask',
     ],
     scripts= [
-        "scripts/covid-profiler.py"
+        "scripts/covid-profiler.py",
+        "scripts/update_tree.py"
     ],
 )
