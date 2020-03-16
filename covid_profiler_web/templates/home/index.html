@@ -1,4 +1,4 @@
-{% import 'utils.html' as utils %}
+    {% import 'utils.html' as utils %}
 {% extends 'base.html' %}
 
 {% block header %}
@@ -15,7 +15,7 @@
 			<h3>COVID-Profiler</h3>
 			<div class="pb-4">
 				Welcome to the COVID-Profiler - a pipeline which allows users
-				to analyse <i>COVID-19</i> sequencing data to place isolates within
+				to analyse <i>Sars-Cov-2</i> sequencing data to place isolates within
                 a real-time tree.
 			</div>
 
@@ -27,8 +27,9 @@
                 outbreak are downloaded and a maximum likelihood tree is built. Users can
                 upload their own sequences to look where they are positioned on the tree.
 				The pipeline searches for SNPs associated with branches on the tree.
-                It then uses the variants to find the closest neightbours on the tree.
-                In parallel it classifies the strains into S/L types as defined by  <a href="https://academic.oup.com/nsr/advance-article/doi/10.1093/nsr/nwaa036/5775463">Tang et al</a>.
+                It then uses the variants to find the closest neighbours on the tree.
+                In parallel it classifies the strains into S/L types as defined by
+                <a href="https://academic.oup.com/nsr/advance-article/doi/10.1093/nsr/nwaa036/5775463">Tang et al</a>.
 			</div>
 
 
@@ -97,7 +98,26 @@
 
 
 
-
+            <hr>
+			<h5 class="">Pipeline</h5>
+			<div class="text-left">
+                Sequences are aligned to the reference genome (NC_045512.2) using minimap2 [1].
+                Variants are called using paftools.js from the minimap2 package and bcftools [2]
+                and transformed into a fasta alignment. IQ-TREE [3] is used to reconstruct the
+                phylogeny. Custom scripts utilising ete3 [4] are used to position new isolates
+                on the tree which are visualised using phylotree.js [5] in the web browser. The website is
+                built using <a href="https://github.com/pallets/flask">flask</a>. All the code is available
+                from <a href="https://github.com/jodyphelan/covid-profiler">https://github.com/jodyphelan/covid-profiler</a>.
+                <div class="pt-4">
+                    <ol>
+                        <li>Li, H. Minimap2: Pairwise alignment for nucleotide sequences. <i>Bioinformatics</i> <b>34</b>, 3094–3100 (2018).</li>
+                        <li>Li, H. A statistical framework for SNP calling, mutation discovery, association mapping and population genetical parameter estimation from sequencing data. <i>Bioinformatics</i> <b>27</b>, 2987–2993 (2011).</li>
+                        <li>Minh, B. Q. et al. IQ-TREE 2: New models and efficient methods for phylogenetic inference in the genomic era. <i>Mol. Biol. Evol.</i> (2020). doi:10.1093/molbev/msaa015</li>
+                        <li>Huerta-Cepas, J., Serra, F. & Bork, P. ETE 3: Reconstruction, Analysis, and Visualization of Phylogenomic Data. <i>Mol. Biol. Evol.</i> <b>33</b>, 1635–8 (2016).</li>
+                        <li>Shank, S. D., Weaver, S. & Kosakovsky Pond, S. L. phylotree.js - a JavaScript library for application development and interactive data visualization in phylogenetics. <i>BMC Bioinformatics</i> <b>19</b>, 276 (2018).</li>
+                    </ol>
+                </div>
+			</div>
 
 
 			<hr>
