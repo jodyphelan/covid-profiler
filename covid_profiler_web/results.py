@@ -14,15 +14,20 @@ from flask import current_app as app
 @bp.route('/results/<uuid:sample_id>',methods=('GET', 'POST'))
 def run_result(sample_id):
     db = get_db()
+
     tmp = db.execute("SELECT * FROM results WHERE id = ?", (str(sample_id),) ).fetchone()
     if tmp == None:
         error = "Run does not exist"
         abort(404)
     run = dict(tmp)
     run["result"] = json.loads(tmp["result"])
-    print(run["result"])
-    newick = open(app.config["UPLOAD_FOLDER"]+"/covid_public.tree").readline().strip()
-    return render_template('results/run_result.html',run=run, tree = newick)
+    tmp = db.execute("SELECT * FROM tree ORDER BY id DESC LIMIT 1" ).fetchone()
+    meta = {}
+    for row in db.execute("SELECT * FROM tree_data" ).fetchall():
+        meta[row["id"]] = dict(row)
+    print(json.dumps(meta))
+    tree = {"newick":tmp["newick"], "created":tmp["created"], "meta": json.dumps(meta)}
+    return render_template('results/run_result.html',run=run, tree = tree)
 
 
 

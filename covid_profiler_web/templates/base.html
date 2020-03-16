@@ -27,6 +27,34 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js" charset="utf-8"></script>
         <script src="{{ url_for('static', filename='phylotree.js') }}"></script>
 
+
+        <style>
+            div.container {
+            width: 100%;
+            border: 1px solid gray;
+            }
+            div.tooltip {
+                position: absolute;
+                text-align: center;
+                width: 180px;
+                padding: 2px;
+                font: 12px sans-serif;
+                background: lightsteelblue;
+                border: 0px;
+                border-radius: 8px;
+                pointer-events: none;
+            }
+            div.tooltip-card {
+                position: absolute;
+                text-align: center;
+                width: 180px;
+                padding: 10px;
+                font: 12px sans-serif;
+                pointer-events: none;
+            }
+        </style>
+
+
         {% block header %}{% endblock %}
     <title>{% block title %}{% endblock %} COVID-Profiler</title>
   </head>

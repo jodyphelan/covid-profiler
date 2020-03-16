@@ -1,5 +1,6 @@
 DROP TABLE IF EXISTS results;
 DROP TABLE IF EXISTS tree;
+DROP TABLE IF EXISTS tree_data;
 
 CREATE TABLE results (
   id TEXT PRIMARY KEY,
@@ -13,12 +14,13 @@ CREATE TABLE results (
 );
 
 CREATE TABLE tree (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     newick TEXT
 );
 
 CREATE TABLE tree_data (
-    accession TEXT,
-    collection_data TIMESTAMP,
+    id TEXT,
+    collection_date TEXT,
     country TEXT
 )

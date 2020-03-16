@@ -6,7 +6,7 @@ from tqdm import tqdm
 from collections import defaultdict
 import csv
 import os
-
+from Bio import SeqIO
 
 def get_conf(prefix):
     conf = {}
@@ -14,6 +14,22 @@ def get_conf(prefix):
         conf[f] = "%s%s" % (prefix,s)
     return conf
 
+
+def get_sample_meta(samples):
+    pp.run_cmd("esearch -db nucleotide -query '%s' | efetch -format gb  > temp.gb" % ",".join(samples))
+    data = []
+    for seq_record in SeqIO.parse(open("temp.gb"), "gb"):
+        sample = seq_record.id.split(".")[0]
+        source = [feat for feat in seq_record.features if feat.type=="source"][0]
+        country = "NA"
+        date = "NA"
+        if "country" in source.qualifiers:
+            country = source.qualifiers["country"][0].split(":")[0]
+        if "collection_date" in source.qualifiers:
+            date = source.qualifiers["collection_date"][0]
+        data.append({"id":sample,"country":country,"date":date})
+
+    return data
 
 
 
@@ -23,7 +39,7 @@ def main_preprocess(args):
     refseq = pp.fasta(conf["ref"]).fa_dict
     refseqname = list(refseq.keys())[0]
 
-    pp.run_cmd("curl 'https://www.ncbi.nlm.nih.gov/genomes/VirusVariation/vvsearch2/?q=*:*&fq=%7B!tag=SeqType_s%7DSeqType_s:(%22Nucleotide%22)&fq=VirusLineageId_ss:(2697049)&fq=%7B!tag=Flags_csv%7DFlags_csv:%22complete%22&cmd=download&sort=&dlfmt=fasta&fl=id,Definition_s,Nucleotide_seq' > temp.fa")
+    # pp.run_cmd("curl 'https://www.ncbi.nlm.nih.gov/genomes/VirusVariation/vvsearch2/?q=*:*&fq=%7B!tag=SeqType_s%7DSeqType_s:(%22Nucleotide%22)&fq=VirusLineageId_ss:(2697049)&fq=%7B!tag=Flags_csv%7DFlags_csv:%22complete%22&cmd=download&sort=&dlfmt=fasta&fl=id,Definition_s,Nucleotide_seq' > temp.fa")
     pp.run_cmd("samtools faidx temp.fa")
 
     seqs = pp.fasta("temp.fa")
@@ -41,17 +57,17 @@ def main_preprocess(args):
     pp.run_cmd("rm %s" % (" ".join(vcf_files)))
     pp.run_cmd("rm %s" % (" ".join(vcf_csi_files)))
     pp.run_cmd("vcf2fasta.py --vcf merged.vcf.gz --ref %s" % conf["ref"])
-    pp.run_cmd("iqtree -s merged.fa -bb 1000 -nt AUTO -asr -redo")
+    # pp.run_cmd("iqtree -s merged.fa -bb 1000 -nt AUTO -asr -redo")
+    sample_data = get_sample_meta(samples)
+    with open("%s.meta.csv" % args.out,"w") as O:
+        writer = csv.DictWriter(O,fieldnames=["id","country","date"])
+        writer.writeheader()
+        for row in sample_data:
+            writer.writerow(row)
 
-def main_asr(args):
-    os.chdir(args.dir)
-    conf = get_conf(args.db)
-    refseq = pp.fasta(conf["ref"]).fa_dict
-    refseqname = list(refseq.keys())[0]
+    seqs = pp.fasta("merged.fa").fa_dict
 
-    seqs = pp.fasta(args.alignment).fa_dict
-
-    tree = ete3.Tree(args.tree,format=1)
+    tree = ete3.Tree("merged.fa.treefile",format=1)
     node_names = set([tree.name] + [n.name.split("/")[0] for n in tree.get_descendants()])
     leaf_names = set(tree.get_leaf_names())
     internal_node_names = node_names - leaf_names
@@ -69,7 +85,7 @@ def main_asr(args):
     states = defaultdict(dict)
     sites = set()
     sys.stderr.write("Loading states\n")
-    for l in tqdm(open(args.states)):
+    for l in tqdm(open("merged.fa.state")):
         if l[0]=="#": continue
         row = l.strip().split()
         if row[0]=="Node": continue
@@ -187,16 +203,9 @@ subparsers = parser.add_subparsers(help="Task to perform")
 parser_sub = subparsers.add_parser('preprocess', help='Output program version and exit', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser_sub.add_argument('--dir',default="/tmp/",help='First read file')
 parser_sub.add_argument('--db',default="cvdb",help='First read file')
+parser_sub.add_argument('--out',default="covid_public",help='First read file')
 parser_sub.set_defaults(func=main_preprocess)
 
-parser_sub = subparsers.add_parser('asr', help='Output program version and exit', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-parser_sub.add_argument('--alignment',default="merged.fa",help='First read file')
-parser_sub.add_argument('--tree',default="merged.fa.treefile",help='First read file')
-parser_sub.add_argument('--states',default="merged.fa.state",help='First read file')
-parser_sub.add_argument('--out',default="covid_public",help='First read file')
-parser_sub.add_argument('--dir',default="/tmp/",help='First read file')
-parser_sub.add_argument('--db',default="cvdb",help='First read file')
-parser_sub.set_defaults(func=main_asr)
 
 parser_sub = subparsers.add_parser('position_isolate', help='Output program version and exit', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser_sub.add_argument('--fasta',help='First read file',required=True)

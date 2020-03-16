@@ -1,8 +1,7 @@
-    {% import 'utils.html' as utils %}
+{% import 'utils.html' as utils %}
 {% extends 'base.html' %}
 
 {% block header %}
-
 
 {% endblock %}
 
@@ -38,10 +37,13 @@
                 <div class="col-md-10 pb-4">
                     <div class="card border-dark text-center">
                       <div class="card-header">
-                        Live tree
+                        Real-time tree
                       </div>
                       <div class="card-body">
                         <svg id="tree_display"></svg>
+                      </div>
+                      <div class="card-footer text-muted">
+                          Last updated: {{ tree["created"] }}
                       </div>
                     </div>
                 </div>
@@ -105,9 +107,10 @@
                 Variants are called using paftools.js from the minimap2 package and bcftools [2]
                 and transformed into a fasta alignment. IQ-TREE [3] is used to reconstruct the
                 phylogeny. Custom scripts utilising ete3 [4] are used to position new isolates
-                on the tree which are visualised using phylotree.js [5] in the web browser. The website is
-                built using <a href="https://github.com/pallets/flask">flask</a>. All the code is available
-                from <a href="https://github.com/jodyphelan/covid-profiler">https://github.com/jodyphelan/covid-profiler</a>.
+                on the tree which are visualised using phylotree.js [5] in the web browser.
+                Sample data is downloaded from NCBI nucleotide database using <a href="https://www.ncbi.nlm.nih.gov/books/NBK179288/">Entrez Direct</a>.
+                The website is built using <a href="https://github.com/pallets/flask">flask</a>.
+                All the code is available from <a href="https://github.com/jodyphelan/covid-profiler">https://github.com/jodyphelan/covid-profiler</a>.
                 <div class="pt-4">
                     <ol>
                         <li>Li, H. Minimap2: Pairwise alignment for nucleotide sequences. <i>Bioinformatics</i> <b>34</b>, 3094–3100 (2018).</li>
@@ -132,40 +135,84 @@
 	</div>
 
     <script type="text/javascript">
-    // var tree = d3.layout.phylotree()
-    //     .svg(d3.select("#tree_display"));
-    //     tree("{{tree}}")
-    //     .layout();
-    var example_tree = "{{tree}}"
-    // tree from Yokoyama et al http://www.ncbi.nlm.nih.gov/pubmed/18768804
+    var data = '{{ tree["meta"] | safe }}'
+    var tree_meta = JSON.parse(data)
+    var example_tree = '{{ tree["newick"] }}'
     var height = 500;
     var width = $( "#tree_display" ).parent().width()-40;
     var tree = d3.layout.phylotree()
-      // create a tree layout object
       .svg(d3.select("#tree_display"))
-      // .radial(true)
       .options({
-    'left-right-spacing': 'fit-to-size',
-    // fit to given size top-to-bottom
-    'top-bottom-spacing': 'fit-to-size',
-    // fit to given size left-to-right
+        'left-right-spacing': 'fit-to-size',
+        'top-bottom-spacing': 'fit-to-size',
+        'collapsible': false,
+        'transitions': false,
+        'zoom':true
+      })
+      .size([height, width])
+      // .align_tips (true);
 
-    // make nodes and branches not selectable
-    'collapsible': false,
-    // turn off the menu on internal nodes
-    'transitions': false,
-    // turn off d3 animations
-    'zoom':true
-  })
-  .size([height, width])
-      // render to this SVG element
 
-    tree(example_tree)
-      // parse the Newick into a d3 hierarchy object with additional fields
-      // .style_nodes(nodeStyler)
+     tree(example_tree);
 
+
+     var attribute_to_color = d3.scale.category10();
+     var tree_attributes = {};
+     var maximum_length = 0;
+
+      tree.traverse_and_compute (function (node) {
+          if (d3.layout.phylotree.is_leafnode (node)) {
+            tree_attributes[node.name] = [tree_meta[node.name]["country"]]
+            maximum_length = maximum_length < node.name.length ? node.name.length : maximum_length;
+          }
+        });
+
+
+
+
+      tree.style_nodes(function(element, node_data){
+          if (node_data.name in tree_attributes) {
+              var node_label = element.select("text")
+              node_label[0][0].attributes.dx.nodeValue = "5"
+              var font_size  = parseFloat (node_label.style ("font-size"));
+              var annotation = element.selectAll ("circle").data (tree_attributes[node_data.name]);
+              annotation.enter().append ("circle");
+              annotation.attr ("r", 3)
+              .style ("fill", function(d, i) {
+                  return attribute_to_color (d);
+             });
+
+
+
+         }
+      })
       .layout()
 
+      var div = d3.select("body").append("div")
+        .attr("class", "card tooltip-card")
+        .style("opacity", 0);
+
+      var nodes = d3.selectAll(".node")
+      nodes.on("mouseover",function(d){
+          console.log(d)
+        div.transition()
+          .duration(200)
+          .style("opacity", .9);
+        var htmlString = "<strong>ID:</strong> " +d.name;
+        var htmlString = htmlString+"<br><strong>Country:</strong> " + tree_meta[d.name]["country"];
+        var htmlString = htmlString+"<br><strong>Date of collection:</strong> " + tree_meta[d.name]["collection_date"];
+        div.attr("height", 18*htmlString.split("<br>").length)
+        div.html(htmlString)
+
+          .style("left", (d3.event.pageX) + "px")
+          .style("top", (d3.event.pageY - 28) + "px");
+      })
+      .on("mouseout",function(d){
+
+        div.transition()
+          .duration(500)
+          .style("opacity", 0);
+      })
 
     </script>
 

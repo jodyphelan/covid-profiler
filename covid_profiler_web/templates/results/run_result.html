@@ -18,7 +18,7 @@
     			<p class="card-text"><b>Sample name:</b> {{ run["sample_name"] }}</p>
     			<p class="card-text"><b>Date:</b> {{ run["created"] }}</p>
     			<p class="card-text"><b>Strain:</b> {{ run["result"]["type"] }}</p>
-                <p class="card-text"><b>Branch:</b> {{ run["result"]["branch"] }}</p>
+                <p class="card-text"><b>Branch:</b> {{ run["result"]["branch"] }} (highlighted in red in the tree below)</p>
     			<hr>
     			<svg id="tree_display"></svg>
     		</div>
@@ -31,45 +31,89 @@
 
 
     <script type="text/javascript">
-    // var tree = d3.layout.phylotree()
-    //     .svg(d3.select("#tree_display"));
-    //     tree("{{tree}}")
-    //     .layout();
-    var example_tree = "{{tree}}"
-    // tree from Yokoyama et al http://www.ncbi.nlm.nih.gov/pubmed/18768804
 
+
+
+    var data = '{{ tree["meta"] | safe }}'
+    var tree_meta = JSON.parse(data)
+    var example_tree = '{{ tree["newick"] }}'
     var height = 500;
     var width = $( "#tree_display" ).parent().width()-40;
     var tree = d3.layout.phylotree()
       .svg(d3.select("#tree_display"))
       .options({
-          'left-right-spacing': 'fit-to-size',
-          'top-bottom-spacing': 'fit-to-size',
-          'collapsible': false,
-          'transitions': false,
-          'zoom':true
+        'left-right-spacing': 'fit-to-size',
+        'top-bottom-spacing': 'fit-to-size',
+        'collapsible': false,
+        'transitions': false,
+        'zoom':true
       })
       .size([height, width])
+      // .align_tips (true);
 
-      function nodeStyler(dom_element, node_object) {
-          if (node_object.name=="{{ run['result']['branch'] }}"){
-              console.log(node_object)
-              console.log(dom_element)
-            dom_element.append("circle").attr("fill", "red").attr("r", "4");
-            dom_element[0][0].classList.replace("internal-node","selected-node")
-            console.log(dom_element[0][0].classList)
-        }
-      }
-      function selecter(node){
-          console.log(node)
-      }
-    tree(example_tree)
-      // parse the Newick into a d3 hierarchy object with additional fields
-      .style_nodes(nodeStyler)
-      // .modify_selection(selecter)
+
+     tree(example_tree);
+
+
+     var attribute_to_color = d3.scale.category10();
+     var tree_attributes = {};
+     var maximum_length = 0;
+
+      tree.traverse_and_compute (function (node) {
+          if (d3.layout.phylotree.is_leafnode (node)) {
+            tree_attributes[node.name] = [tree_meta[node.name]["country"]]
+            maximum_length = maximum_length < node.name.length ? node.name.length : maximum_length;
+          }
+        });
+
+
+
+
+      tree.style_nodes(function(element, node_data){
+          if (node_data.name in tree_attributes) {
+              var node_label = element.select("text")
+              node_label[0][0].attributes.dx.nodeValue = "5"
+              var font_size  = parseFloat (node_label.style ("font-size"));
+              var annotation = element.selectAll ("circle").data (tree_attributes[node_data.name]);
+              annotation.enter().append ("circle");
+              annotation.attr ("r", 3)
+              .style ("fill", function(d, i) {
+                  // return attribute_to_color (d);
+                  return "grey";
+             });
+         }
+         if (node_data.name=='{{ run["result"]["branch"] }}'){
+                element.append("circle").attr("fill", "red").attr("r", "4");
+                element[0][0].classList.replace("internal-node","selected-node")
+         }
+      })
       .layout()
 
+      var div = d3.select("body").append("div")
+        .attr("class", "card tooltip-card")
+        .style("opacity", 0);
 
+      var nodes = d3.selectAll(".node")
+      nodes.on("mouseover",function(d){
+          console.log(d)
+        div.transition()
+          .duration(200)
+          .style("opacity", .9);
+        var htmlString = "<strong>ID:</strong> " +d.name;
+        var htmlString = htmlString+"<br><strong>Country:</strong> " + tree_meta[d.name]["country"];
+        var htmlString = htmlString+"<br><strong>Date of collection:</strong> " + tree_meta[d.name]["collection_date"];
+        div.attr("height", 18*htmlString.split("<br>").length)
+        div.html(htmlString)
+
+          .style("left", (d3.event.pageX) + "px")
+          .style("top", (d3.event.pageY - 28) + "px");
+      })
+      .on("mouseout",function(d){
+
+        div.transition()
+          .duration(500)
+          .style("opacity", 0);
+      })
 
 
       console.log(tree)
