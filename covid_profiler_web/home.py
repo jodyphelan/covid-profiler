@@ -16,7 +16,6 @@ def index():
     meta = {}
     for row in db.execute("SELECT * FROM tree_data" ).fetchall():
         meta[row["id"]] = dict(row)
-    print(json.dumps(meta))
     tree = {"newick":tmp["newick"], "created":tmp["created"], "meta": json.dumps(meta)}
 
     if request.method == 'POST':
