@@ -178,6 +178,7 @@
               var annotation = element.selectAll ("circle").data (tree_attributes[node_data.name]);
               annotation.enter().append ("circle");
               annotation.attr ("r", 3)
+              .attr("data-legend",function(d,i) { return d})
               .style ("fill", function(d, i) {
                   return attribute_to_color (d);
              });
@@ -188,13 +189,29 @@
       })
       .layout()
 
+      svg = d3.selectAll("svg")
+      legend_offset = parseFloat(svg.style("width"))-100
+      legend = svg.append("g")
+          .attr("class","legend")
+          .attr("transform","translate("+legend_offset+",50)")
+          .style("font-size","12px")
+          .call(d3.legend)
+
+      reset = svg.append("g")
+        .attr("transform","translate("+legend_offset+",200)")
+        .append("text")
+        .text("Reset view")
+        .style("font-size","12px")
+
+      reset.on("click",function(d){
+          tree.update()
+      })
       var div = d3.select("body").append("div")
         .attr("class", "card tooltip-card")
         .style("opacity", 0);
 
       var nodes = d3.selectAll(".node")
       nodes.on("mouseover",function(d){
-          console.log(d)
         div.transition()
           .duration(200)
           .style("opacity", .9);
