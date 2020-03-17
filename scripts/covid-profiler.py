@@ -114,7 +114,7 @@ def main_preprocess(args):
                 if n.name in internal_node_names:
                      internal_node_change = True
             n.add_feature("state",node_state)
-        if internal_node_change:
+        if internal_node_change and num_changes==1:
             barcoding_sites.append(site)
         if num_changes>1:
             convergent_sites.append(site)
@@ -167,16 +167,12 @@ def main_position_sample(args):
 
     closest_node = None
     for node in tree.traverse():
+        # print(node.name)
         if node.name in barcoding_sites:
             tmp = barcoding_sites[node.name]
             if tmp[2] in bed_gt[tmp[0]][tmp[1]]:
                 closest_node = node
-    closest_node
-    # nstyle=ete3.NodeStyle()
-    # nstyle["fgcolor"] = "red"
-    # nstyle["size"] = 15
-    # closest_node.set_style(nstyle)
-    # tree.render(args.outfile)
+
     sys.stdout.write("%s\n" % closest_node.name)
     open(args.outfile,"w").write("%s\n" % closest_node.get_ascii(attributes=["name"], show_internal=False))
 
