@@ -25,7 +25,6 @@ def run_result(sample_id):
     meta = {}
     for row in db.execute("SELECT * FROM tree_data" ).fetchall():
         meta[row["id"]] = dict(row)
-    print(json.dumps(meta))
     tree = {"newick":tmp["newick"], "created":tmp["created"], "meta": json.dumps(meta)}
     return render_template('results/run_result.html',run=run, tree = tree)
 
