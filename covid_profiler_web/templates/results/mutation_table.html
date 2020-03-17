@@ -1,0 +1,74 @@
+{% import 'utils.html' as utils %}
+{% extends 'base.html' %}
+
+{% block header %}
+
+
+{% endblock %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-md-1">
+
+    </div>
+    <div class="col-md-10 pt-4">
+        <h3 class="text-center">Mutation Watch</h3>
+        <div class="pb-4">
+            Below is a list of mutations according to their position in the
+            <a href="https://www.ncbi.nlm.nih.gov/nuccore/NC_045512">reference genome</a>.
+            The number of independant acquisitions of the mutation has been counted
+            using empirical bayesian ancestral reconstruction methods. High number of
+            acquisitions can be indicative of positive selection pressure - highlighting
+            potentially important regions in the genome.
+        </div>
+    </div>
+
+</div>
+<div class="row justify-content-md-center">
+    <div class="col-md-10">
+        <div class="card border-dark mb-3">
+    		<div class="card-header text-center">Mutation table</div>
+    		<div class="card-body text-dark">
+                <table class="table table-hover" id="results_table">
+            		<thead>
+            			<tr>
+            				<!-- <th scope="col"></th> -->
+            				<th scope="col">Genomic position</th>
+            				<th scope="col">Number of independant origins</th>
+            			</tr>
+            		</thead>
+            		<tbody id="resultsTable">
+            			{% for mutation in mutations %}
+            				<tr name="{{ mutation['position'] }}">
+            					<td><a href="{{ url_for('results.mutation', position=mutation['position']) }}">{{ mutation['position'] }}</a></td>
+            					<td>{{ mutation['origins'] }}</td>
+            				</tr>
+            			{% endfor %}
+            		</tbody>
+            	</table>
+    		</div>
+    	</div>
+    </div>
+
+</div>
+
+
+<script type="text/javascript">
+
+
+
+	$(document).ready( function () {
+			var table = $('#results_table').DataTable( {
+				select: true,
+
+		    // dom: 'Blfrtip',
+        })
+    })
+
+
+
+</script>
+
+
+{% endblock %}

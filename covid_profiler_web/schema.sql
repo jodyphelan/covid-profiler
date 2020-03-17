@@ -1,6 +1,7 @@
 DROP TABLE IF EXISTS results;
 DROP TABLE IF EXISTS tree;
 DROP TABLE IF EXISTS tree_data;
+DROP TABLE IF EXISTS mutations;
 
 CREATE TABLE results (
   id TEXT PRIMARY KEY,
@@ -23,4 +24,10 @@ CREATE TABLE tree_data (
     id TEXT,
     collection_date TEXT,
     country TEXT
+)
+
+CREATE TABLE mutations (
+    position INT,
+    origins INT,
+    samples TEXT
 )

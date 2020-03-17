@@ -1,0 +1,141 @@
+{% import 'utils.html' as utils %}
+
+{% extends 'base.html' %}
+
+{% block header %}
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-md-center">
+    <div class="col-md-10">
+        <div class="card border-dark mb-3">
+    		<div class="card-header">Mutation Summary</div>
+    		<div class="card-body text-dark">
+    			<p class="card-text"><b>Position:</b> {{ mutation["position"] }}</p>
+                <p class="card-text"><b>Number of independant aquisitions:</b> {{ mutation["origins"] }}</p>
+
+
+    			<hr>
+    			<svg id="tree_display"></svg>
+    		</div>
+    	</div>
+    </div>
+
+</div>
+
+
+
+
+    <script type="text/javascript">
+
+    var tmp = '{{ mutation["json_string"] | safe }}'
+    var mutation = JSON.parse(tmp)
+    console.log(mutation)
+
+    var allele2col = {"A":"#f7d55c","C":"#ed563b","G":"#1f639b","T":"#3cada3"}
+    var data = '{{ tree["meta"] | safe }}'
+    var tree_meta = JSON.parse(data)
+    var origin_nodes = '{{ mutation["branches"] }}'.split(",")
+    var example_tree = '{{ tree["newick"] }}'
+    var height = 500;
+    var width = $( "#tree_display" ).parent().width()-40;
+    var tree = d3.layout.phylotree()
+      .svg(d3.select("#tree_display"))
+      .options({
+        'left-right-spacing': 'fit-to-size',
+        'top-bottom-spacing': 'fit-to-size',
+        'collapsible': false,
+        'transitions': false,
+        'zoom':true
+      })
+      .size([height, width])
+      // .align_tips (true);
+
+
+     tree(example_tree);
+
+
+     var attribute_to_color = d3.scale.category10();
+     var tree_attributes = {};
+     var maximum_length = 0;
+
+      tree.traverse_and_compute (function (node) {
+          if (d3.layout.phylotree.is_leafnode (node)) {
+            tree_attributes[node.name] = [tree_meta[node.name]["country"]]
+            maximum_length = maximum_length < node.name.length ? node.name.length : maximum_length;
+          }
+        });
+
+
+
+
+      tree.style_nodes(function(element, node_data){
+          if (node_data.name in tree_attributes) {
+              var node_label = element.select("text")
+              node_label[0][0].attributes.dx.nodeValue = "5"
+              var font_size  = parseFloat (node_label.style ("font-size"));
+              var annotation = element.selectAll ("circle").data (tree_attributes[node_data.name]);
+              annotation.enter().append ("circle");
+              annotation.attr ("r", 4)
+              .attr("stroke-width",1)
+              .attr("data-legend",function(d,i) { return mutation[node_data.name]})
+              .style ("fill", function(d, i) {
+                  return allele2col[mutation[node_data.name]];
+              }
+          );
+        }
+      })
+      .layout()
+
+      svg = d3.selectAll("svg")
+      legend_offset = parseFloat(svg.style("width"))-100
+      legend = svg.append("g")
+          .attr("class","legend")
+          .attr("transform","translate("+legend_offset+",50)")
+          .style("font-size","12px")
+          .call(d3.legend)
+
+
+      reset = svg.append("g")
+        .attr("transform","translate("+(legend_offset-20)+",100)")
+        .append("text")
+        .text("Reset view")
+        .style("font-size","12px")
+
+      reset.on("click",function(d){
+          tree.update()
+      })
+
+      var div = d3.select("body").append("div")
+        .attr("class", "card tooltip-card")
+        .style("opacity", 0);
+
+      var nodes = d3.selectAll(".node")
+      nodes.on("mouseover",function(d){
+          console.log(d)
+        div.transition()
+          .duration(200)
+          .style("opacity", .9);
+        var htmlString = "<strong>ID:</strong> " +d.name;
+        var htmlString = htmlString+"<br><strong>Country:</strong> " + tree_meta[d.name]["country"];
+        var htmlString = htmlString+"<br><strong>Date of collection:</strong> " + tree_meta[d.name]["collection_date"];
+        div.attr("height", 18*htmlString.split("<br>").length)
+        div.html(htmlString)
+
+          .style("left", (d3.event.pageX) + "px")
+          .style("top", (d3.event.pageY - 28) + "px");
+      })
+      .on("mouseout",function(d){
+
+        div.transition()
+          .duration(500)
+          .style("opacity", 0);
+      })
+
+
+      console.log(tree)
+    </script>
+
+
+
+{% endblock %}

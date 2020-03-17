@@ -29,7 +29,30 @@ def run_result(sample_id):
     return render_template('results/run_result.html',run=run, tree = tree)
 
 
+@bp.route('/mutations/position/<int:position>')
+def mutation(position):
+    db = get_db()
 
+    tmp = db.execute("SELECT * FROM mutations WHERE position = ?", (position,)).fetchone()
+    if tmp == None:
+        error = "Mutation does not exist"
+        abort(404)
+    mutation = dict(tmp)
+    print(mutation)
+    tmp = db.execute("SELECT * FROM tree ORDER BY id DESC LIMIT 1" ).fetchone()
+    meta = {}
+    for row in db.execute("SELECT * FROM tree_data" ).fetchall():
+        meta[row["id"]] = dict(row)
+    tree = {"newick":tmp["newick"], "created":tmp["created"], "meta": json.dumps(meta)}
+    tmp = json.dumps(mutation)
+    mutation["json_string"] = tmp
+    return render_template('results/mutations.html',mutation=mutation, tree = tree)
+
+@bp.route('/mutations/')
+def mutation_table():
+    db = get_db()
+    mutations = db.execute("SELECT * FROM mutations").fetchall()
+    return render_template('results/mutation_table.html',mutations=mutations)
 
 
 @bp.route('/sra',methods=('GET', 'POST'))

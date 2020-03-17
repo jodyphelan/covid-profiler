@@ -150,7 +150,6 @@
         'zoom':true
       })
       .size([height, width])
-      // .align_tips (true);
 
 
      tree(example_tree);
@@ -206,6 +205,7 @@
       reset.on("click",function(d){
           tree.update()
       })
+
       var div = d3.select("body").append("div")
         .attr("class", "card tooltip-card")
         .style("opacity", 0);
