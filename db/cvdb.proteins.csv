@@ -1,0 +1,28 @@
+Region,Start,End,Gene,Putative function,DOI
+gene,266,21555,orf1ab,Replicase protein (please see NSP table for further detail on individual NSPs),10.1186/s40779-020-00240-0
+gene,21563,25384,S,Spike protein (plays a key role in binding to cell receptors (ACE2) and is a target of the human immune system),10.1186/s40779-020-00240-0
+gene,25393,26220,ORF3a,"In *SARS-Cov*,  potentially linked to triggering or serving as decoy to humoral immune response; and potentially linked to activation of the NLRP3 inflammasome",10.1016/j.virusres.2007.10.009;10.1096/fj.201802418R
+gene,26245,26472,E,Envelop protein,10.1186/s40779-020-00240-0
+gene,26523,27191,M,Membrane protein,10.1186/s40779-020-00240-0
+gene,27202,27387,ORF6,"in *SARS-Cov* , potentially involved in viral replication and inhibition of interferon (IFN) pathway",10.1016/j.virusres.2007.10.009
+gene,27394,27759,ORF7a,"in *SARS-Cov*, several studies have reported diverse biological functions of 7a protein in cultured cells. These include induction of apoptosis in several cell lines through a caspase-dependent pathway (Tan et al., 2004a), inhibition of cellular protein synthesis, activation of p38 mitogen-activated protein kinase (Kopecky-Bromberg et al., 2006) and cell cycle arrest at the G0/G1 phase (Yuan et al., 2006b).",10.1016/j.virusres.2007.10.009
+gene,27756,27887,ORF7b,"in *SARS-Cov* , putative viral accessory protein that localizes to the Golgi compartment and is incorporated into SARS-CoV particle",10.1128/JVI.01691-06
+gene,27894,28259,ORF8,"The ORF8 region has been identified as an evolutionary hotspot of SARS-CoVs and has signficant differences between e.g. SARS-Cov-2 and SARS-Cov-2. (Tang, 2020) used a SNP in ORF8 together with a SNP in orf1ab to seperate the L from the S strain (Tang, 2020)",10.1016/j.virusres.2007.10.009;10.1101/2020.03.11.987222
+gene,28274,29533,N,Nucleocapsid protein,10.1186/s40779-020-00240-0
+gene,29558,29674,ORF10,Unique to Sars-Cov-2; no homologous proteins in SARS-CoV ; function unknown,10.1101/2020.03.05.976167
+nsp,1,180,orf1ab:nsp1,suppress antiviral host response,10.1080/22221751.2020.1719902
+nsp,181,818,orf1ab:nsp2,unknown,10.1080/22221751.2020.1719902
+nsp,819,2763,orf1ab:nsp3,putative PL-pro domain,10.1080/22221751.2020.1719902
+nsp,2764,3263,orf1ab:nsp4,complex with nsp3 and 6: DMV formation,10.1080/22221751.2020.1719902
+nsp,3264,3569,orf1ab:nsp5,3CL-pro domain,10.1080/22221751.2020.1719902
+nsp,3570,3859,orf1ab:nsp6,complex with nsp3 and 4: DMV formation,10.1080/22221751.2020.1719902
+nsp,3860,3942,orf1ab:nsp7,complex with nsp8: primase,10.1080/22221751.2020.1719902
+nsp,3943,4140,orf1ab:nsp8,complex with nsp7: primase,10.1080/22221751.2020.1719902
+nsp,4141,4253,orf1ab:nsp9,RNA/DNA binding activity,10.1080/22221751.2020.1719902
+nsp,4254,4392,orf1ab:nsp10,complex with nsp14: replication fidelity,10.1080/22221751.2020.1719902
+nsp,4393,4405,orf1ab:nsp11,short peptide at the end of orf1a,10.1080/22221751.2020.1719902
+nsp,4393,5324,orf1ab:nsp12,RNA-dependent RNA polymerase,10.1080/22221751.2020.1719902
+nsp,5325,5925,orf1ab:nsp13,helicase,10.1080/22221751.2020.1719902
+nsp,5926,6452,orf1ab:nsp14,ExoN: 3_5_ exonuclease,10.1080/22221751.2020.1719902
+nsp,6453,6798,orf1ab:nsp15,XendoU: poly(U)-specific endoribonuclease,10.1080/22221751.2020.1719902
+nsp,6799,7096,orf1ab:nsp16,2&apos;-O-MT: 2&apos;-O-ribose methyltransferase,10.1080/22221751.2020.1719902

@@ -8,16 +8,26 @@ import csv
 import os
 from Bio import SeqIO
 import json
+import re
+
+
+def get_codon_num(mutation):
+    re_obj = re.search("([\d]+)[A-Z\*]",mutation)
+    if re_obj:
+        return int(re_obj.group(1))
+    else:
+        return None
 
 def get_conf(prefix):
     conf = {}
-    for f,s in [("ref",".fa"),("barcode",".barcode.bed"),("gff",".gff")]:
+    for f,s in [("ref",".fa"),("barcode",".barcode.bed"),("gff",".gff"),("proteins",".proteins.csv")]:
         conf[f] = "%s%s" % (prefix,s)
     return conf
 
 
-def get_sample_meta(samples):
-    pp.run_cmd("esearch -db nucleotide -query '%s' | efetch -format gb  > temp.gb" % ",".join(samples))
+def get_sample_meta(samples,debug=False):
+    if not args.debug:
+        pp.run_cmd("esearch -db nucleotide -query '%s' | efetch -format gb  > temp.gb" % ",".join(samples))
     data = []
     for seq_record in SeqIO.parse(open("temp.gb"), "gb"):
         sample = seq_record.id.split(".")[0]
@@ -32,13 +42,22 @@ def get_sample_meta(samples):
 
     return data
 
-def get_variant_data(vcf_file,ref_file,gff_file):
+def get_variant_data(vcf_file,ref_file,gff_file,protein_file):
+    nsp_data = {}
+    gene_info = {}
+    for row in csv.DictReader(open(protein_file)):
+        gene_info[row["Gene"]] = {"function":row["Putative function"],"DOI":row["DOI"]}
+        if row["Region"]!="nsp": continue
+        for i in range(int(row["Start"]),int(row["End"])+1):
+            nsp_data[i] = row
+
     pp.run_cmd("samtools faidx %s" % ref_file)
     results = {}
     for l in pp.cmd_out("bcftools view %s | bcftools csq -f %s -g %s  | bcftools query -f '%%POS\\t%%REF\\t%%ALT\\t%%BCSQ\\n'" % (vcf_file,ref_file,gff_file)):
         pos,ref,alts_str,csq_str = l.strip().split()
+        pos = int(pos)
         if csq_str==".":
-            results[int(pos)] = {"alts":alts_str, "types":"intergenic","changes":"NA","gene":"NA"}
+            results[pos] = {"alts":alts_str, "types":"intergenic","changes":"NA","gene":"NA","gene_function":"NA","gene_reference":"NA"}
         else:
             csqs = csq_str.split(",")
             types = []
@@ -48,37 +67,48 @@ def get_variant_data(vcf_file,ref_file,gff_file):
                 csq = csqs[i].split("|")
                 types.append(csq[0])
                 changes.append(csq[5])
-                genes.append(csq[1])
-            results[int(pos)] = {"alts":alts_str, "types":",".join(types), "changes":",".join(changes),"gene":genes[0]}
+                if csq[1]=="orf1ab":
+                    codon_pos = get_codon_num(csq[5])
+                    if codon_pos in nsp_data:
+                        genes.append(nsp_data[codon_pos]["Gene"])
+                    else:
+                        genes.append("orf1ab")
+                else:
+                    genes.append(csq[1])
+
+            results[pos] = {"alts":alts_str, "types":",".join(types), "changes":",".join(changes),"gene":genes[0], "gene_function":gene_info[genes[0]]["function"], "gene_reference":gene_info[genes[0]]["DOI"]}
     return results
+
 
 def main_preprocess(args):
     os.chdir(args.dir)
     conf = get_conf(args.db)
     refseq = pp.fasta(conf["ref"]).fa_dict
     refseqname = list(refseq.keys())[0]
-
-    pp.run_cmd("curl 'https://www.ncbi.nlm.nih.gov/genomes/VirusVariation/vvsearch2/?q=*:*&fq=%7B!tag=SeqType_s%7DSeqType_s:(%22Nucleotide%22)&fq=VirusLineageId_ss:(2697049)&fq=%7B!tag=Flags_csv%7DFlags_csv:%22complete%22&cmd=download&sort=&dlfmt=fasta&fl=id,Definition_s,Nucleotide_seq' > temp.fa")
-    pp.run_cmd("samtools faidx temp.fa")
+    if not args.debug:
+        pp.run_cmd("curl 'https://www.ncbi.nlm.nih.gov/genomes/VirusVariation/vvsearch2/?q=*:*&fq=%7B!tag=SeqType_s%7DSeqType_s:(%22Nucleotide%22)&fq=VirusLineageId_ss:(2697049)&fq=%7B!tag=Flags_csv%7DFlags_csv:%22complete%22&cmd=download&sort=&dlfmt=fasta&fl=id,Definition_s,Nucleotide_seq' > temp.fa")
+        pp.run_cmd("samtools faidx temp.fa")
 
     seqs = pp.fasta("temp.fa")
     samples = list(seqs.fa_dict.keys())
-    for sample in samples:
-        fname = pp.get_random_file()
-        open(fname,"w").write(">%s\n%s\n" % (sample,seqs.fa_dict[sample]))
-        fasta_obj = pp.fasta(fname)
-        vcf_obj = pp.vcf(fasta_obj.get_ref_variants(conf["ref"], sample))
-        pp.run_cmd("rm %s" % fname)
+    if not args.debug:
+        for sample in samples:
+            fname = pp.get_random_file()
+            open(fname,"w").write(">%s\n%s\n" % (sample,seqs.fa_dict[sample]))
+            fasta_obj = pp.fasta(fname)
+            vcf_obj = pp.vcf(fasta_obj.get_ref_variants(conf["ref"], sample))
+            pp.run_cmd("rm %s" % fname)
 
     vcf_files = ["%s.vcf.gz" % s  for s in samples]
     vcf_csi_files = ["%s.vcf.gz.csi" % s  for s in samples]
-    pp.run_cmd("bcftools merge -0  %s | bcftools view -V indels -Oz -o merged.vcf.gz" % (" ".join(vcf_files)))
-    pp.run_cmd("rm %s" % (" ".join(vcf_files)))
-    pp.run_cmd("rm %s" % (" ".join(vcf_csi_files)))
-    pp.run_cmd("vcf2fasta.py --vcf merged.vcf.gz --ref %s" % conf["ref"])
-    pp.run_cmd("iqtree -s merged.fa -bb 1000 -nt AUTO -asr -redo")
-    variant_data = get_variant_data("merged.vcf.gz",conf["ref"],conf["gff"])
-    sample_data = get_sample_meta(samples)
+    if not args.debug:
+        pp.run_cmd("bcftools merge -0  %s | bcftools view -V indels -Oz -o merged.vcf.gz" % (" ".join(vcf_files)))
+        pp.run_cmd("rm %s" % (" ".join(vcf_files)))
+        pp.run_cmd("rm %s" % (" ".join(vcf_csi_files)))
+        pp.run_cmd("vcf2fasta.py --vcf merged.vcf.gz --ref %s" % conf["ref"])
+        pp.run_cmd("iqtree -s merged.fa -bb 1000 -nt AUTO -asr -redo")
+    variant_data = get_variant_data("merged.vcf.gz",conf["ref"],conf["gff"],conf["proteins"])
+    sample_data = get_sample_meta(samples,args.debug)
     with open("%s.meta.csv" % args.out,"w") as O:
         writer = csv.DictWriter(O,fieldnames=["id","country","date"])
         writer.writeheader()
@@ -91,6 +121,7 @@ def main_preprocess(args):
     node_names = set([tree.name] + [n.name.split("/")[0] for n in tree.get_descendants()])
     leaf_names = set(tree.get_leaf_names())
     internal_node_names = node_names - leaf_names
+
 
     for n in tree.traverse():
         if n.name.split("/")[0] in node_names:
@@ -152,6 +183,8 @@ def main_preprocess(args):
             "origins": len(origins),
             "branches":",".join(origins),
             "gene": variant_data[site]["gene"],
+            "gene_function": variant_data[site]["gene_function"],
+            "gene_reference": variant_data[site]["gene_reference"],
             "alts": variant_data[site]["alts"],
             "functional_types": variant_data[site]["types"],
             "changes": variant_data[site]["changes"]
@@ -174,12 +207,10 @@ def main_preprocess(args):
         for pos in barcoding_sites:
             for allele in set(list(states[pos].values())):
                 tmp_samps = [x for x in leaf_names if states[pos][x]==allele]
-                if tree.get_common_ancestor(tmp_samps).name=="":
-                    import pdb; pdb.set_trace()
                 O.write("%s\t%s\t%s\t%s\t%s\n" % (refseqname,pos-1,pos,allele,tree.get_common_ancestor(tmp_samps).name))
 
     with open(args.out+".mutation_summary.csv","w") as O:
-        writer = csv.DictWriter(O,fieldnames=["position","mutation_type","origins","branches","gene","alts","functional_types","changes"] + list(leaf_names))
+        writer = csv.DictWriter(O,fieldnames=["position","mutation_type","origins","branches","gene","gene_function","gene_reference","alts","functional_types","changes"] + list(leaf_names))
         writer.writeheader()
         for row in mutations:
             writer.writerow(row)
@@ -238,6 +269,7 @@ parser_sub = subparsers.add_parser('preprocess', help='Output program version an
 parser_sub.add_argument('--dir',default="/tmp/",help='First read file')
 parser_sub.add_argument('--db',default="cvdb",help='First read file')
 parser_sub.add_argument('--out',default="covid_public",help='First read file')
+parser_sub.add_argument('--debug',action="store_true",help='First read file')
 parser_sub.set_defaults(func=main_preprocess)
 
 

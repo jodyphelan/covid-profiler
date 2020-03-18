@@ -21,10 +21,10 @@ def main(args):
             pass
 
     c.execute("DROP TABLE IF EXISTS mutations")
-    c.execute("CREATE TABLE mutations (position INT, mutation_type TEXT, gene TEXT, alts TEXT, functional_types TEXT, changes TEXT, origins INT, branches TEXT, %s )" % (",".join(["%s TEXT" % s for s in samples])))
+    c.execute("CREATE TABLE mutations (position INT, mutation_type TEXT, gene TEXT, gene_function TEXT, gene_reference TEXT, alts TEXT, functional_types TEXT, changes TEXT, origins INT, branches TEXT, %s )" % (",".join(["%s TEXT" % s for s in samples])))
 
     for row in csv.DictReader(open("%s/covid_public.mutation_summary.csv" % args.dir)):
-        c.execute("INSERT INTO mutations (position, mutation_type, gene, alts, functional_types, changes, origins, branches) VALUES (%(position)s,'%(mutation_type)s','%(gene)s','%(alts)s','%(functional_types)s','%(changes)s',%(origins)s,'%(branches)s')" % row)
+        c.execute("INSERT INTO mutations (position, mutation_type, gene, gene_function, gene_reference, alts, functional_types, changes, origins, branches) VALUES (%(position)s,'%(mutation_type)s','%(gene)s','%(gene_function)s','%(gene_reference)s','%(alts)s','%(functional_types)s','%(changes)s',%(origins)s,'%(branches)s')" % row)
         for s in samples:
             c.execute("UPDATE mutations SET %s = '%s' where position = %s" % (s,row[s],row["position"]))
     conn.commit()
