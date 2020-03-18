@@ -76,7 +76,7 @@ def main_preprocess(args):
     pp.run_cmd("rm %s" % (" ".join(vcf_files)))
     pp.run_cmd("rm %s" % (" ".join(vcf_csi_files)))
     pp.run_cmd("vcf2fasta.py --vcf merged.vcf.gz --ref %s" % conf["ref"])
-    pp.run_cmd("iqtree -s merged.fa -bb 1000 -nt AUTO -asr -czb -redo")
+    pp.run_cmd("iqtree -s merged.fa -bb 1000 -nt AUTO -asr -redo")
     variant_data = get_variant_data("merged.vcf.gz",conf["ref"],conf["gff"])
     sample_data = get_sample_meta(samples)
     with open("%s.meta.csv" % args.out,"w") as O:
@@ -174,6 +174,8 @@ def main_preprocess(args):
         for pos in barcoding_sites:
             for allele in set(list(states[pos].values())):
                 tmp_samps = [x for x in leaf_names if states[pos][x]==allele]
+                if tree.get_common_ancestor(tmp_samps).name=="":
+                    import pdb; pdb.set_trace()
                 O.write("%s\t%s\t%s\t%s\t%s\n" % (refseqname,pos-1,pos,allele,tree.get_common_ancestor(tmp_samps).name))
 
     with open(args.out+".mutation_summary.csv","w") as O:
@@ -194,6 +196,7 @@ def main_position_sample(args):
 
     for l in open(args.barcode_bed):
         row = l.strip().split()
+        if len(row)<5: continue
         barcoding_sites[row[4]] = (row[0],int(row[2]),row[3])
 
     fasta_obj = pp.fasta(args.fasta)
