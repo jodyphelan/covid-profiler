@@ -79,7 +79,7 @@ def main_preprocess(args):
     pp.run_cmd("rm %s" % (" ".join(vcf_csi_files)))
     pp.run_cmd("vcf2fasta.py --vcf merged.vcf.gz --ref %s" % conf["ref"])
     if os.path.isfile("merged.fa.log"):
-        pp.run_cmd("rm merged.fa*")
+        pp.run_cmd("rm merged.fa.*")
     pp.run_cmd("iqtree -s merged.fa -bb 1000 -nt AUTO -czb -redo")
     variant_data = get_variant_data("merged.vcf.gz",conf["ref"],conf["gff"])
     sample_data = get_sample_meta(samples)
@@ -98,7 +98,7 @@ def main_preprocess(args):
 
     tree.write(format=1, outfile=args.out+".tree")
     if os.path.isfile("merged.fa.asr.log"):
-        pp.run_cmd("rm merged.fa.asr*")
+        pp.run_cmd("rm merged.fa.asr.*")
     pp.run_cmd("iqtree -s merged.fa -te %s.tree -nt AUTO -czb -pre merged.fa.asr -asr" % (args.out))
 
 
