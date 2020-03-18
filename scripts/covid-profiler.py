@@ -116,6 +116,9 @@ def main_preprocess(args):
                 if len(tmp)>1:
                     n.support = tmp[1]
 
+    tree.set_outgroup(tree.get_common_ancestor("MN996527","MT106053"))
+    outgroup_leaf_names = [s for s in tree.get_leaf_names() if seqs[s][8782-1]=="T"]
+    tree.set_outgroup(tree.get_common_ancestor(outgroup_leaf_names))
     tree.write(format=1, outfile=args.out+".tree")
 
     states = defaultdict(dict)
