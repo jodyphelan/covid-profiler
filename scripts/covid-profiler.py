@@ -58,7 +58,7 @@ def main_preprocess(args):
     pp.run_cmd("rm %s" % (" ".join(vcf_files)))
     pp.run_cmd("rm %s" % (" ".join(vcf_csi_files)))
     pp.run_cmd("vcf2fasta.py --vcf merged.vcf.gz --ref %s" % conf["ref"])
-    pp.run_cmd("iqtree -s merged.fa -bb 1000 -nt AUTO -asr -redo")
+    pp.run_cmd("iqtree -s merged.fa -bb 1000 -nt AUTO -asr -czb -redo")
     sample_data = get_sample_meta(samples)
     with open("%s.meta.csv" % args.out,"w") as O:
         writer = csv.DictWriter(O,fieldnames=["id","country","date"])
