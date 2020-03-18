@@ -35,6 +35,9 @@
             			<tr>
             				<!-- <th scope="col"></th> -->
             				<th scope="col">Genomic position</th>
+                            <th scope="col">Gene</th>
+                            <th scope="col">Type</th>
+                            <th scope="col">Coding change</th>
             				<th scope="col">Number of independant origins</th>
             			</tr>
             		</thead>
@@ -42,7 +45,10 @@
             			{% for mutation in mutations %}
             				<tr name="{{ mutation['position'] }}">
             					<td><a href="{{ url_for('results.mutation', position=mutation['position']) }}">{{ mutation['position'] }}</a></td>
-            					<td>{{ mutation['origins'] }}</td>
+            					<td>{{ mutation['gene'] }}</td>
+                                <td>{{ mutation['functional_types'] }}</td>
+                                <td>{{ mutation['changes'] }}</td>
+                                <td>{{ mutation['origins'] }}</td>
             				</tr>
             			{% endfor %}
             		</tbody>
@@ -61,6 +67,7 @@
 	$(document).ready( function () {
 			var table = $('#results_table').DataTable( {
 				select: true,
+                "order": [[ 4, "desc" ]]
 
 		    // dom: 'Blfrtip',
         })

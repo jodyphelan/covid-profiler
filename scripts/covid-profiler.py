@@ -11,13 +11,13 @@ import json
 
 def get_conf(prefix):
     conf = {}
-    for f,s in [("ref",".fa"),("barcode",".barcode.bed")]:
+    for f,s in [("ref",".fa"),("barcode",".barcode.bed"),("gff",".gff")]:
         conf[f] = "%s%s" % (prefix,s)
     return conf
 
 
 def get_sample_meta(samples):
-    pp.run_cmd("esearch -db nucleotide -query '%s' | efetch -format gb  > temp.gb" % ",".join(samples))
+    # pp.run_cmd("esearch -db nucleotide -query '%s' | efetch -format gb  > temp.gb" % ",".join(samples))
     data = []
     for seq_record in SeqIO.parse(open("temp.gb"), "gb"):
         sample = seq_record.id.split(".")[0]
@@ -32,7 +32,25 @@ def get_sample_meta(samples):
 
     return data
 
-
+def get_variant_data(vcf_file,ref_file,gff_file):
+    pp.run_cmd("samtools faidx %s" % ref_file)
+    results = {}
+    for l in pp.cmd_out("bcftools view %s | bcftools csq -f %s -g %s  | bcftools query -f '%%POS\\t%%REF\\t%%ALT\\t%%BCSQ\\n'" % (vcf_file,ref_file,gff_file)):
+        pos,ref,alts_str,csq_str = l.strip().split()
+        if csq_str==".":
+            results[int(pos)] = {"alts":alts_str, "types":"intergenic","changes":"NA","gene":"NA"}
+        else:
+            csqs = csq_str.split(",")
+            types = []
+            changes = []
+            genes = []
+            for i in range(len(csqs)):
+                csq = csqs[i].split("|")
+                types.append(csq[0])
+                changes.append(csq[5])
+                genes.append(csq[1])
+            results[int(pos)] = {"alts":alts_str, "types":",".join(types), "changes":",".join(changes),"gene":genes[0]}
+    return results
 
 def main_preprocess(args):
     os.chdir(args.dir)
@@ -40,25 +58,26 @@ def main_preprocess(args):
     refseq = pp.fasta(conf["ref"]).fa_dict
     refseqname = list(refseq.keys())[0]
 
-    pp.run_cmd("curl 'https://www.ncbi.nlm.nih.gov/genomes/VirusVariation/vvsearch2/?q=*:*&fq=%7B!tag=SeqType_s%7DSeqType_s:(%22Nucleotide%22)&fq=VirusLineageId_ss:(2697049)&fq=%7B!tag=Flags_csv%7DFlags_csv:%22complete%22&cmd=download&sort=&dlfmt=fasta&fl=id,Definition_s,Nucleotide_seq' > temp.fa")
+    # pp.run_cmd("curl 'https://www.ncbi.nlm.nih.gov/genomes/VirusVariation/vvsearch2/?q=*:*&fq=%7B!tag=SeqType_s%7DSeqType_s:(%22Nucleotide%22)&fq=VirusLineageId_ss:(2697049)&fq=%7B!tag=Flags_csv%7DFlags_csv:%22complete%22&cmd=download&sort=&dlfmt=fasta&fl=id,Definition_s,Nucleotide_seq' > temp.fa")
     pp.run_cmd("samtools faidx temp.fa")
 
     seqs = pp.fasta("temp.fa")
     samples = list(seqs.fa_dict.keys())
-    for sample in samples:
-        fname = pp.get_random_file()
-        open(fname,"w").write(">%s\n%s\n" % (sample,seqs.fa_dict[sample]))
-        fasta_obj = pp.fasta(fname)
-        vcf_obj = pp.vcf(fasta_obj.get_ref_variants(conf["ref"], sample))
-        pp.run_cmd("rm %s" % fname)
+    # for sample in samples:
+    #     fname = pp.get_random_file()
+    #     open(fname,"w").write(">%s\n%s\n" % (sample,seqs.fa_dict[sample]))
+    #     fasta_obj = pp.fasta(fname)
+    #     vcf_obj = pp.vcf(fasta_obj.get_ref_variants(conf["ref"], sample))
+    #     pp.run_cmd("rm %s" % fname)
 
     vcf_files = ["%s.vcf.gz" % s  for s in samples]
     vcf_csi_files = ["%s.vcf.gz.csi" % s  for s in samples]
-    pp.run_cmd("bcftools merge -0  %s | bcftools view -V indels -Oz -o merged.vcf.gz" % (" ".join(vcf_files)))
-    pp.run_cmd("rm %s" % (" ".join(vcf_files)))
-    pp.run_cmd("rm %s" % (" ".join(vcf_csi_files)))
-    pp.run_cmd("vcf2fasta.py --vcf merged.vcf.gz --ref %s" % conf["ref"])
-    pp.run_cmd("iqtree -s merged.fa -bb 1000 -nt AUTO -asr -czb -redo")
+    # pp.run_cmd("bcftools merge -0  %s | bcftools view -V indels -Oz -o merged.vcf.gz" % (" ".join(vcf_files)))
+    # pp.run_cmd("rm %s" % (" ".join(vcf_files)))
+    # pp.run_cmd("rm %s" % (" ".join(vcf_csi_files)))
+    # pp.run_cmd("vcf2fasta.py --vcf merged.vcf.gz --ref %s" % conf["ref"])
+    # pp.run_cmd("iqtree -s merged.fa -bb 1000 -nt AUTO -asr -czb -redo")
+    variant_data = get_variant_data("merged.vcf.gz",conf["ref"],conf["gff"])
     sample_data = get_sample_meta(samples)
     with open("%s.meta.csv" % args.out,"w") as O:
         writer = csv.DictWriter(O,fieldnames=["id","country","date"])
@@ -102,59 +121,63 @@ def main_preprocess(args):
     convergent_sites = []
     mutations = []
     for site in tqdm(sites):
-        origins = []
         nucleotides = set([states[site][n] for n in node_names])
-
         if len(nucleotides)==1: continue
+
+        # Set up storage objjects
+        origins = []
         internal_node_change = False
-        num_changes = 0
+
         tree.add_feature("state",states[site][tree.name])
         for n in tree.traverse():
             if n == tree: continue
             node_state = states[site][n.name]
             if node_state!=n.get_ancestors()[0].state:
-                num_changes+=1
                 origins.append(n.name)
                 if n.name in internal_node_names:
                      internal_node_change = True
             n.add_feature("state",node_state)
-        if internal_node_change and num_changes==1:
+
+        type = "unique"
+        if internal_node_change and len(origins)==1:
+            type = "barcoding"
             barcoding_sites.append(site)
-        if num_changes>1:
+        if len(origins)>1:
+            type = "convergent"
             convergent_sites.append(site)
 
-        tmp_data = {"position": site,"origins": num_changes,"branches":",".join(origins)}
+        tmp_data = {
+            "position": site,
+            "mutation_type":type,
+            "origins": len(origins),
+            "branches":",".join(origins),
+            "gene": variant_data[site]["gene"],
+            "alts": variant_data[site]["alts"],
+            "functional_types": variant_data[site]["types"],
+            "changes": variant_data[site]["changes"]
+            }
         for sample in leaf_names:
             tmp_data[sample] = states[site][sample]
         mutations.append(tmp_data)
 
     print("Barcoding sites: ",barcoding_sites)
     print("Convergent sites: ",convergent_sites)
+
+    # Reroot tree at S/L types
     tree.set_outgroup(tree.get_common_ancestor("MN996527","MT106053"))
     outgroup_leaf_names = [s for s in leaf_names if seqs[s][8782-1]=="T"]
     tree.set_outgroup(tree.get_common_ancestor(outgroup_leaf_names))
+
     tree.write(format=1, outfile=args.out+".tree")
+
     with open(args.out+".barcode.bed","w") as O:
         for pos in barcoding_sites:
             for allele in set(list(states[pos].values())):
                 tmp_samps = [x for x in leaf_names if states[pos][x]==allele]
                 O.write("%s\t%s\t%s\t%s\t%s\n" % (refseqname,pos-1,pos,allele,tree.get_common_ancestor(tmp_samps).name))
-    with open(args.out+".barcode.csv","w") as O:
-        writer = csv.DictWriter(O,fieldnames=["id"]+barcoding_sites)
-        writer.writeheader()
-        for sample in leaf_names:
-            row = {pos:seqs[sample][pos-1] for pos in barcoding_sites}
-            row["id"] = sample
-            writer.writerow(row)
-    with open(args.out+".convergent.csv","w") as O:
-        writer = csv.DictWriter(O,fieldnames=["id"]+convergent_sites)
-        writer.writeheader()
-        for sample in leaf_names:
-            row = {pos:seqs[sample][pos-1] for pos in convergent_sites}
-            row["id"] = sample
-            writer.writerow(row)
+
     with open(args.out+".mutation_summary.csv","w") as O:
-        writer = csv.DictWriter(O,fieldnames=["position","origins","branches"] + list(leaf_names))
+        writer = csv.DictWriter(O,fieldnames=["position","mutation_type","origins","branches","gene","alts","functional_types","changes"] + list(leaf_names))
         writer.writeheader()
         for row in mutations:
             writer.writerow(row)
@@ -180,7 +203,6 @@ def main_position_sample(args):
 
     closest_node = None
     for node in tree.traverse():
-        # print(node.name)
         if node.name in barcoding_sites:
             tmp = barcoding_sites[node.name]
             if tmp[2] in bed_gt[tmp[0]][tmp[1]]:

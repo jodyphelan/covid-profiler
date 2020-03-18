@@ -12,6 +12,10 @@
     		<div class="card-header">Mutation Summary</div>
     		<div class="card-body text-dark">
     			<p class="card-text"><b>Position:</b> {{ mutation["position"] }}</p>
+                <p class="card-text"><b>Gene:</b> {{ mutation["gene"] }}</p>
+                <p class="card-text"><b>Type:</b> {{ mutation["functional_types"] }}</p>
+                <p class="card-text"><b>Nucleotide changes(s):</b> {{ mutation["alts"] }}</p>
+                <p class="card-text"><b>Amino acid changes(s):</b> {{ mutation["changes"] }}</p>
                 <p class="card-text"><b>Number of independant aquisitions:</b> {{ mutation["origins"] }}</p>
 
 
