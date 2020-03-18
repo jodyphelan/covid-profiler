@@ -17,7 +17,7 @@ def get_conf(prefix):
 
 
 def get_sample_meta(samples):
-    # pp.run_cmd("esearch -db nucleotide -query '%s' | efetch -format gb  > temp.gb" % ",".join(samples))
+    pp.run_cmd("esearch -db nucleotide -query '%s' | efetch -format gb  > temp.gb" % ",".join(samples))
     data = []
     for seq_record in SeqIO.parse(open("temp.gb"), "gb"):
         sample = seq_record.id.split(".")[0]
@@ -58,27 +58,26 @@ def main_preprocess(args):
     refseq = pp.fasta(conf["ref"]).fa_dict
     refseqname = list(refseq.keys())[0]
 
-    # pp.run_cmd("curl 'https://www.ncbi.nlm.nih.gov/genomes/VirusVariation/vvsearch2/?q=*:*&fq=%7B!tag=SeqType_s%7DSeqType_s:(%22Nucleotide%22)&fq=VirusLineageId_ss:(2697049)&fq=%7B!tag=Flags_csv%7DFlags_csv:%22complete%22&cmd=download&sort=&dlfmt=fasta&fl=id,Definition_s,Nucleotide_seq' > temp.fa")
+    pp.run_cmd("curl 'https://www.ncbi.nlm.nih.gov/genomes/VirusVariation/vvsearch2/?q=*:*&fq=%7B!tag=SeqType_s%7DSeqType_s:(%22Nucleotide%22)&fq=VirusLineageId_ss:(2697049)&fq=%7B!tag=Flags_csv%7DFlags_csv:%22complete%22&cmd=download&sort=&dlfmt=fasta&fl=id,Definition_s,Nucleotide_seq' > temp.fa")
     pp.run_cmd("samtools faidx temp.fa")
 
     seqs = pp.fasta("temp.fa")
     samples = list(seqs.fa_dict.keys())
-    # for sample in samples:
-    #     fname = pp.get_random_file()
-    #     open(fname,"w").write(">%s\n%s\n" % (sample,seqs.fa_dict[sample]))
-    #     fasta_obj = pp.fasta(fname)
-    #     vcf_obj = pp.vcf(fasta_obj.get_ref_variants(conf["ref"], sample))
-    #     pp.run_cmd("rm %s" % fname)
+    for sample in samples:
+        fname = pp.get_random_file()
+        open(fname,"w").write(">%s\n%s\n" % (sample,seqs.fa_dict[sample]))
+        fasta_obj = pp.fasta(fname)
+        vcf_obj = pp.vcf(fasta_obj.get_ref_variants(conf["ref"], sample))
+        pp.run_cmd("rm %s" % fname)
 
     vcf_files = ["%s.vcf.gz" % s  for s in samples]
     vcf_csi_files = ["%s.vcf.gz.csi" % s  for s in samples]
-    # pp.run_cmd("bcftools merge -0  %s | bcftools view -V indels -Oz -o merged.vcf.gz" % (" ".join(vcf_files)))
-    # pp.run_cmd("rm %s" % (" ".join(vcf_files)))
-    # pp.run_cmd("rm %s" % (" ".join(vcf_csi_files)))
-    # pp.run_cmd("vcf2fasta.py --vcf merged.vcf.gz --ref %s" % conf["ref"])
-    # pp.run_cmd("iqtree -s merged.fa -bb 1000 -nt AUTO -asr -czb -redo")
+    pp.run_cmd("bcftools merge -0  %s | bcftools view -V indels -Oz -o merged.vcf.gz" % (" ".join(vcf_files)))
+    pp.run_cmd("rm %s" % (" ".join(vcf_files)))
+    pp.run_cmd("rm %s" % (" ".join(vcf_csi_files)))
+    pp.run_cmd("vcf2fasta.py --vcf merged.vcf.gz --ref %s" % conf["ref"])
+    pp.run_cmd("iqtree -s merged.fa -bb 1000 -nt AUTO -asr -czb -redo")
     variant_data = get_variant_data("merged.vcf.gz",conf["ref"],conf["gff"])
-    print(variant_data)
     sample_data = get_sample_meta(samples)
     with open("%s.meta.csv" % args.out,"w") as O:
         writer = csv.DictWriter(O,fieldnames=["id","country","date"])
