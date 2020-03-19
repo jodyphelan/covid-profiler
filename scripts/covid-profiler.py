@@ -197,9 +197,11 @@ def main_preprocess(args):
     print("Convergent sites: ",convergent_sites)
 
     # Reroot tree at S/L types
-    tree.set_outgroup(tree.get_common_ancestor("MN996527","MT106053"))
     outgroup_leaf_names = [s for s in leaf_names if seqs[s][8782-1]=="T"]
+    if tree.get_common_ancestor(outgroup_leaf_names).name=="Node1":
+        tree.set_outgroup(tree.get_common_ancestor("MN996527","MT106053"))
     tree.set_outgroup(tree.get_common_ancestor(outgroup_leaf_names))
+
 
     tree.write(format=1, outfile=args.out+".tree")
 
