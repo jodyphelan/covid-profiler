@@ -65,11 +65,16 @@
 
 
 	$(document).ready( function () {
-			var table = $('#results_table').DataTable( {
-				select: true,
-                "order": [[ 4, "desc" ]]
-
-		    // dom: 'Blfrtip',
+		var table = $('#results_table').DataTable( {
+			select: true,
+            "order": [[ 4, "desc" ]],
+            dom: 'Blfrtip',
+            buttons: [
+            'copyHtml5',
+            'excelHtml5',
+            'csvHtml5',
+            'pdfHtml5'
+            ]
         })
     })
 
