@@ -11,6 +11,22 @@ import os
 from flask import current_app as app
 
 
+
+
+
+@bp.route('/tree')
+def tree():
+    db = get_db()
+    tmp = db.execute("SELECT * FROM tree ORDER BY id DESC LIMIT 1" ).fetchone()
+    meta = {}
+    for row in db.execute("SELECT * FROM tree_data" ).fetchall():
+        meta[row["id"]] = dict(row)
+    tree = {"newick":tmp["newick"], "created":tmp["created"], "meta": json.dumps(meta)}
+
+    return render_template('results/tree_view.html',tree = tree)
+
+
+
 @bp.route('/results/<uuid:sample_id>',methods=('GET', 'POST'))
 def run_result(sample_id):
     db = get_db()
@@ -103,3 +119,12 @@ def result_table(request,user):
                 db.execute(cmd)
                 db.commit()
     return render_template('results/result_table.html', user=user)
+
+
+
+
+
+
+@bp.route('/immuno')
+def immuno():
+    return render_template('results/immunoanalytics.html',tree = tree)

@@ -5,9 +5,14 @@
 #!genome-build-accession NCBI_Assembly:GCF_009858895.2
 ##sequence-region NC_045512.2 1 29903
 ##species https://www.ncbi.nlm.nih.gov/Taxonomy/Browser/wwwtax.cgi?id=2697049
-NC_045512.2	ena	gene	266	21555	.	+	.	ID=gene:GU280_gp01;Name=orf1ab;biotype=protein_coding
-NC_045512.2	ena	mRNA	266	21555	.	+	.	ID=transcript:GU280_gp01;Parent=gene:GU280_gp01;Name=orf1ab;biotype=protein_coding
-NC_045512.2	ena	CDS	266	21555	.	+	0	ID=CDS:YP_009724389.1;Parent=transcript:GU280_gp01
+NC_045512.2	ena	gene	266	13468	.	+	.	ID=gene:GU280_gp01_part1;Name=orf1ab;biotype=protein_coding
+NC_045512.2	ena	mRNA	266	13468	.	+	.	ID=transcript:GU280_gp01_part1;Parent=gene:GU280_gp01_part1;Name=orf1ab;biotype=protein_coding
+NC_045512.2	ena	CDS	266	13468	.	+	0	ID=CDS:YP_009724389.1;Parent=transcript:GU280_gp01_part1
+####### up to 4401 in orf1ab ########
+###
+NC_045512.2	ena	gene	13468	21555	.	+	.	ID=gene:GU280_gp01_part2;Name=orf1ab;biotype=protein_coding
+NC_045512.2	ena	mRNA	13468	21555	.	+	.	ID=transcript:GU280_gp01_part2;Parent=gene:GU280_gp01_part2;Name=orf1ab;biotype=protein_coding
+NC_045512.2	ena	CDS	13468	21555	.	+	0	ID=CDS:YP_009724389.1;Parent=transcript:GU280_gp01_part2
 ###
 NC_045512.2	ena	gene	21563	25384	.	+	.	ID=gene:GU280_gp02;Name=S;biotype=protein_coding
 NC_045512.2	ena	mRNA	21563	25384	.	+	.	ID=transcript:GU280_gp02;Parent=gene:GU280_gp02;Name=S;biotype=protein_coding

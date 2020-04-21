@@ -41,23 +41,27 @@
     var data = '{{ tree["meta"] | safe }}'
     var tree_meta = JSON.parse(data)
     var origin_nodes = '{{ mutation["branches"] }}'.split(",")
-    var example_tree = '{{ tree["newick"] }}'
+    var newick_string = '{{ tree["newick"] }}'
     var height = 500;
     var width = $( "#tree_display" ).parent().width()-40;
     var tree = d3.layout.phylotree()
       .svg(d3.select("#tree_display"))
       .options({
-        'left-right-spacing': 'fit-to-size',
-        'top-bottom-spacing': 'fit-to-size',
-        'collapsible': false,
-        'transitions': false,
-        'zoom':true
-      })
-      .size([height, width])
-      // .align_tips (true);
+          "max-radius":250,
+          "zoom":false,
+          "show-scale": false,
+          // 'left-right-spacing': 'fit-to-size',
+          // fit to given size top-to-bottom
+          // 'top-bottom-spacing': 'fit-to-size',
+          "collapsible": false
+        })
+        .radial(true)
+        .branch_name(function() {
+              return ""
+            })
 
 
-     tree(example_tree);
+     tree(newick_string);
 
 
      var attribute_to_color = d3.scale.category10();
@@ -101,15 +105,7 @@
           .call(d3.legend)
 
 
-      reset = svg.append("g")
-        .attr("transform","translate("+(legend_offset-20)+",100)")
-        .append("text")
-        .text("Reset view")
-        .style("font-size","12px")
-
-      reset.on("click",function(d){
-          tree.update()
-      })
+      
 
       var div = d3.select("body").append("div")
         .attr("class", "card tooltip-card")
