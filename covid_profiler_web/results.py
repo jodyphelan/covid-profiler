@@ -64,7 +64,7 @@ def mutation(position):
     mutation["json_string"] = tmp
     return render_template('results/mutations.html',mutation=mutation, tree = tree)
 
-@bp.route('/mutations/')
+@bp.route('/mutations')
 def mutation_table():
     db = get_db()
     mutations = db.execute("SELECT * FROM mutations").fetchall()
