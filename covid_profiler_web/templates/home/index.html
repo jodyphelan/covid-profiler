@@ -11,7 +11,8 @@
 
 		</div>
 		<div class="col-md-10 pt-4">
-			<img src="{{ url_for('static', filename='covid_profiler_logo.svg') }}" alt="" width="500px">
+
+			<img src="{{ url_for('static', filename='covid_profiler_logo.svg') }}" alt="" width="75%">
 			<div class="pb-4">
 				Welcome to the COVID-Profiler - a pipeline which allows users
 				to analyse <i>Sars-Cov-2</i> sequencing data to place isolates within
@@ -40,7 +41,7 @@
                             Real-time tree
                         </div>
                             <div class="card-body" style="overflow: hidden; height:524px;">
-                                <svg id="tree_display"></svg>
+                                <!-- <svg id="tree_display"></svg> -->
                             </div>
                             <div class="card-footer text-muted">
                               Last updated: {{ tree["created"] }}
