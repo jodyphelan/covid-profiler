@@ -57,48 +57,52 @@
   </head>
   <body>
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
-          <a class="navbar-brand" href="{{ url_for('home.index') }}">COVID-Profiler</a>
-          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
 
-          <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto">
-              <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('home.index') }}">Home</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('upload.upload') }}">Upload</a>
-              </li>
-              <li class="nav-item">
-                  <a class="nav-link" href="{{ url_for('results.mutation_table') }}">Mutations</a>
-              </li>
-              <li class="nav-item">
-                  <a class="nav-link" href="{{ url_for('results.immuno') }}">Immuno</a>
-              </li>
-            </ul>
-            <ul class="navbar-nav my-2 my-lg-0">
-                <li class="nav-item pr-4">
-                    <a href="https://www.lshtm.ac.uk/research/centres/applied-genomics-centre"><img src="{{ url_for('static',filename='tagc_logo.jpg')}}" class="img-thumbnail" style="height:50px" alt=""></a>
+            <a href="https://www.lshtm.ac.uk/">
+                <img src="{{ url_for('static', filename='covid_profiler_logo_min.svg') }}" class="img-thumbnail" style="height:50px; background-color: transparent; border: 0px" alt="">
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-                </li>
-                <li class="nav-item pr-4">
-                    <a href="https://www.lshtm.ac.uk/"><img src="{{ url_for('static',filename='lshtm_logo.jpg')}}" class="img-thumbnail" style="height:50px" alt=""></a>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('home.index') }}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('upload.upload') }}">Upload</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('results.mutation_table') }}">Mutations</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('diagnostics.diagnostics') }}">Diagnostics</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('results.immuno') }}">Immuno</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav my-2 my-lg-0">
+                    <li class="nav-item pr-4">
+                        <a href="https://www.lshtm.ac.uk/research/centres/applied-genomics-centre"><img src="{{ url_for('static',filename='tagc_logo.jpg')}}" class="img-thumbnail" style="height:50px" alt=""></a>
+                    </li>
+                    <li class="nav-item pr-4">
+                        <a href="https://www.lshtm.ac.uk/"><img src="{{ url_for('static',filename='lshtm_logo.jpg')}}" class="img-thumbnail" style="height:50px" alt=""></a>
+                    </li>
 
-                </li>
-
-            </ul>
+                </ul>
             </div>
         </nav>
 
         <div class="container-fluid">
             {% for message in get_flashed_messages() %}
-            <div class="alert alert-danger" role="alert">{{ message }}</div>
-          {% endfor %}
-          {% block content %}{% endblock %}
+                <div class="alert alert-danger" role="alert">{{ message }}</div>
+            {% endfor %}
+            {% block content %}{% endblock %}
         </div>
         <hr>
         <!-- Optional JavaScript -->
         <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-  </body>
+    </body>
 </html>
