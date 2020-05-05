@@ -26,7 +26,7 @@ def blast_seq(seq,ref,word_size=4):
 
 
 def get_conf_dict(library_prefix):
-    files = {"gff":".gff","ref":".fasta","barcode":".barcode.bed","version":".version.json"}
+    files = {"gff":".gff","ref":".fasta","barcode":".barcode.bed","version":".version.json","proteins":".proteins.csv"}
     conf = {}
     for key in files:
         sys.stderr.write("Using %s file: %s\n" % (key,library_prefix+files[key]))
@@ -65,184 +65,65 @@ def get_sample_meta(samples,debug=False):
 
     return data
 
+def change_codon_number(mut,num):
+    re_obj = re.search("(\d+)([A-Z\*]+)>(\d+)([A-Z\*]+)",mut)
+    if re_obj:
+        return "%s%s>%s%s" % (num,re_obj.group(2),num,re_obj.group(4))
+    re_obj = re.search("(\d+)([A-Z\*]+)",mut)
+    if re_obj:
+        return "%s%s" % (num,re_obj.group(2))
+    else:
+        import pdb; pdb.set_trace()
+
 def get_variant_data(vcf_file,ref_file,gff_file,protein_file):
     nsp_data = {}
     gene_info = {}
     for row in csv.DictReader(open(protein_file)):
+        row["Start"] = int(row["Start"])
+        row["End"] = int(row["End"])
         gene_info[row["Gene"]] = {"function":row["Putative function"],"DOI":row["DOI"]}
         if row["Region"]!="nsp": continue
-        for i in range(int(row["Start"]),int(row["End"])+1):
+        for i in range(row["Start"],row["End"]+1):
             nsp_data[i] = row
 
     pp.run_cmd("samtools faidx %s" % ref_file)
     results = {}
-    for l in pp.cmd_out("bcftools view %s | bcftools csq -f %s -g %s  | bcftools query -f '%%POS\\t%%REF\\t%%ALT\\t%%BCSQ\\n'" % (vcf_file,ref_file,gff_file)):
-        pos,ref,alts_str,csq_str = l.strip().split()
+    for l in pp.cmd_out("bcftools view %s | bcftools csq -f %s -g %s  | correct_covid_csq.py | bcftools +fill-tags | bcftools query -f '%%POS\\t%%REF\\t%%ALT\\t%%AF\\t%%BCSQ\\n'" % (vcf_file,ref_file,gff_file)):
+        pos,ref,alts_str,af_str,csq_str = l.strip().split()
+        alt_af = sum([float(x) for x in af_str.split(",")])
+        csqs = csq_str.split(",")
+        types = []
+        changes = []
+        genes = []
         pos = int(pos)
-        if csq_str==".":
-            results[pos] = {"alts":alts_str, "types":"intergenic","changes":"NA","gene":"NA","gene_function":"NA","gene_reference":"NA"}
-        else:
-            csqs = csq_str.split(",")
-            types = []
-            changes = []
-            genes = []
-            for i in range(len(csqs)):
+        for i in range(len(csqs)):
+            if csqs[i][0]=="@":
+                results[pos] = results[int(csqs[i][1:])]
+
+            elif csqs[i]==".":
+                results[pos] = {"pos":pos, "alts":alts_str, "alt_af":alt_af, "types":"intergenic","changes":"NA","gene":"NA","gene_function":"NA","gene_reference":"NA"}
+
+            else:
                 csq = csqs[i].split("|")
-                types.append(csq[0])
-                changes.append(csq[5])
+                types.append(csq[0].replace("*",""))
+
                 if csq[1]=="orf1ab":
                     codon_pos = get_codon_num(csq[5])
                     if codon_pos in nsp_data:
                         genes.append(nsp_data[codon_pos]["Gene"])
+                        codon_pos = codon_pos-nsp_data[codon_pos]["Start"]+1
+                        changes.append(change_codon_number(csq[5],codon_pos))
                     else:
                         genes.append("orf1ab")
+                        changes.append(csq[5])
                 else:
+                    changes.append(csq[5])
                     genes.append(csq[1])
-
-            results[pos] = {"alts":alts_str, "types":",".join(types), "changes":",".join(changes),"gene":genes[0], "gene_function":gene_info[genes[0]]["function"], "gene_reference":gene_info[genes[0]]["DOI"]}
+                if len(set(types))==1:
+                    types = list(set(types))
+                results[pos] = {"pos":pos, "alts":alts_str, "alt_af":alt_af, "types":",".join(types), "changes":",".join(changes),"gene":genes[0], "gene_function":gene_info[genes[0]]["function"], "gene_reference":gene_info[genes[0]]["DOI"]}
     return results
 
-
-def main_preprocess(args):
-    os.chdir(args.dir)
-    conf = get_conf(args.db)
-    refseq = pp.fasta(conf["ref"]).fa_dict
-    refseqname = list(refseq.keys())[0]
-    if not args.debug:
-        if args.seqs:
-            seqs = pp.fasta(args.seqs)
-        else:
-            pp.run_cmd("curl 'https://www.ncbi.nlm.nih.gov/genomes/VirusVariation/vvsearch2/?q=*:*&fq=%7B!tag=SeqType_s%7DSeqType_s:(%22Nucleotide%22)&fq=VirusLineageId_ss:(2697049)&fq=%7B!tag=Flags_csv%7DFlags_csv:%22complete%22&cmd=download&sort=&dlfmt=fasta&fl=id,Definition_s,Nucleotide_seq' > temp.fa")
-            pp.run_cmd("samtools faidx temp.fa")
-            seqs = pp.fasta("temp.fa")
-
-
-    samples = list(seqs.fa_dict.keys())
-    if not args.debug:
-        for sample in samples:
-            fname = pp.get_random_file()
-            open(fname,"w").write(">%s\n%s\n" % (sample,seqs.fa_dict[sample]))
-            fasta_obj = pp.fasta(fname)
-            vcf_obj = pp.vcf(fasta_obj.get_ref_variants(conf["ref"], sample))
-            pp.run_cmd("rm %s" % fname)
-
-    vcf_files = ["%s.vcf.gz" % s  for s in samples]
-    vcf_csi_files = ["%s.vcf.gz.csi" % s  for s in samples]
-    if not args.debug:
-        pp.run_cmd("bcftools merge -0  %s | bcftools view -V indels -Oz -o merged.vcf.gz" % (" ".join(vcf_files)))
-        pp.run_cmd("rm %s" % (" ".join(vcf_files)))
-        pp.run_cmd("rm %s" % (" ".join(vcf_csi_files)))
-        pp.run_cmd("vcf2fasta.py --vcf merged.vcf.gz --ref %s" % conf["ref"])
-        pp.run_cmd("iqtree -s merged.fa -bb 1000 -nt AUTO -asr -redo")
-    variant_data = get_variant_data("merged.vcf.gz",conf["ref"],conf["gff"],conf["proteins"])
-    sample_data = get_sample_meta(samples,args.debug)
-    with open("%s.meta.csv" % args.out,"w") as O:
-        writer = csv.DictWriter(O,fieldnames=["id","country","date"])
-        writer.writeheader()
-        for row in sample_data:
-            writer.writerow(row)
-
-    seqs = pp.fasta("merged.fa").fa_dict
-
-    tree = ete3.Tree("merged.fa.treefile",format=1)
-    node_names = set([tree.name] + [n.name.split("/")[0] for n in tree.get_descendants()])
-    leaf_names = set(tree.get_leaf_names())
-    internal_node_names = node_names - leaf_names
-
-
-    for n in tree.traverse():
-        if n.name.split("/")[0] in node_names:
-            if "Node" in n.name:
-                tmp = n.name.split("/")
-                n.name = tmp[0]
-                if len(tmp)>1:
-                    n.support = tmp[1]
-
-
-
-    states = defaultdict(dict)
-    sites = set()
-    sys.stderr.write("Loading states\n")
-    for l in tqdm(open("merged.fa.state")):
-        if l[0]=="#": continue
-        row = l.strip().split()
-        if row[0]=="Node": continue
-        states[int(row[1])][row[0]] = row[2]
-        sites.add(int(row[1]))
-
-    sys.stderr.write("Loading alignment sites\n")
-    for site in tqdm(sites):
-        for sample in seqs:
-            states[site][sample] = seqs[sample][site-1]
-
-    barcoding_sites = []
-    convergent_sites = []
-    mutations = []
-    for site in tqdm(sites):
-        nucleotides = set([states[site][n] for n in node_names])
-        if len(nucleotides)==1: continue
-
-        # Set up storage objjects
-        origins = []
-        internal_node_change = False
-
-        tree.add_feature("state",states[site][tree.name])
-        for n in tree.traverse():
-            if n == tree: continue
-            node_state = states[site][n.name]
-            if node_state!=n.get_ancestors()[0].state:
-                origins.append(n.name)
-                if n.name in internal_node_names:
-                     internal_node_change = True
-            n.add_feature("state",node_state)
-
-        type = "unique"
-        if internal_node_change and len(origins)==1:
-            type = "barcoding"
-            barcoding_sites.append(site)
-        if len(origins)>1:
-            type = "convergent"
-            convergent_sites.append(site)
-
-        tmp_data = {
-            "position": site,
-            "mutation_type":type,
-            "origins": len(origins),
-            "branches":",".join(origins),
-            "gene": variant_data[site]["gene"],
-            "gene_function": variant_data[site]["gene_function"],
-            "gene_reference": variant_data[site]["gene_reference"],
-            "alts": variant_data[site]["alts"],
-            "functional_types": variant_data[site]["types"],
-            "changes": variant_data[site]["changes"]
-            }
-        for sample in leaf_names:
-            tmp_data[sample] = states[site][sample]
-        mutations.append(tmp_data)
-
-    print("Barcoding sites: ",barcoding_sites)
-    print("Convergent sites: ",convergent_sites)
-
-    # Reroot tree at S/L types
-    outgroup_leaf_names = [s for s in leaf_names if seqs[s][8782-1]=="T"]
-    if tree.get_common_ancestor(outgroup_leaf_names).name=="Node1":
-        tree.set_outgroup(tree.get_common_ancestor("MN996527","MT106053"))
-    tree.set_outgroup(tree.get_common_ancestor(outgroup_leaf_names))
-
-
-    tree.write(format=1, outfile=args.out+".tree")
-
-    with open(args.out+".barcode.bed","w") as O:
-        for pos in barcoding_sites:
-            for allele in set(list(states[pos].values())):
-                tmp_samps = [x for x in leaf_names if states[pos][x]==allele]
-                O.write("%s\t%s\t%s\t%s\t%s\n" % (refseqname,pos-1,pos,allele,tree.get_common_ancestor(tmp_samps).name))
-
-    with open(args.out+".mutation_summary.csv","w") as O:
-        writer = csv.DictWriter(O,fieldnames=["position","mutation_type","origins","branches","gene","gene_function","gene_reference","alts","functional_types","changes"] + list(leaf_names))
-        writer.writeheader()
-        for row in mutations:
-            writer.writerow(row)
 
 
 def main_position_sample(args):
@@ -277,7 +158,7 @@ def main_position_sample(args):
 
 def main_load_library(args):
     lib_prefix = args.prefix.split("/")[-1]
-    files = {"gff":".gff","ref":".fasta","barcode":".barcode.bed","version":".version.json"}
+    files = {"gff":".gff","ref":".fasta","barcode":".barcode.bed","version":".version.json","proteins":".proteins.csv"}
     if pp.nofolder(sys.base_prefix+"/share/covidprofiler"):
         pp.run_cmd("mkdir %s " % (sys.base_prefix+"/share/covidprofiler/"))
     for key in files:
@@ -287,7 +168,6 @@ def main_load_library(args):
     pp.run_cmd("bwa index %s" % sys.base_prefix+"/share/covidprofiler/"+lib_prefix+".fasta")
     if os.path.isfile("%s" % sys.base_prefix+"/share/covidprofiler/"+lib_prefix+".dict"):
         pp.run_cmd("rm %s" % sys.base_prefix+"/share/covidprofiler/"+lib_prefix+".dict")
-    pp.run_cmd("gatk CreateSequenceDictionary -R %s" % sys.base_prefix+"/share/covidprofiler/"+lib_prefix+".fasta")
     pp.log("Sucessfully imported library")
 
 
@@ -337,32 +217,16 @@ def main_profile(args):
     refseq = pp.fasta(conf["ref"]).fa_dict
     refseqname = list(refseq.keys())[0]
 
-    mutations = wg_vcf_obj.get_bed_gt(conf["barcode"], conf["ref"])
+    results = {}
+    barcode_mutations = wg_vcf_obj.get_bed_gt(conf["barcode"], conf["ref"])
+    barcode = pp.barcode(barcode_mutations,conf["barcode"])
+    clade = ";".join(sorted([d["annotation"] for d in barcode]))
+    sys.stdout.write("%s\t%s\n" % (args.prefix,clade))
+    results["clade"] = clade
 
-    barcode = pp.barcode(mutations,conf["barcode"])
-    sys.stdout.write("%s\t%s\n" % (args.prefix,";".join([d["annotation"] for d in barcode])))
-
-
-
-
-
-def main_phylogeny(args):
-    conf = get_conf_dict(sys.base_prefix+"/share/covidprofiler/%s" % args.db)
-    samples = [x.replace(".vcf.gz","") for x in os.listdir(args.dir) if x[-len(".vcf.gz"):]==".vcf.gz"]
-    vcf_files = ["%s/%s.vcf.gz" % (args.dir,x) for x in samples]
-    for vcf in vcf_files:
-        pp.index_bcf(vcf)
-    args.tmp_vcf = pp.get_random_file()
-    pp.run_cmd("bcftools merge -0  %s | bcftools view -V indels -Oz -o %s" % (" ".join(vcf_files),args.tmp_vcf))
-    pp.index_bcf(args.tmp_vcf)
-    args.sample_file = pp.get_random_file()
-    args.ref = conf["ref"]
-    open(args.sample_file,"w").write("\n".join(samples)+"\n")
-    pp.run_cmd('cat %(sample_file)s | parallel  --bar -j %(threads)s "bcftools consensus -f %(ref)s -s {} %(tmp_vcf)s | sed \'s/^>.*/>{}/\' > {}.tmp.fasta"' % vars(args))
-    pp.run_cmd('cat %s > %s.fa' % (" ".join(["%s.tmp.fasta" % s for s in samples]), args.prefix))
-    pp.run_cmd('rm %s %s' % (" ".join(["%s.tmp.fasta" % s for s in samples]), args.sample_file))
-    pp.run_cmd("iqtree -s %(prefix)s.fa -nt AUTO -czb -bb 1000" % vars(args))
-
+    variant_data = get_variant_data(wg_vcf_obj.filename,conf["ref"],conf["gff"],conf["proteins"])
+    results["variants"] = list(variant_data.values())
+    json.dump(results,open("%s.results.json" % files_prefix,"w"))
 
 
 def primer_evaluation(args):
@@ -393,15 +257,6 @@ parser = argparse.ArgumentParser(description='Covid pipeline',formatter_class=ar
 subparsers = parser.add_subparsers(help="Task to perform")
 
 
-parser_sub = subparsers.add_parser('preprocess', help='Output program version and exit', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-parser_sub.add_argument('--seqs',help='First read file')
-parser_sub.add_argument('--dir',default="/tmp/",help='First read file')
-parser_sub.add_argument('--db',default="cvdb",help='First read file')
-parser_sub.add_argument('--out',default="covid_public",help='First read file')
-parser_sub.add_argument('--debug',action="store_true",help='First read file')
-parser_sub.set_defaults(func=main_preprocess)
-
-
 parser_sub = subparsers.add_parser('position_isolate', help='Output program version and exit', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser_sub.add_argument('--fasta',help='First read file',required=True)
 parser_sub.add_argument('--tree',default="covid_public.tree",help='First read file')
@@ -425,12 +280,6 @@ parser_sub.add_argument('--caller',default="bcftools", choices=["bcftools","gatk
 parser_sub.add_argument('--platform','-m',choices=["illumina","nanopore"],default="illumina",help='NGS Platform used to generate data')
 parser_sub.set_defaults(func=main_profile)
 
-parser_sub = subparsers.add_parser('phylogeny', help='Output program version and exit', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-parser_sub.add_argument('--prefix','-p',help='Prefix for output files',required=True)
-parser_sub.add_argument('--db',default="cvdb",help='First read file')
-parser_sub.add_argument('--dir',default="covidv_profiler_results",help='First read file')
-parser_sub.add_argument('--threads','-t',default=1,help='Threads to use',type=int)
-parser_sub.set_defaults(func=main_phylogeny)
 
 parser_sub = subparsers.add_parser('load_library', help='Load new library', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser_sub.add_argument('prefix',type=str,help='Prefix to the library files')

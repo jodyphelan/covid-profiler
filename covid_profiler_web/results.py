@@ -4,7 +4,7 @@ from flask import (
 from werkzeug.exceptions import abort
 import json
 # from covid_profiler_web.auth import login_required
-from covid_profiler_web.db import get_db
+from covid_profiler_web.db import get_db, get_mongo_db
 import tbprofiler as tbp
 bp = Blueprint('results', __name__)
 import os
@@ -29,45 +29,49 @@ def tree():
 
 @bp.route('/results/<uuid:sample_id>',methods=('GET', 'POST'))
 def run_result(sample_id):
-    db = get_db()
+    mongo = get_mongo_db()
 
-    tmp = db.execute("SELECT * FROM results WHERE id = ?", (str(sample_id),) ).fetchone()
-    if tmp == None:
+    run = mongo.db.profiler_results.find_one({"_id":str(sample_id)})
+    if run == None:
         error = "Run does not exist"
         abort(404)
-    run = dict(tmp)
-    run["result"] = json.loads(tmp["result"])
-    tmp = db.execute("SELECT * FROM tree ORDER BY id DESC LIMIT 1" ).fetchone()
-    meta = {}
-    for row in db.execute("SELECT * FROM tree_data" ).fetchall():
-        meta[row["id"]] = dict(row)
-    tree = {"newick":tmp["newick"], "created":tmp["created"], "meta": json.dumps(meta)}
+
+    tree_text = mongo.db.tree.find_one()["tree"]
+    meta = mongo.db.meta.find_one()
+    del meta["_id"]
+    meta = json.dumps(meta)
+
+    tree = {"newick":tree_text, "created":"NA", "meta": meta}
+
     return render_template('results/run_result.html',run=run, tree = tree)
 
 
 @bp.route('/mutations/position/<int:position>')
 def mutation(position):
     db = get_db()
+    mongo = get_mongo_db()
+    mutation = mongo.db.mutations.find_one({"position":str(position)})
+    del mutation["_id"]
 
-    tmp = db.execute("SELECT * FROM mutations WHERE position = ?", (position,)).fetchone()
-    if tmp == None:
+
+    if mutation == None:
         error = "Mutation does not exist"
         abort(404)
-    mutation = dict(tmp)
-    print(mutation)
-    tmp = db.execute("SELECT * FROM tree ORDER BY id DESC LIMIT 1" ).fetchone()
-    meta = {}
-    for row in db.execute("SELECT * FROM tree_data" ).fetchall():
-        meta[row["id"]] = dict(row)
-    tree = {"newick":tmp["newick"], "created":tmp["created"], "meta": json.dumps(meta)}
     tmp = json.dumps(mutation)
     mutation["json_string"] = tmp
+
+    tree_text = mongo.db.tree.find_one()["tree"]
+    meta = mongo.db.meta.find_one()
+    del meta["_id"]
+    tree = {"newick":tree_text, "meta":json.dumps(meta), "created":"test"}
+
+
     return render_template('results/mutations.html',mutation=mutation, tree = tree)
 
 @bp.route('/mutations')
 def mutation_table():
-    db = get_db()
-    mutations = db.execute("SELECT * FROM mutations").fetchall()
+    mongo = get_mongo_db()
+    mutations = mongo.db.mutations.find()
     return render_template('results/mutation_table.html',mutations=mutations)
 
 

@@ -6,117 +6,59 @@
 {% endblock %}
 
 {% block content %}
-{% if run['result']=={} %}
-	<div class="alert alert-warning mt-4" role="alert">Your run ID is: <b>{{run["id"]}}</b>. This run is still processing. Please come back later.</div>
+{% if run['results']=={} %}
+	<div class="alert alert-warning mt-4" role="alert">Your run ID is: <b>{{run["_id"]}}</b>. This run is still processing. Please come back later.</div>
 {% else %}
 <div class="row justify-content-md-center">
     <div class="col-md-10">
         <div class="card border-dark mb-3">
     		<div class="card-header">Summary</div>
     		<div class="card-body text-dark">
-    			<p class="card-text"><b>Run ID:</b> {{ run["id"] }}</p>
+    			<p class="card-text"><b>Run ID:</b> {{ run["_id"] }}</p>
     			<p class="card-text"><b>Sample name:</b> {{ run["sample_name"] }}</p>
     			<p class="card-text"><b>Date:</b> {{ run["created"] }}</p>
-    			<p class="card-text"><b>Strain:</b> {{ run["result"]["type"] }}</p>
-                <p class="card-text"><b>Branch:</b> {{ run["result"]["branch"] }} (highlighted in red in the tree below)</p>
+    			<p class="card-text"><b>Strain:</b> {{ run["results"]["clade"] }}</p>
     			<hr>
-    			<svg id="tree_display"></svg>
+
     		</div>
     	</div>
     </div>
 
 </div>
 
-
+<div class="row justify-content-md-center">
+    <div class="col-md-10">
+        <div class="card border-dark mb-3">
+            <div class="card-header">Mutations</div>
+            <table class="table table-hover" id="results_table">
+                <thead>
+                    <tr>
+                        <!-- <th scope="col"></th> -->
+                        <th scope="col">Genomic position</th>
+                        <th scope="col">Gene</th>
+                        <th scope="col">Type</th>
+                        <th scope="col">Coding change</th>
+                    </tr>
+                </thead>
+                <tbody id="resultsTable">
+                    {% for mutation in run["results"]["variants"] %}
+                        <tr name="{{ mutation['position'] }}">
+                            <td><a href="{{ url_for('results.mutation', position=mutation['pos']) }}">{{ mutation['pos'] }}</a></td>
+                            <td>{{ mutation['gene'] }}</td>
+                            <td>{{ mutation['types'] }}</td>
+                            <td>{{ mutation['changes'] }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 
 
     <script type="text/javascript">
 
 
-
-    var data = '{{ tree["meta"] | safe }}'
-    var tree_meta = JSON.parse(data)
-    var example_tree = '{{ tree["newick"] }}'
-    var height = 500;
-    var width = $( "#tree_display" ).parent().width()-40;
-    var tree = d3.layout.phylotree()
-      .svg(d3.select("#tree_display"))
-      .options({
-        'left-right-spacing': 'fit-to-size',
-        'top-bottom-spacing': 'fit-to-size',
-        'collapsible': false,
-        'transitions': false,
-        'zoom':true
-      })
-      .size([height, width])
-      // .align_tips (true);
-
-
-     tree(example_tree);
-
-
-     var attribute_to_color = d3.scale.category10();
-     var tree_attributes = {};
-     var maximum_length = 0;
-
-      tree.traverse_and_compute (function (node) {
-          if (d3.layout.phylotree.is_leafnode (node)) {
-            tree_attributes[node.name] = [tree_meta[node.name]["country"]]
-            maximum_length = maximum_length < node.name.length ? node.name.length : maximum_length;
-          }
-        });
-
-
-
-
-      tree.style_nodes(function(element, node_data){
-          if (node_data.name in tree_attributes) {
-              var node_label = element.select("text")
-              node_label[0][0].attributes.dx.nodeValue = "5"
-              var font_size  = parseFloat (node_label.style ("font-size"));
-              var annotation = element.selectAll ("circle").data (tree_attributes[node_data.name]);
-              annotation.enter().append ("circle");
-              annotation.attr ("r", 3)
-              .style ("fill", function(d, i) {
-                  // return attribute_to_color (d);
-                  return "grey";
-             });
-         }
-         if (node_data.name=='{{ run["result"]["branch"] }}'){
-                element.append("circle").attr("fill", "red").attr("r", "4");
-                element[0][0].classList.replace("internal-node","selected-node")
-         }
-      })
-      .layout()
-
-      var div = d3.select("body").append("div")
-        .attr("class", "card tooltip-card")
-        .style("opacity", 0);
-
-      var nodes = d3.selectAll(".node")
-      nodes.on("mouseover",function(d){
-          console.log(d)
-        div.transition()
-          .duration(200)
-          .style("opacity", .9);
-        var htmlString = "<strong>ID:</strong> " +d.name;
-        var htmlString = htmlString+"<br><strong>Country:</strong> " + tree_meta[d.name]["country"];
-        var htmlString = htmlString+"<br><strong>Date of collection:</strong> " + tree_meta[d.name]["collection_date"];
-        div.attr("height", 18*htmlString.split("<br>").length)
-        div.html(htmlString)
-
-          .style("left", (d3.event.pageX) + "px")
-          .style("top", (d3.event.pageY - 28) + "px");
-      })
-      .on("mouseout",function(d){
-
-        div.transition()
-          .duration(500)
-          .style("opacity", 0);
-      })
-
-
-      console.log(tree)
     </script>
 
 
