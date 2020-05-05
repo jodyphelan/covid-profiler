@@ -33,10 +33,9 @@ def profile(fasta,uniq_id,storage_dir):
 
 @celery.task
 def profile_primer(primerF,primerR,probe,uniq_id,save_dir):
-    pp.run_cmd("covid-profiler.py primer --msa /tmp/gisaid.filtered.fasta --primerF %s --primerR %s --probe %s --out /tmp/%s.csv" % (primerF,primerR,probe,uniq_id))
-    pp.run_cmd("Rscript /Users/jodyphelan/github/covid-profiler/scripts/plot_primers.R /tmp/%s.csv %s %s %s" % (uniq_id,primerF,primerR,probe))
-    pp.run_cmd("mv /tmp/%s.svg %s/" % (uniq_id,save_dir))
-
+    pp.run_cmd("covid-profiler.py primer --primerF %s --primerR %s --probe %s --out %s/%s.csv" % (primerF,primerR,probe,save_dir,uniq_id))
+    pp.run_cmd("covid_plot_primers.R %s/%s.csv %s %s %s" % (save_dir,uniq_id,primerF,primerR,probe))
+    pp.run_cmd("rm %s/%s.csv" % (save_dir,uniq_id))
     client = MongoClient()
     db = client.test_database
     db.primer_results.find_one_and_update(

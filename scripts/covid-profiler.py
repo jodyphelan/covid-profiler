@@ -26,7 +26,7 @@ def blast_seq(seq,ref,word_size=4):
 
 
 def get_conf_dict(library_prefix):
-    files = {"gff":".gff","ref":".fasta","barcode":".barcode.bed","version":".version.json","proteins":".proteins.csv"}
+    files = {"gff":".gff","ref":".fasta","barcode":".barcode.bed","version":".version.json","proteins":".proteins.csv","msa":".msa.fa"}
     conf = {}
     for key in files:
         sys.stderr.write("Using %s file: %s\n" % (key,library_prefix+files[key]))
@@ -230,15 +230,14 @@ def main_profile(args):
 
 
 def primer_evaluation(args):
-    msa = pp.fasta(args.msa).fa_dict
-
-    forward_results = cp.run_fuzznuc(args.msa, args.primerF, pmismatch=args.mismatch)
-    reverse_results = cp.run_fuzznuc(args.msa, args.primerR, pmismatch=args.mismatch)
-    probe_results = cp.run_fuzznuc(args.msa, args.probe, pmismatch=args.mismatch)
+    conf = get_conf_dict(sys.base_prefix+"/share/covidprofiler/%s" % args.db)
+    msa_obj = pp.fasta(conf["msa"]).fa_dict
+    forward_results = cp.run_fuzznuc(conf["msa"], args.primerF, pmismatch=args.mismatch)
+    reverse_results = cp.run_fuzznuc(conf["msa"], args.primerR, pmismatch=args.mismatch)
+    probe_results = cp.run_fuzznuc(conf["msa"], args.probe, pmismatch=args.mismatch)
 
     rows = []
-    print(list(forward_results.values())[0])
-    for s in tqdm(msa):
+    for s in tqdm(msa_obj):
         amplicon = cp.find_amplicon(forward_results[s], reverse_results[s],probe_results[s] )
         rows.append(amplicon)
     with open(args.out,"w") as O:
@@ -287,12 +286,12 @@ parser_sub.set_defaults(func=main_load_library)
 
 
 parser_sub = subparsers.add_parser('primer', help='Output program version and exit', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-parser_sub.add_argument('--msa',help='First read file',required=True)
 parser_sub.add_argument('--primerF',help='First read file',required=True)
 parser_sub.add_argument('--primerR',help='First read file',required=True)
 parser_sub.add_argument('--probe',help='First read file',required=True)
 parser_sub.add_argument('--out',help='First read file',required=True)
 parser_sub.add_argument('--mismatch',type=int,default=3,help='First read file')
+parser_sub.add_argument('--db',default="cvdb",help='First read file')
 parser_sub.set_defaults(func=primer_evaluation)
 
 parser_sub = subparsers.add_parser('asr', help='Output program version and exit', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
