@@ -29,7 +29,7 @@ def run_fuzznuc(seqs,pattern,pmismatch=0):
     tmpfile = pp.get_random_file()
     pp.run_cmd("fuzznuc -sequence %s -pattern %s -outfile %s -complement -pmismatch %s" % (seqs,pattern,tmpfile,pmismatch))
     result = parse_fuzznuc_output(tmpfile)
-    # pp.rm_files([tmpfile])
+    pp.rm_files([tmpfile])
     return result
 
 
