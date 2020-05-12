@@ -1,12 +1,12 @@
-var BACKGROUND06 = [ "BACKGROUND06" , {
-  BginnerRadius: 200,
+var BACKGROUND07 = [ "BACKGROUND06" , {
+  BginnerRadius: 185,
   BgouterRadius: 170,
   BgFillColor: "#F2F2F2",
   BgborderColor : "#000",
   BgborderSize : 0.3
 }];
 var LINE01 = [ "LINE01" , {
-  maxRadius: 200,
+  maxRadius: 180,
   minRadius: 170,
   LineColor: "#DA704F",
   LineWidth: 0.5

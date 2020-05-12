@@ -34,19 +34,6 @@ def get_conf_dict(library_prefix):
     return conf
 
 
-def get_codon_num(mutation):
-    re_obj = re.search("([\d]+)[A-Z\*]",mutation)
-    if re_obj:
-        return int(re_obj.group(1))
-    else:
-        return None
-
-def get_conf(prefix):
-    conf = {}
-    for f,s in [("ref",".fasta"),("barcode",".barcode.bed"),("gff",".gff"),("proteins",".proteins.csv")]:
-        conf[f] = "%s%s" % (prefix,s)
-    return conf
-
 
 def get_sample_meta(samples,debug=False):
     if not args.debug:
@@ -64,65 +51,6 @@ def get_sample_meta(samples,debug=False):
         data.append({"id":sample,"country":country,"date":date})
 
     return data
-
-def change_codon_number(mut,num):
-    re_obj = re.search("(\d+)([A-Z\*]+)>(\d+)([A-Z\*]+)",mut)
-    if re_obj:
-        return "%s%s>%s%s" % (num,re_obj.group(2),num,re_obj.group(4))
-    re_obj = re.search("(\d+)([A-Z\*]+)",mut)
-    if re_obj:
-        return "%s%s" % (num,re_obj.group(2))
-    else:
-        import pdb; pdb.set_trace()
-
-def get_variant_data(vcf_file,ref_file,gff_file,protein_file):
-    nsp_data = {}
-    gene_info = {}
-    for row in csv.DictReader(open(protein_file)):
-        row["Start"] = int(row["Start"])
-        row["End"] = int(row["End"])
-        gene_info[row["Gene"]] = {"function":row["Putative function"],"DOI":row["DOI"]}
-        if row["Region"]!="nsp": continue
-        for i in range(row["Start"],row["End"]+1):
-            nsp_data[i] = row
-
-    pp.run_cmd("samtools faidx %s" % ref_file)
-    results = {}
-    for l in pp.cmd_out("bcftools view %s | bcftools csq -f %s -g %s  | correct_covid_csq.py | bcftools +fill-tags | bcftools query -f '%%POS\\t%%REF\\t%%ALT\\t%%AF\\t%%BCSQ\\n'" % (vcf_file,ref_file,gff_file)):
-        pos,ref,alts_str,af_str,csq_str = l.strip().split()
-        alt_af = sum([float(x) for x in af_str.split(",")])
-        csqs = csq_str.split(",")
-        types = []
-        changes = []
-        genes = []
-        pos = int(pos)
-        for i in range(len(csqs)):
-            if csqs[i][0]=="@":
-                results[pos] = results[int(csqs[i][1:])]
-
-            elif csqs[i]==".":
-                results[pos] = {"pos":pos, "alts":alts_str, "alt_af":alt_af, "types":"intergenic","changes":"NA","gene":"NA","gene_function":"NA","gene_reference":"NA"}
-
-            else:
-                csq = csqs[i].split("|")
-                types.append(csq[0].replace("*",""))
-
-                if csq[1]=="orf1ab":
-                    codon_pos = get_codon_num(csq[5])
-                    if codon_pos in nsp_data:
-                        genes.append(nsp_data[codon_pos]["Gene"])
-                        codon_pos = codon_pos-nsp_data[codon_pos]["Start"]+1
-                        changes.append(change_codon_number(csq[5],codon_pos))
-                    else:
-                        genes.append("orf1ab")
-                        changes.append(csq[5])
-                else:
-                    changes.append(csq[5])
-                    genes.append(csq[1])
-                if len(set(types))==1:
-                    types = list(set(types))
-                results[pos] = {"pos":pos, "alts":alts_str, "alt_af":alt_af, "types":",".join(types), "changes":",".join(changes),"gene":genes[0], "gene_function":gene_info[genes[0]]["function"], "gene_reference":gene_info[genes[0]]["DOI"]}
-    return results
 
 
 
@@ -224,9 +152,21 @@ def main_profile(args):
     sys.stdout.write("%s\t%s\n" % (args.prefix,clade))
     results["clade"] = clade
 
-    variant_data = get_variant_data(wg_vcf_obj.filename,conf["ref"],conf["gff"],conf["proteins"])
+    variant_data = cp.get_variant_data(wg_vcf_obj.filename,conf["ref"],conf["gff"],conf["proteins"])
     results["variants"] = list(variant_data.values())
     json.dump(results,open("%s.results.json" % files_prefix,"w"))
+
+def main_collate(args):
+    samples = [x.replace(args.suffix,"") for x in os.listdir(args.dir) if x[-len(args.suffix):]==args.suffix]
+    lineages = {}
+    sys.stderr.write("Loading data\n")
+    for s in tqdm(samples):
+        data = json.load(open(pp.filecheck("%s/%s%s" % (args.dir,s,args.suffix))))
+        lineages[s] = data["clade"]
+    with open(args.out+".clades.csv","w") as O:
+        O.write("isolate,clade\n")
+        for s in samples:
+            O.write("%s,%s\n" % (s,lineages[s]))
 
 
 def primer_evaluation(args):
@@ -270,7 +210,7 @@ parser_sub.add_argument('--fasta','-f',help='Fasta file')
 parser_sub.add_argument('--read1','-1',help='First read file')
 parser_sub.add_argument('--read2','-2',help='Second read file')
 parser_sub.add_argument('--prefix','-p',help='Prefix for output files',required=True)
-parser_sub.add_argument('--dir',default="covidv_profiler_results",help='First read file')
+parser_sub.add_argument('--dir',default="covid_profiler_results",help='First read file')
 parser_sub.add_argument('--db',default="cvdb",help='First read file')
 parser_sub.add_argument('--no_trim',action="store_true",help="Don't trim files using trimmomatic")
 parser_sub.add_argument('--threads','-t',default=1,help='Threads to use',type=int)
@@ -279,6 +219,11 @@ parser_sub.add_argument('--caller',default="bcftools", choices=["bcftools","gatk
 parser_sub.add_argument('--platform','-m',choices=["illumina","nanopore"],default="illumina",help='NGS Platform used to generate data')
 parser_sub.set_defaults(func=main_profile)
 
+parser_sub = subparsers.add_parser('collate', help='Load new library', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+parser_sub.add_argument('--dir',type=str,default="covid_profiler_results",help='Prefix to the library files')
+parser_sub.add_argument('--suffix',type=str,default=".results.json", help='Prefix to the library files')
+parser_sub.add_argument('--out',type=str,default="covid_profiler", help='Prefix to the library files')
+parser_sub.set_defaults(func=main_collate)
 
 parser_sub = subparsers.add_parser('load_library', help='Load new library', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser_sub.add_argument('prefix',type=str,help='Prefix to the library files')

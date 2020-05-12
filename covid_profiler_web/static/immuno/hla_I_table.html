@@ -37,12 +37,12 @@
 
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
-    <script src="{{ url_for('static', filename='immuno/pace.js')}}"></script>
-  <link href="{{ url_for('static', filename='immuno/loadingbar.css')}}" rel="stylesheet" />
+    
+
     <meta name="viewport" content="width=device-width, initial-scale=2">
 
     <!-- CSS for the loading screen -->
-
+ 
  <style>
     /* Center the loader */
     #loader {
@@ -82,12 +82,12 @@
     }
 
     @-webkit-keyframes animatebottom {
-      from { bottom:-100px; opacity:0 }
+      from { bottom:-100px; opacity:0 } 
       to { bottom:0px; opacity:1 }
     }
 
-    @keyframes animatebottom {
-      from{ bottom:-100px; opacity:0 }
+    @keyframes animatebottom { 
+      from{ bottom:-100px; opacity:0 } 
       to{ bottom:0; opacity:1 }
     }
 
@@ -158,153 +158,28 @@ function showPage() {
         <div class="container-fluid">
 
 
-<script data-pace-options='{ "ajax": false }' src='pace.js'></script>
+
 
 <div class="row">
     <div class="col-md-1">
 
     </div>
     <div class="col-md-10 pt-4">
-        <h3 class="text-center"><b>SARS-CoV-2 Immunoanalytics</b></h3>
-
-
-
-        <p class="lead">The circular graph plotted below is an interactive platform to visulise the SARS-CoV-2 proteome alongside the data from 7 meta-analyses designed to inform the selection of immunologically relevant regions for further study.<br><br> Please allow ~30 seconds for the tool to load.</p>
+        <h3 class="text-center"><b>SARS-CoV-2 Immunoanalytics<br>(HLA Class I Epitope Prediction Data)</b></h3>
+        
+        
+        
+        <p class="lead">The table below contains the information used to predict HLA-I epitopes, the analysis was performed using netMHCpan 4.1. Only epitopes with a 'strong binding' affinity have been selected for this analysis and are included in the table below. <br> For a list of the HLA-I alleles used click the <a href="https://raw.githubusercontent.com/dan-ward-bio/COVID-immunoanalytics/master/hla_I_epitope_prediction/HLA_I_alleles.txt" target="_blank">link</a></p>.
         <br>
-
-        <div class="pb-4">
-
-        <ul class="nav nav-tabs">
-  <li class="active"><a data-toggle="tab" href="#home">Home</a></li>
-  <li><a data-toggle="tab" href="#menu1">Usage Tips</a></li>
-  <li><a data-toggle="tab" href="#menu3">Data Downloads</a></li>
-  <li><a data-toggle="tab" href="#menu2">Citation</a></li>
-  <li><a data-toggle="tab" href="#menu4">HLA-I Allele Data</a></li>
-</ul>
-
-<div class="tab-content">
-  <div id="home" class="tab-pane fade in active">
-    <h3></h3>
-    <div style="margin:16px 0">
-
-</div>
-    <p></p>
-  </div>
-  <div id="menu1" class="tab-pane fade">
-    <h3>Help</h3>
-    <p><div class="alert alert-warning">
-          <b>Starting from the outer ring, going inwards, the 7 meta-analyses comprise of: <br>1) A database of <font color="#B10E03">UniProt sequence annotations</font> aligned to their respective positions to elucidate functional protein domains. Glycosylated residues are highlighted in <font color="blue">blue</font>. <br> 2) An up-to-date genomic <font color="purple">'mutation watch'</font>, that plots non-synonymous mutations across the proteome, identified using a database of 2200 SARS-CoV-2 whole genome sequences.<br> 3) A heatmap highlighting convergance in epitope prediction scores of 6 leading epitope prediction suites: ABCpred, LBtope,AAPpred, DRREP and BCEpreds and Bepipred.<br>4) An HLA-II peptide prediction analysis using the tool <a href="https://maria.stanford.edu/" target="_blank"> MARIA</a> <b> <br>5) An HLA-I peptide prediction analysis performed using <a href="http://www.cbs.dtu.dk/services/NetMHCpan/"> netMHCpan 4.0</a> <br>6) A plot representing the frequency of IEDB epitopes which map to the proteome of SARS-CoV-2 the IEDB identifiers for which can be found in the table below. <br> 7) Sequence identity analysis featuring SARS,OC43,229E,HKU1,MERS and NL63 α and β
-            <i>coronavirus</i> spp.</b> </b> </p>
-        </div>
-<div class="alert alert-primary">
-        <b>Once you have found a region of interest, scroll down and use the data table blow to extract the desired metadata to continue your own analyses.</b>
-             <br>
-             <b>Raw sequence data (NT and AA) can be downloaded using the link at the bottom of the page.</b>
-             <br>
-             <b>If you would like to zoom in on a region, click the  and it will open the plot in a new tab. Use the mouse scroll-wheel, or two finger scroll on a touchpad to magnify the a section of the plot. <br> Scroll down to the table below to insect by-residue metadata.<br>If the pop-up boxes become unresponsive, move the mouse away and try again. If it remains unresponsive try refreshing the page.</b>
-        </div>
-      </p>
-  </div>
-  <div id="menu3" class="tab-pane fade">
-    <h3>Data Downloads</h3>
-    <p>All of the data files used in this analysis are available on GitHub. These include all epitopes, prediction scores, multiple sequence alignments and UniProt files.<br>
-<a href="https://github.com/dan-ward-bio/COVID-immunoanalytics" target="_blank">COVID-immunoanalytics GitHub Page</a>
-
- </p>
-  </div>
-  <div id="menu2" class="tab-pane fade">
-    <h3></h3>
-    <p>An interactive visualisation tool that integrates the SARS-CoV-2 proteome with epitope, genomic, and other data to inform the use of immunologically regions for infection control. <br> For any questions email daniel.ward1@lshtm.ac.uk.<br>To cite our work: Ward et. al. 2020 Under consideration. <br> Data for this analysis was sourced from the NCBI and GISAID.
- </p>
-  </div>
-  <div id="menu4" class="tab-pane fade">
-    <h3>HLA Class I Prediction Allele Data</h3>
-    <p><div class="alert alert-warning">
-          <b>Click the <a href="{{ url_for('static', filename='immuno/hla_I_table.html')}}" target="_blank">link</a> to open a new window with data on the HLA-I epitope predictions made for this analysis.</b>
-        </div>
-</div>
-
-        </div>
-
-
-             <br>
-             <img src="{{ url_for('static', filename='immuno/KEY.svg')}}" class="rounded mx-auto d-block" style="width:70%">
-        </div>
-    </div>
-</div>
-
+        
 <div class="row justify-content-md-center">
-    <div class="col-md-10 pb-4">
-        <div class="card">
-            <div class="card-header">
-                <b>Try hovering your mouse over a datapoint to find out more information - further information on IEDB epitopes can be found in the table below.</b> <br>
-            </div>
-          <div class="row justify-content-md-center">
-    <button type="button" class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Click this button to open a new window with zoom functionality.(Not available in Firefox)">
-  <a href="url_for('static',filename='immuno/zoom_frame.html') }}" style="color: white" target="_blank">Zoom</a>
-</button>
-</div>
-<style>
-.toast {
-  font-size: 16px;
-  width: 100%;
-}
-</style>
-  <div class="row justify-content-md-start">
- <div class="toast" data-autohide="false">
-    <div class="toast-header">
-      <strong class="mr-auto text-primary">Browser Compatibility</strong>
-      <small class="text-muted"></small>
-      <button type="button" class="ml-2 mb-1 close" data-dismiss="toast">&times;</button>
-    </div>
-    <div class="toast-body">
-      Firefox and Safari users may experience performance issues using the tool.<br> While this page has been optimised for Firefox users best as possible, using Google Chrome will provide a better experience.<b> Zoom functionality is not available for Firefox users.</b>
-</a>
-</div>
-</div>
-</div>
-<div class="card-body">
-<div class="row justify-content-md-start">
-
-                        <style>
-                    #wrapper { width: 1500px; height: 1650px; padding-left: -20%; overflow:;  }
-                    #scaled-frame { width: 1500px; height: 1650px; border: 0px; }
-                    #scaled-frame {
-                        zoom: 1.5;
-                        -moz-transform: scale(1.5);
-                        -moz-transform-origin: 0 0;
-                        -o-transform: scale(1.5);
-                        -o-transform-origin: 0 0;
-                        -webkit-transform: scale(2.2);
-                        -webkit-transform-origin: 0 0;
-                    }
-
-                    @media screen and (-webkit-min-device-pixel-ratio:0) {
-                     #scaled-frame  { zoom: 1;  }
-                    }
-                    </style>
-
-                    <div id="wrapper">
-                    <iframe id="scaled-frame" scrolling="yes", align="center" src="{{ url_for('static', filename='immuno/gallery05.test.html')}}"></iframe></div>
-                </div>
-
-              </div>
-          </div>
-      </div>
-    </div>
-  </div>
-<div class="row justify-content-md-center">
-    <div class="col-md-10 pb-4">
-<div class="alert alert-primary">
-Use this table to extract sequence metadata. Select a gene of interest using the dropdown menu to the top-left of the table. Then type the desired <b>start</b> and <b>end</b> AA protein coordinates (as displayed on the above plot) in to the boxes on the <b> top left</b>. <br> You can use the seach bar on the top right to query specific items such as an IEDB epitope number or UniProt Entries (such as glycosylation annotations). Once you have the desired entries diplayed, use the buttons located at the top left of the table to export the data in your desired format. All source data is available for downlaod in the "Downloads" tab at the top of the page.
-</div>
-</div>
+    
 </div>
 <div class="row justify-content-md-center">
 
     <div class="col-md-10">
         <div class="card border-dark mb-3">
-        <div class="card-header text-center">SARS-CoV-2 Residue Metadata</div>
+        <div class="card-header text-center">SARS-CoV-2 HLA-I epitope Prediction Data</div>
         <div class="card-body text-dark">
                 <div class="row">
                     <div class="">
@@ -322,28 +197,10 @@ Use this table to extract sequence metadata. Select a gene of interest using the
                     <!-- <th scope="col"></th> -->
                         <th scope="col">Gene</th>
                         <th scope="col">Protein CDS Position</th>
-                        <th scope="col">Reference Allele</th>
-                        <th scope="col">ALT Allele</th>
-                        <th scope="col">ALT Allele Occurrences</th>
-                        <th scope="col">Dominant Alt. Allele freq.</th>
-                        <th scope="col">Location (Continent)</th>
-                        <th scope="col">Exposed/Buried</th>
-                        <th scope="col">Bepipred</th>
-                        <th scope="col">AAPPRed</th>
-                        <th scope="col">bcepreds</th>
-                        <th scope="col">Lbtope</th>
-                        <th scope="col">DRREP</th>
-                        <th scope="col">ABCpreds</th>
-                        <th scope="col">Epitope Prediction Total</th>
-                        <th scope="col">HCoV-HKU1 Identity</th>
-                        <th scope="col">HCoV-MERS Identity</th>
-                        <th scope="col">HCoV-NL63 Identity</th>
-                        <th scope="col">HCoV-OC43 Identity</th>
-                        <th scope="col">HCoV-229E Identity</th>
-                        <th scope="col">HCoV-SARS Identity</th>
-                        <th scope="col">Uniprot Annotation</th>
-                        <th scope="col">IEDB Epitope Map count</th>
-                        <th scope="col">IEDB epitope Data</th>
+                        <th scope="col">HLA-I Allele</th>
+                        <th scope="col">Epitope Sequence</th>
+                        <th scope="col">Binding Affinity (nM)</th>
+
 
 
                   </tr>
@@ -351,14 +208,14 @@ Use this table to extract sequence metadata. Select a gene of interest using the
              <!--   <tbody id="resultsTable">
 
     DATA
-
-          </tbody>    -->
+    
+          </tbody>    -->      
                     <tfoot>
                     <tr>
                         <th>Gene</th>
                     </tr>
                 </tfoot>
-            </table>
+            </table>      
       </div>
     </div>
 
@@ -387,7 +244,7 @@ $.fn.dataTable.ext.search.push(
 );
   $(document).ready( function () {
     var table = $('#results_table').DataTable( {
-        "ajax": 'https://raw.githubusercontent.com/dan-ward-bio/COVID-immunoanalytics/master/BioCircos.js/arrays.txt',
+        "ajax": 'https://raw.githubusercontent.com/dan-ward-bio/COVID-immunoanalytics/master/hla_I_epitope_prediction/allele_table_small.json',
             "scrollX": true,
       select: true,
             "order": [[ 1, "asc" ]], // This sorts by the 4th column
@@ -403,12 +260,12 @@ $.fn.dataTable.ext.search.push(
                         var val = $.fn.dataTable.util.escapeRegex(
                             $(this).val()
                         );
-
+ 
                         column
                             .search( val ? '^'+val+'$' : '', true, false )
                             .draw();
                     } );
-
+ 
                 column.data().unique().sort().each( function ( d, j ) {
                     select.append( '<option value="'+d+'">'+d+'</option>' )
                 } );
@@ -436,3 +293,19 @@ $(document).ready(function(){
 </div>
 </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
