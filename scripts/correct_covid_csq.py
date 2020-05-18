@@ -9,11 +9,10 @@ for l in sys.stdin:
             if info[i][:4]=="BCSQ":
                 new_bcsq = []
                 for bcsq in info[i].split(","):
-                    if bcsq[5]=="@":
+                    if "@" in bcsq:
                         new_bcsq.append(bcsq)
                     else:
                         tmp = bcsq.split("|")
-
                         re_obj1 = re.search("(\d+)([A-Z]+)>(\d+)([A-Z]+)",tmp[5])
                         re_obj2 = re.search("(\d+)([A-Z]+)",tmp[5])
                         if re_obj1:

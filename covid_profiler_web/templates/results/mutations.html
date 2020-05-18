@@ -79,11 +79,8 @@
 
 
       tree.style_nodes(function(element, node_data){
-          if (node_data.name in tree_attributes) {
-              var node_label = element.select("text")
-              node_label[0][0].attributes.dx.nodeValue = "5"
-              var font_size  = parseFloat (node_label.style ("font-size"));
-              var annotation = element.selectAll ("circle").data (tree_attributes[node_data.name]);
+          if (node_data.name in mutation["minor_allele_genotypes"]) {
+              var annotation = element.selectAll ("circle").data (mutation["minor_allele_genotypes"][node_data.name]);
               annotation.enter().append ("circle");
               annotation.attr ("r", 4)
               .attr("stroke-width",1)
@@ -105,7 +102,7 @@
           .call(d3.legend)
 
 
-      
+
 
       var div = d3.select("body").append("div")
         .attr("class", "card tooltip-card")

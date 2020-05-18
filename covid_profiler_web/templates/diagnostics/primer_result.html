@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block header %}
+
+
+{% endblock %}
+
+{% block content %}
+
+
+
+<div class="row justify-content-md-center">
+	<div class="col-md-7 pb-4">
+		<div class="card">
+			<div class="card-header">
+				Results
+			</div>
+			<div class="card-body">
+                <p><b>ID:</b> {{ run_id }}</p>
+                <p><b>Forward primer:</b> {{ parameters["primerF"] }}</p>
+                <p><b>Reverse primer:</b> {{ parameters["primerR"] }}</p>
+                <p><b>Probe:</b> {{ parameters["probe"] }}</p>
+				<p class="card-text">
+                    Panel <b>A</b> shows the fraction of isolates with at least
+                    one mutation in the forward primer in different countries.
+                    Panel <b>B</b> shows the number of samples with different
+                    numbers of mismatches. Panel <b>C</b> shows the frequency
+                    and location of mismatches across the primer binding site.
+                    Panels <b>D</b>, <b>E</b> and <b>F</b> show the same metrics
+                    for the probe and panels <b>G</b>, <b>H</b> and <b>I</b> for the reverse primer.
+
+
+				</p>
+                {% if parameters["status"]=="done" %}
+		            <img src="{{ url_for('static',filename='results/'+run_id+'.svg')}}" alt="">
+                {% else %}
+                    <div class="alert alert-warning mt-4" role="alert">This run is still processing. Please come back later.</div>
+                {% endif %}
+			</div>
+		</div>
+	</div>
+<!-- </div> -->
+
+
+
+{% endblock %}

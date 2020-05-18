@@ -3,6 +3,7 @@ import sqlite3
 import click
 from flask import current_app, g
 from flask.cli import with_appcontext
+from flask_pymongo import PyMongo
 
 
 def get_db():
@@ -14,6 +15,11 @@ def get_db():
         g.db.row_factory = sqlite3.Row
 
     return g.db
+
+def get_mongo_db():
+    if 'mongo_db' not in g:
+        g.mongo_db = PyMongo(current_app)
+    return g.mongo_db
 
 
 def close_db(e=None):

@@ -11,7 +11,7 @@
 html { 
    color: #000 !important;
    font-family: Helvetica !important;
-   font-size: 70.5%; /* font-size 1em = 10px on default browser settings */ 
+   font-size: 65%; /* font-size 1em = 10px on default browser settings */ 
 }
         </style>
         <!-- BioCircos.js, Jquery.js and D3.js import -->
@@ -34,7 +34,11 @@ html {
 <script src="./gallery07_HEATMAP06.js"></script>
 <script src="./gallery07_HEATMAP07.js"></script>
 <script src="./gallery07_HEATMAP08.js"></script>
+<script src="./gallery07_HEATMAP09.js"></script>
+<script src="./gallery07_HEATMAP10.js"></script>
 <script src="./gallery08_LINE01.js"></script>
+<script src="./gallery09_HISTOGRAM.js"></script>
+<script src="./gallery07_HEATMAP11.js"></script>
 <script>
 var BACKGROUND01 = [ "BACKGROUND01" , {
   BginnerRadius: 235,
@@ -49,16 +53,16 @@ var BACKGROUND01 = [ "BACKGROUND01" , {
 }];
 </script>
 <script>
-var BACKGROUND01 = [ "BACKGROUND06" , {
-  BginnerRadius: 235,
-  BgouterRadius: 218,
+var BACKGROUND06 = [ "BACKGROUND06" , {
+  BginnerRadius: 200,
+  BgouterRadius: 180,
   BgFillColor: "#F2F2F2",
   BgborderColor : "#000",
   BgborderSize : 0.4,
   axisShow: "true",
-  axisWidth: 0.2,
-  axisColor: "969392",
-  axisNum: 5
+  axisWidth: 0.3,
+  axisColor: "#4b4848",
+  axisNum: 2
 }];
 </script>
 <script>
@@ -130,10 +134,10 @@ var BACKGROUND04 = [ "BACKGROUND04" , {
 
   ];
 
-  BioCircos01 = new BioCircos(TEXT01,ARC_hg18,ARC01,LINK01,LINE01,BACKGROUND01,SNP02,BACKGROUND02,HEATMAP02,HEATMAP03,HEATMAP04,HEATMAP05,HEATMAP06,HEATMAP07,HEATMAP08,BACKGROUND03,BACKGROUND04,BACKGROUND05,SNP01,BioCircosGenome,{
+  BioCircos01 = new BioCircos(TEXT01,ARC_hg18,ARC01,LINK01,LINE01,BACKGROUND01,SNP02,BACKGROUND02,HEATMAP02,HEATMAP03,HEATMAP04,HEATMAP05,HEATMAP06,HEATMAP07,HEATMAP08,HEATMAP09,HEATMAP10,HEATMAP11,BACKGROUND03,BACKGROUND04,BACKGROUND05,BACKGROUND06,SNP01,HISTOGRAM01,BioCircosGenome,{
      target : "biocircos",
-     svgWidth : 700,
-     svgHeight : 650,
+     svgWidth : 635,
+     svgHeight : 690,
      chrPad : 0.04,
      innerRadius: 246,
      outerRadius: 270,
@@ -236,7 +240,7 @@ var BACKGROUND04 = [ "BACKGROUND04" , {
      HEATMAPMouseEnterDisplay : false,
      HEATMAPMouseEnterColor : "green",            //"none","red"
      HEATMAPMouseEnterOpacity : 1.0,            //"none",1.0
-     HEATMAPMouseEnterStrokeColor : "none",  //"none","#F26223"
+     HEATMAPMouseEnterStrokeColor : "red",  //"none","#F26223"
      HEATMAPMouseEnterStrokeWidth : "none",          //"none",3
      HEATMAPMouseLeaveDisplay : true,
      HEATMAPMouseLeaveColor : "",            //"none","red"
@@ -255,20 +259,20 @@ var BACKGROUND04 = [ "BACKGROUND04" , {
      HEATMAPMouseOutStrokeColor : "none",  //"none","#F26223"
      HEATMAPMouseOutStrokeWidth : "none",          //"none",3
      HEATMAPMouseUpDisplay : false,
-     HEATMAPMouseUpColor : "green",            //"none","red"
+     HEATMAPMouseUpColor : "",            //"none","red"
      HEATMAPMouseUpOpacity : 1.0,            //"none",1.0
      HEATMAPMouseUpStrokeColor : "none",  //"none","#F26223"
      HEATMAPMouseUpStrokeWidth : "none",          //"none",3
      HEATMAPMouseOverDisplay : true,
      HEATMAPMouseOverColor : "none",            //"none","red"
      HEATMAPMouseOverOpacity : 1.0,            //"none",1.0
-     HEATMAPMouseOverStrokeColor : "none",  //"none","#F26223"
+     HEATMAPMouseOverStrokeColor : "red",  //"none","#F26223"
      HEATMAPMouseOverStrokeWidth : "none",          //"none",3
      HEATMAPMouseOverTooltipsHtml01 : "Gene: ",
      HEATMAPMouseOverTooltipsHtml02 : "<br>Start: ",
      HEATMAPMouseOverTooltipsHtml03 : "<br>End:",
-     HEATMAPMouseOverTooltipsHtml04 : "<br>Name: ",
-     HEATMAPMouseOverTooltipsHtml05 : "<br>Value : ",
+     HEATMAPMouseOverTooltipsHtml04 : "<br> ",
+     HEATMAPMouseOverTooltipsHtml05 : "<br> ",
      HEATMAPMouseOverTooltipsHtml06 : "",
      HEATMAPMouseOverTooltipsPosition : "absolute",
      HEATMAPMouseOverTooltipsBackgroundColor : "white",
@@ -277,7 +281,7 @@ var BACKGROUND04 = [ "BACKGROUND04" , {
      HEATMAPMouseOverTooltipsPadding : "3px",
      HEATMAPMouseOverTooltipsBorderRadius : "3px",
      HEATMAPMouseOverTooltipsOpacity : 0.8,
-        LINEMouseEvent : true,
+    LINEMouseEvent : true,
      LINEMouseClickDisplay : true,
      LINEMouseClickLineOpacity : 1,           //"none"
      LINEMouseClickLineStrokeColor : "red",   //"none"
@@ -290,9 +294,9 @@ var BACKGROUND04 = [ "BACKGROUND04" , {
      LINEMouseEnterLineOpacity : 1,           //"none"
      LINEMouseEnterLineStrokeColor : "red",   //"none"
      LINEMouseEnterLineStrokeWidth : "none",  //"none"
-     LINEMouseLeaveDisplay : false,
+     LINEMouseLeaveDisplay : true,
      LINEMouseLeaveLineOpacity : 1,           //"none"
-     LINEMouseLeaveLineStrokeColor : "red",   //"none"
+     LINEMouseLeaveLineStrokeColor : "none",   //"none"
      LINEMouseLeaveLineStrokeWidth : "none",  //"none"
      LINEMouseMoveDisplay : false,
      LINEMouseMoveLineOpacity : 1,           //"none"
@@ -307,11 +311,16 @@ var BACKGROUND04 = [ "BACKGROUND04" , {
      LINEMouseUpLineOpacity : 1,           //"none"
      LINEMouseUpLineStrokeColor : "red",   //"none"
      LINEMouseUpLineStrokeWidth : "none",  //"none"
-     LINEMouseOverDisplay : false,
+     LINEMouseOverDisplay : true,
      LINEMouseOverLineOpacity : 1,           //"none"
      LINEMouseOverLineStrokeColor : "red",   //"none"
      LINEMouseOverLineStrokeWidth : "none",  //"none"
-     LINEMouseOverTooltipsHtml01 : "Line",
+     LINEMouseOverTooltipsHtml01 : "IEDB Epitoep mapping freq.",
+     LINEMouseOverTooltipsHtml02 : "Pos: ",
+     LINEMouseOverTooltipsHtml03 : "AA - ",
+     LINEMouseOverTooltipsHtml04 : "AA<br>Name: ",
+     LINEMouseOverTooltipsHtml05 : "AA<br>Name: ",
+     LINEMouseOverTooltipsHtml06 : "AA<br>Name: ",
      LINEMouseOverTooltipsPosition : "absolute",
      LINEMouseOverTooltipsBackgroundColor : "white",
      LINEMouseOverTooltipsBorderStyle : "solid",
@@ -319,6 +328,61 @@ var BACKGROUND04 = [ "BACKGROUND04" , {
      LINEMouseOverTooltipsPadding : "3px",
      LINEMouseOverTooltipsBorderRadius : "3px",
      LINEMouseOverTooltipsOpacity : 0.8,
+     HISTOGRAMMouseEvent : true,
+     HISTOGRAMMouseClickDisplay : false,
+     HISTOGRAMMouseClickColor : "red",            //"none","red"
+     HISTOGRAMMouseClickOpacity : 1.0,            //"none",1.0
+     HISTOGRAMMouseClickStrokeColor : "none",  //"none","#F26223"
+     HISTOGRAMMouseClickStrokeWidth : "none",          //"none",3
+     HISTOGRAMMouseDownDisplay : false,
+     HISTOGRAMMouseDownColor : "red",            //"none","red"
+     HISTOGRAMMouseDownOpacity : 1.0,            //"none",1.0
+     HISTOGRAMMouseDownStrokeColor : "none",  //"none","#F26223"
+     HISTOGRAMMouseDownStrokeWidth : "none",          //"none",3
+     HISTOGRAMMouseEnterDisplay : false,
+     HISTOGRAMMouseEnterColor : "red",            //"none","red"
+     HISTOGRAMMouseEnterOpacity : 1.0,            //"none",1.0
+     HISTOGRAMMouseEnterStrokeColor : "none",  //"none","#F26223"
+     HISTOGRAMMouseEnterStrokeWidth : "none",          //"none",3
+     HISTOGRAMMouseLeaveDisplay : false,
+     HISTOGRAMMouseLeaveColor : "red",            //"none","red"
+     HISTOGRAMMouseLeaveOpacity : 1.0,            //"none",1.0
+     HISTOGRAMMouseLeaveStrokeColor : "none",  //"none","#F26223"
+     HISTOGRAMMouseLeaveStrokeWidth : "none",          //"none",3
+     HISTOGRAMMouseMoveDisplay : false,
+     HISTOGRAMMouseMoveColor : "red",            //"none","red"
+     HISTOGRAMMouseMoveOpacity : 1.0,            //"none",1.0
+     HISTOGRAMMouseMoveStrokeColor : "none",  //"none","#F26223"
+     HISTOGRAMMouseMoveStrokeWidth : "none",          //"none",3
+     HISTOGRAMMouseOutDisplay : true,
+     HISTOGRAMMouseOutAnimationTime : 500,
+     HISTOGRAMMouseOutColor : "red",            //"none","red"
+     HISTOGRAMMouseOutOpacity : 1.0,            //"none",1.0
+     HISTOGRAMMouseOutStrokeColor : "none",  //"none","#F26223"
+     HISTOGRAMMouseOutStrokeWidth : "none",          //"none",3
+     HISTOGRAMMouseUpDisplay : true,
+     HISTOGRAMMouseUpColor : "red",            //"none","red"
+     HISTOGRAMMouseUpOpacity : 1.0,            //"none",1.0
+     HISTOGRAMMouseUpStrokeColor : "none",  //"none","#F26223"
+     HISTOGRAMMouseUpStrokeWidth : "none",          //"none",3
+     HISTOGRAMMouseOverDisplay : true,
+     HISTOGRAMMouseOverColor : "red",            //"none","red"
+     HISTOGRAMMouseOverOpacity : 1.0,            //"none",1.0
+     HISTOGRAMMouseOverStrokeColor : "none",  //"none","#F26223"
+     HISTOGRAMMouseOverStrokeWidth : "none",          //"none",3
+     HISTOGRAMMouseOverTooltipsHtml01 : "chr :",
+     HISTOGRAMMouseOverTooltipsHtml02 : "<br>position: ",
+     HISTOGRAMMouseOverTooltipsHtml03 : "-",
+     HISTOGRAMMouseOverTooltipsHtml04 : "<br>name : ",
+     HISTOGRAMMouseOverTooltipsHtml05 : "<br>value : ",
+     HISTOGRAMMouseOverTooltipsHtml06 : "",
+     HISTOGRAMMouseOverTooltipsPosition : "absolute",
+     HISTOGRAMMouseOverTooltipsBackgroundColor : "white",
+     HISTOGRAMMouseOverTooltipsBorderStyle : "solid",
+     HISTOGRAMMouseOverTooltipsBorderWidth : 0,
+     HISTOGRAMMouseOverTooltipsPadding : "3px",
+     HISTOGRAMMouseOverTooltipsBorderRadius : "3px",
+     HISTOGRAMMouseOverTooltipsOpacity : 0.8,
      genomeBorder : {
         display : true,
         borderColor : "#000000",

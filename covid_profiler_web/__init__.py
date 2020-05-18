@@ -10,7 +10,8 @@ def create_app(test_config=None):
         SECRET_KEY='dev',
         DATABASE=os.path.join(app.instance_path, 'flaskr.sqlite'),
         UPLOAD_FOLDER="/tmp",
-        APP_ROOT=os.path.dirname(os.path.abspath(__file__))
+        APP_ROOT=os.path.dirname(os.path.abspath(__file__)),
+        MONGO_URI = "mongodb://localhost:27017/test_database"
     )
 
     if test_config is None:
@@ -37,6 +38,9 @@ def create_app(test_config=None):
 
     from . import upload
     app.register_blueprint(upload.bp)
+
+    from . import diagnostics
+    app.register_blueprint(diagnostics.bp)
 
     # from . import auth
     # app.register_blueprint(auth.bp)
