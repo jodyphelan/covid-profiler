@@ -5,7 +5,7 @@ from collections import defaultdict
 from tqdm import tqdm
 
 
-def find_ancestral_mutations(msa_file,tree_file,states_file):
+def find_ancestral_mutations(msa_file,tree_file,states_file,variant_sites = None):
     seqs = pp.fasta(msa_file).fa_dict
 
     tree = ete3.Tree(tree_file,format=1)
@@ -32,9 +32,11 @@ def find_ancestral_mutations(msa_file,tree_file,states_file):
         if l[0]=="#": continue
         row = l.strip().split()
         if row[0]=="Node": continue
+        site = int(row[1])
+        if variant_sites and site not in variant_sites: continue
         if row[0] not in internal_node_names: continue
-        states[int(row[1])][row[0]] = row[2]
-        sites.add(int(row[1]))
+        states[site][row[0]] = row[2]
+        sites.add(site)
 
     sys.stderr.write("Loading alignment sites\n")
     for site in tqdm(sites):
@@ -56,8 +58,7 @@ def find_ancestral_mutations(msa_file,tree_file,states_file):
         for n in tree.traverse():
             if n == tree: continue
             node_state = states[site][n.name]
-            if node_state!=n.get_ancestors()[0].state:
-                # if site==14408: import pdb; pdb.set_trace()
+            if node_state!=n.get_ancestors()[0].state and node_state!="N" and n.get_ancestors()[0].state!="N":
                 origins.append(n.name)
                 if n.name in internal_node_names:
                      internal_node_change = True

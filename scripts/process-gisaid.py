@@ -147,8 +147,8 @@ def main_fasta2vcf(args):
 
 def main_asr(args):
     conf = get_conf_dict(sys.base_prefix+"/share/covidprofiler/%s" % args.db)
-    mutations = cp.find_ancestral_mutations(args.msa,args.tree,args.states)
     variant_data = get_variant_data(args.vcf,conf["ref"],conf["gff"],conf["proteins"])
+    mutations = cp.find_ancestral_mutations(args.msa,args.tree,args.states,variant_sites = set(list(variant_data)))
     for i in range(len(mutations)):
         for key in variant_data[mutations[i]["position"]]:
             mutations[i][key] = variant_data[mutations[i]["position"]][key]
