@@ -1,9 +1,7 @@
-<!DOCTYPE html>
-<html class="gr__genomics_lshtm_ac_uk" lang="en"><head>
-<meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+{% extends 'base.html' %}
+
+{% block header %}
+
 
     <!-- Bootstrap CSS -->
     <!-- Bootstrap CSS -->
@@ -41,52 +39,17 @@
   <link href="./biocircos_js/loadingbar.css" rel="stylesheet" />
     <meta name="viewport" content="width=device-width, initial-scale=2">
 
+    <style>
+     body {
+         background-color: #bed1e6;
+     }
 
+    </style>
+{% endblock %}
 
-  <div data-gr-c-s-loaded="true">
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
-          <a class="navbar-brand" href="http://genomics.lshtm.ac.uk/">COVID-Profiler</a>
-          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto">
-              <li class="nav-item">
-                <a class="nav-link" href="http://genomics.lshtm.ac.uk/">Home</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="http://genomics.lshtm.ac.uk/upload">Upload</a>
-              </li>
-              <li class="nav-item">
-                  <a class="nav-link" href="http://genomics.lshtm.ac.uk/mutations/">Mutations</a>
-              </li>
-              <li class="nav-item">
-                  <a class="nav-link" href="http://genomics.lshtm.ac.uk/diagnostics/">Diagnostics</a>
-              </li>
-              <li class="nav-item">
-                  <a class="nav-link" href="http://genomics.lshtm.ac.uk/immuno/">Immunoanalytics</a>
-              </li>
-            </ul>
-            <ul class="navbar-nav my-2 my-lg-0">
-                <li class="nav-item pr-4">
-                    <a href="https://www.lshtm.ac.uk/research/centres/applied-genomics-centre"><img src="datatables_files/tagc_logo.jpg" class="img-thumbnail" style="height:50px" alt=""></a>
+{% block content %}
 
-                </li>
-                <li class="nav-item pr-4">
-                    <a href="https://www.lshtm.ac.uk/"><img src="datatables_files/lshtm_logo.jpg" class="img-thumbnail" style="height:50px" alt=""></a>
-
-                </li>
-
-            </ul>
-            </div>
-        </nav>
-
-
-
-
-</head>
-<body style="background-color:#bed1e6;">
-  <img src="../../static/immuno/new_logo-01.svg" class="rounded mx-auto d-block" style="width:70%">
+  <img src="{{url_for('static',filename='immuno/new_logo-01.svg')}}" class="rounded mx-auto d-block" style="width:70%">
 
 <br>
 <br>
@@ -103,7 +66,6 @@
 <br>
 
 
-<
 
   <div class="row">
    <div class="col-md-4 ml-md-auto">
@@ -160,4 +122,4 @@
 
 
 
-      </body>
+{% endblock %}
