@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html class="gr__genomics_lshtm_ac_uk" lang="en"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4-4.1.1/jq-3.3.1/jszip-2.5.0/dt-1.10.20/af-2.3.4/b-1.6.1/b-colvis-1.6.1/b-flash-1.6.1/b-html5-1.6.1/b-print-1.6.1/cr-1.5.2/fc-3.3.0/fh-3.1.6/kt-2.5.1/r-2.2.3/rg-1.1.1/rr-1.2.6/sc-2.0.1/sp-1.0.1/sl-1.3.1/datatables.min.css"/>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css"/>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css"/>
+<!-- TAB STUFF -->
+ <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+  <!-- teb stuff end -->
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.6.1/js/dataTables.buttons.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.6.1/js/buttons.flash.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.6.1/js/buttons.html5.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.6.1/js/buttons.print.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/v/bs4-4.1.1/jq-3.3.1/jszip-2.5.0/dt-1.10.20/af-2.3.4/b-1.6.1/b-colvis-1.6.1/b-flash-1.6.1/b-html5-1.6.1/b-print-1.6.1/cr-1.5.2/fc-3.3.0/fh-3.1.6/kt-2.5.1/r-2.2.3/rg-1.1.1/rr-1.2.6/sc-2.0.1/sp-1.0.1/sl-1.3.1/datatables.min.js"></script>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=2">
+
+    <!-- CSS for the loading screen -->
+
+ <style>
+    /* Center the loader */
+    #loader {
+      position: absolute;
+      left: 50%;
+      top: 120%;
+      z-index: 1;
+      width: 150px;
+      height: 150px;
+      margin: -75px 0 0 -75px;
+      border: 16px solid #f3f3f3;
+      border-radius: 50%;
+      border-top: 16px solid #3498db;
+      width: 120px;
+      height: 120px;
+      -webkit-animation: spin 2s linear infinite;
+      animation: spin 2s linear infinite;
+    }
+
+    @-webkit-keyframes spin {
+      0% { -webkit-transform: rotate(0deg); }
+      100% { -webkit-transform: rotate(360deg); }
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Add animation to "page content" */
+    .animate-bottom {
+      position: relative;
+      -webkit-animation-name: animatebottom;
+      -webkit-animation-duration: 1s;
+      animation-name: animatebottom;
+      animation-duration: 1s
+    }
+
+    @-webkit-keyframes animatebottom {
+      from { bottom:-100px; opacity:0 }
+      to { bottom:0px; opacity:1 }
+    }
+
+    @keyframes animatebottom {
+      from{ bottom:-100px; opacity:0 }
+      to{ bottom:0; opacity:1 }
+    }
+
+    #myDiv {
+      display: none;
+      text-align: center;
+    }
+    </style>
+
+
+    <title> COVID-Profiler</title>
+  </head>
+  <body onload="myFunction()" style="margin:0;">
+
+<div id="loader"></div>
+
+<div style="display:none;" id="myDiv" class="animate-bottom">
+  <h2>Loading compete!</h2>
+  <p></p>
+</div>
+
+<script>
+var myVar;
+
+function myFunction() {
+  myVar = setTimeout(showPage, 3000);
+}
+
+function showPage() {
+  document.getElementById("loader").style.display = "none";
+  document.getElementById("myDiv").style.display = "block";
+}
+</script>
+
+
+  <div data-gr-c-s-loaded="true">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+          <a class="navbar-brand" href="http://genomics.lshtm.ac.uk/">COVID-Profiler</a>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+              <li class="nav-item">
+                <a class="nav-link" href="http://genomics.lshtm.ac.uk/">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="http://genomics.lshtm.ac.uk/upload">Upload</a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link" href="http://genomics.lshtm.ac.uk/mutations/">Mutations</a>
+              </li>
+            </ul>
+            <ul class="navbar-nav my-2 my-lg-0">
+                <li class="nav-item pr-4">
+                    <a href="https://www.lshtm.ac.uk/research/centres/applied-genomics-centre"><img src="datatables_files/tagc_logo.jpg" class="img-thumbnail" style="height:50px" alt=""></a>
+
+                </li>
+                <li class="nav-item pr-4">
+                    <a href="https://www.lshtm.ac.uk/"><img src="datatables_files/lshtm_logo.jpg" class="img-thumbnail" style="height:50px" alt=""></a>
+
+                </li>
+
+            </ul>
+            </div>
+        </nav>
+
+        <div class="container-fluid">
+
+<div class="row">
+    <div class="col-md-1">
+
+    </div>
+    <div class="col-md-10 pt-4">
+        <h3 class="text-center"><b>SARS-CoV-2 Immunoanalytics</b></h3>
+
+<br>
+<div class="alert alert-primary">
+        <p class="lead" style="text-align:center">The circular graph plotted below is an interactive platform to visulise the SARS-CoV-2 proteome alongside the data from 7 meta-analyses designed to inform the selection of immunologically relevant regions for further study.<br> once you have found a region you are intereted in, proceed to 'Step 2' on the previous page.<br><br> Please allow ~30 seconds for the tool to load.</p>
+        <br>
+</div>
+        <div class="pb-4">
+
+        <ul class="nav nav-tabs">
+  <li class="active"><a data-toggle="tab" href="#home">Home</a></li>
+  <li><a data-toggle="tab" href="#menu1">Usage Tips</a></li>
+  <li><a data-toggle="tab" href="#menu3">Data Downloads</a></li>
+  <li><a data-toggle="tab" href="#menu2">Citation</a></li>
+  <li><a data-toggle="tab" href="#menu4">HLA-I Allele Data</a></li>
+</ul>
+
+<div class="tab-content">
+  <div id="home" class="tab-pane fade in active">
+    <h3></h3>
+    <div style="margin:16px 0">
+
+</div>
+    <p></p>
+  </div>
+  <div id="menu1" class="tab-pane fade">
+    <h3>Help</h3>
+    <p><div class="alert alert-warning">
+          <b>Starting from the outer ring, going inwards, the 7 meta-analyses comprise of: <br>1) A database of <font color="#B10E03">UniProt sequence annotations</font> aligned to their respective positions to elucidate functional protein domains. Glycosylated residues are highlighted in <font color="blue">blue</font>. <br> 2) An up-to-date genomic <font color="purple">'mutation watch'</font>, that plots non-synonymous mutations across the proteome, identified using a database of 2200 SARS-CoV-2 whole genome sequences.<br> 3) A heatmap highlighting convergance in epitope prediction scores of 6 leading epitope prediction suites: ABCpred, LBtope,AAPpred, DRREP and BCEpreds and Bepipred.<br>4) An HLA-II peptide prediction analysis using the tool <a href="https://maria.stanford.edu/" target="_blank"> MARIA</a> <b> <br>5) An HLA-I peptide prediction analysis performed using <a href="http://www.cbs.dtu.dk/services/NetMHCpan/"> netMHCpan 4.0</a> <br>6) A plot representing the frequency of IEDB epitopes which map to the proteome of SARS-CoV-2 the IEDB identifiers for which can be found in the table below. <br> 7) Sequence identity analysis featuring SARS,OC43,229E,HKU1,MERS and NL63 α and β
+            <i>coronavirus</i> spp.</b> </b> </p>
+        </div>
+<div class="alert alert-primary">
+        <b>Once you have found a region of interest, use the data table (step 2) to extract the desired metadata to continue your own analyses.</b>
+             <br>
+             <b>Raw sequence data (NT and AA) can be downloaded using the link in the 'Data Downlaods' tab on this page.</b>
+             <br>
+             <b>If you would like to zoom in on a region, click the 'Zoom' button above the plot and it will open the plot in a new tab. Use the mouse scroll-wheel, or two finger scroll on a touchpad to magnify the a section of the plot. <br> Scroll down to the table below to insect by-residue metadata.<br>If the pop-up boxes become unresponsive, move the mouse away and try again. If it remains unresponsive try refreshing the page.</b>
+        </div>
+      </p>
+  </div>
+  <div id="menu3" class="tab-pane fade">
+    <h3>Data Downloads</h3>
+    <p>All of the data files used in this analysis are available on GitHub. These include all epitopes, prediction scores, multiple sequence alignments and UniProt files.<br>
+<a href="https://github.com/dan-ward-bio/COVID-immunoanalytics" target="_blank">COVID-immunoanalytics GitHub Page</a>
+
+ </p>
+  </div>
+  <div id="menu2" class="tab-pane fade">
+    <h3></h3>
+    <p>An interactive visualisation tool that integrates the SARS-CoV-2 proteome with epitope, genomic, and other data to inform the use of immunologically regions for infection control. <br> https://doi.org/10.1101/2020.05.11.089409 <br> For any questions email daniel.ward1@lshtm.ac.uk.<br>To cite our work: Ward et. al. 2020 Under consideration. <br> Data for this analysis was sourced from the NCBI and GISAID.
+ </p>
+  </div>
+  <div id="menu4" class="tab-pane fade">
+    <h3>HLA Class I Prediction Allele Data</h3>
+    <p><div class="alert alert-warning">
+          <b>Click the <a href="./hla_I_table.html" target="_blank">link</a> to open a new window with data on the HLA-I epitope predictions made for this analysis.</b>
+        </div>
+</div>
+
+        </div>
+
+
+             <br>
+             <img src="./KEY.svg" class="rounded mx-auto d-block" style="width:70%">
+        </div>
+    </div>
+</div>
+
+<div class="row justify-content-md-center">
+    <div class="col-md-10 pb-4">
+        <div class="card">
+            <div class="card-header">
+                <b>Try hovering your mouse over a datapoint to find out more information. </b> <br>
+            </div>
+          <div class="row justify-content-md-center">
+    <button type="button" class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Click this button to open a new window with zoom functionality.(Not available in Firefox)">
+  <a href="./zoom_frame.html" style="color: white" target="_blank">Zoom</a>
+</button>
+</div>
+<style>
+.toast {
+  font-size: 16px;
+  width: 100%;
+}
+</style>
+  <div class="row justify-content-md-start">
+ <div class="toast" data-autohide="false">
+    <div class="toast-header">
+      <strong class="mr-auto text-primary">Browser Compatibility</strong>
+      <small class="text-muted"></small>
+      <button type="button" class="ml-2 mb-1 close" data-dismiss="toast">&times;</button>
+    </div>
+    <div class="toast-body">
+      Firefox and Safari users may experience performance issues using the tool.<br> While this page has been optimised for Firefox users best as possible, using Google Chrome will provide a better experience.<b> Zoom functionality is not available for Firefox users.</b>
+</a>
+</div>
+</div>
+</div>
+<div class="card-body">
+<div class="row justify-content-md-center">
+
+                        <style>
+                    #wrapper { width: 1500px; height: 1650px; padding-left: -20%; overflow:;  }
+                    #scaled-frame { width: 1500px; height: 1650px; border: 0px; }
+                    #scaled-frame {
+                        zoom: 1.5;
+                        -moz-transform: scale(1.5);
+                        -moz-transform-origin: 0 0;
+                        -o-transform: scale(1.5);
+                        -o-transform-origin: 0 0;
+                        -webkit-transform: scale(2.2);
+                        -webkit-transform-origin: 0 0;
+                    }
+
+                    @media screen and (-webkit-min-device-pixel-ratio:0) {
+                     #scaled-frame  { zoom: 1;  }
+                    }
+                    </style>
+
+                    <div id="wrapper">
+                    <iframe id="scaled-frame" scrolling="yes", align="center" src="./gallery05.test.html"></iframe></div>
+                </div>
+
+              </div>
+          </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+$(document).ready(function(){
+  $('.toast').toast('show');
+});
+</script>
+    <script>
+      $(function () {
+  $('[data-toggle="tooltip"]').tooltip()
+})
+    </script>
+</div>
+</div>
+</body>
+</html>
