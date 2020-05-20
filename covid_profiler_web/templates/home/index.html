@@ -22,9 +22,8 @@
 
 			<img src="{{ url_for('static', filename='covid_profiler_logo.png') }}" alt="" width="75%">
 			<div class="pb-4 pt-4 text-justify">
-				Welcome to the COVID-Profiler - a pipeline which allows users
-				to analyse <i>Sars-Cov-2</i> sequencing data to place isolates within
-                a real-time tree.
+				Welcome to the COVID-Profiler - a collections which allows users
+				to analyse <i>Sars-Cov-2</i> sequencing and immunological data.
 			</div>
 
 
@@ -32,12 +31,12 @@
 			<h5 class="">How does it work?</h5>
 			<div class="pb-4 text-justify">
                 This tree has been created using sequences from the
-                <a href="https://www.gisaid.org/">GISAID database</a>. Users can
-                upload their own sequences to look where they are positioned on the tree.
-				The pipeline searches for SNPs associated with branches on the tree.
-                It then uses the variants to find the closest neighbours on the tree.
-                In parallel it classifies the strains into S/L types as defined by
-                <a href="https://academic.oup.com/nsr/advance-article/doi/10.1093/nsr/nwaa036/5775463">Tang et al</a>.
+                <a href="https://www.gisaid.org/">GISAID database</a>. Users
+                upload their own sequences to characterise mutations present compared
+                to the reference genome <a href="https://www.ncbi.nlm.nih.gov/nuccore/1798174254">NC_045512.2</a>.
+				These mutations can then be visualised in the context of a large phylogeny.
+                These mutations are also used to clssify isolates into one of 6
+                different pre-defined clades.
 			</div>
 
 
