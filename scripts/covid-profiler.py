@@ -153,7 +153,7 @@ def main_profile(args):
     results["clade"] = clade
 
     variant_data = cp.get_variant_data(wg_vcf_obj.filename,conf["ref"],conf["gff"],conf["proteins"])
-    results["variants"] = list(variant_data.values())
+    results["variants"] = variant_data
     json.dump(results,open("%s.results.json" % files_prefix,"w"))
 
 def main_collate(args):

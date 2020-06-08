@@ -13,13 +13,16 @@ bp = Blueprint('home', __name__)
 def index():
     db = get_db()
     mongo = get_mongo_db()
-    tree_text = mongo.db.tree.find_one()["tree"]
-    meta = mongo.db.meta.find_one()
-    del meta["_id"]
-    meta = json.dumps(meta)
+    try:
+        tree_text = mongo.db.tree.find_one()["tree"]
+        meta = mongo.db.meta.find_one()
+        del meta["_id"]
+        meta = json.dumps(meta)
 
-    tree = {"newick":tree_text, "created":"NA", "meta": meta}
-
+        tree = {"newick":tree_text, "created":"NA", "meta": meta}
+    except:
+        meta = ""
+        tree = {"newick":"","created":"NA","meta":meta}
 
     if request.method == 'POST':
         return redirect(url_for('results.run_result', sample_id=request.form["sample_id"]))
