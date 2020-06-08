@@ -9,12 +9,12 @@ from tqdm import tqdm
 def main(args):
     client = MongoClient()
     db = client.test_database
-    db.drop_collection("hla")
-    hla_db = db.hla
+    db.drop_collection("immuno")
+    immuno_db = db.immuno
 
     for row in tqdm(csv.DictReader(open(args.csv))):
-        row["binding_affinity"] = float(row["binding_affinity"])
-        id = hla_db.insert_one(row)
+        row["Protein CDS Position"] = int(row["Protein CDS Position"])
+        id = immuno_db.insert_one(row)
 
 
 
