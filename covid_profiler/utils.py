@@ -76,4 +76,11 @@ def get_variant_data(vcf_file,ref_file,gff_file,protein_file):
                 if len(set(types))==1:
                     types = list(set(types))
                 results[pos].append({"pos":pos, "alts":alts_str, "alt_af":alt_af, "types":",".join(types), "changes":",".join(changes),"gene":genes[0], "gene_function":gene_info[genes[0]]["function"], "gene_reference":gene_info[genes[0]]["DOI"]})
-    return results
+    final_results = []
+    for res in list(results.values()):
+        print(res)
+        if len(res)==1:
+            final_results.append(res[0])
+        else:
+            quit("ERROR! more than one variant for a position")
+    return final_results

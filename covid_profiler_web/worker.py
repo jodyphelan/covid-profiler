@@ -12,9 +12,16 @@ celery = Celery('tasks', broker='pyamqp://guest@localhost//')
 
 
 @celery.task
-def profile(fasta,uniq_id,storage_dir):
-    pp.run_cmd("covid-profiler.py profile --fasta %s --prefix %s --dir %s" % (fasta,uniq_id,storage_dir))
-
+def profile(uniq_id,storage_dir,fasta=None,R1 = None, R2 = None):
+    if fasta:
+        pp.run_cmd("covid-profiler.py profile --fasta %s --prefix %s --dir %s" % (fasta,uniq_id,storage_dir))
+    elif R1 and not R2:
+        pp.run_cmd("covid-profiler.py profile -1 %s --prefix %s --dir %s" % (R1,uniq_id,storage_dir))
+    elif R1 and R2:
+        pp.run_cmd("covid-profiler.py profile -1 %s -2 %s --prefix %s --dir %s" % (R1,R2,uniq_id,storage_dir))
+    else:
+        sys.stderr.write("ERROR!!! Check file inputs to profile worker!")
+        
     results = json.load(open("%s/%s.results.json" % (storage_dir,uniq_id)))
 
     print("Updating database")

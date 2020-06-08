@@ -42,7 +42,7 @@
                 </thead>
                 <tbody id="resultsTable">
                     {% for mutation in run["results"]["variants"] %}
-                        <tr name="{{ mutation['position'] }}">
+                        <tr name="{{ mutation['pos'] }}">
                             <td><a href="{{ url_for('results.mutation', position=mutation['pos']) }}">{{ mutation['pos'] }}</a></td>
                             <td>{{ mutation['gene'] }}</td>
                             <td>{{ mutation['types'] }}</td>

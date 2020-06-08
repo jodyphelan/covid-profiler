@@ -19,11 +19,11 @@
 	<div class="col-md-6 pb-4">
 		<div class="card">
 			<div class="card-header">
-				Single sample
+				FASTA input
 			</div>
 			<div class="card-body">
 				<p class="card-text">
-					You can upload one or two (forward and reverse) fastq files. When you
+					You can upload a fasta file. When you
 					upload your data, the run will be be assigned a unique ID. Please take
 					a note of this ID as you will need to to find your results later.
 				</p>
@@ -37,12 +37,40 @@
 						<input type="file" name="file1" class="form-control-file" id="file1">
 					</div>
 					<hr>
-					<button type="submit" class="btn btn-primary" name="single_sample_submit" id="single_sample_submit">Submit</button>
+					<button type="submit" class="btn btn-primary" name="fasta_submit" id="fasta_submit">Submit</button>
 				</form>
 			</div>
 		</div>
 	</div>
-<!-- </div> -->
+	<div class="col-md-6 pb-4">
+		<div class="card">
+			<div class="card-header">
+				FASTQ input
+			</div>
+			<div class="card-body">
+				<p class="card-text">
+					You can upload one or two (forward and reverse) fastq files. When you
+					upload your data, the run will be be assigned a unique ID. Please take
+					a note of this ID as you will need to to find your results later.
+				</p>
+				<form method="post" enctype=multipart/form-data>
+					{% if g.user %}
+						<input type="text" class="form-control w-50" id="sample_name" name="sample_name" placeholder="Sample name">
+					{% endif %}
+
+					<div class="form-group pt-2">
+						<label for="file1">Fastq file 1:</label>
+						<input type="file" name="file1" class="form-control-file" id="file1">
+						<label for="file2">Fastq file 2:</label>
+						<input type="file" name="file2" class="form-control-file" id="file1">
+					</div>
+					<hr>
+					<button type="submit" class="btn btn-primary" name="fastq_submit" id="fastq_submit">Submit</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
 
 
 

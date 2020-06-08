@@ -32,16 +32,20 @@ def run_result(sample_id):
     mongo = get_mongo_db()
 
     run = mongo.db.profiler_results.find_one({"_id":str(sample_id)})
+    print(run)
     if run == None:
         error = "Run does not exist"
         abort(404)
 
-    tree_text = mongo.db.tree.find_one()["tree"]
-    meta = mongo.db.meta.find_one()
-    del meta["_id"]
-    meta = json.dumps(meta)
+    try:
+        tree_text = mongo.db.tree.find_one()["tree"]
+        meta = mongo.db.meta.find_one()
+        del meta["_id"]
+        meta = json.dumps(meta)
 
-    tree = {"newick":tree_text, "created":"NA", "meta": meta}
+        tree = {"newick":tree_text, "created":"NA", "meta": meta}
+    except:
+        tree = {"newick":"", "created":"NA", "meta": ""}
 
     return render_template('results/run_result.html',run=run, tree = tree)
 
