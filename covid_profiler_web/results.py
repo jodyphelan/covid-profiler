@@ -135,4 +135,16 @@ def result_table(request,user):
 
 @bp.route('/immuno')
 def immuno():
-    return render_template('results/immunoanalytics.html',tree = tree)
+    return render_template('immuno/immunoanalytics.html',tree = tree)
+
+@bp.route('/hla_I_table',methods=('GET', 'POST'))
+def hla_I_table():
+    mongo = get_mongo_db()
+    if request.method=='POST':
+
+        gene = request.form["gene_select"]
+        binding_affinity = float(request.form["binding_affinity"]) if request.form["binding_affinity"]!="" else 0
+        flash((gene,binding_affinity))
+        data = mongo.db.hla.find({"gene":gene,"binding_affinity":{"$gt":binding_affinity}})
+
+    return render_template('immuno/hla_I_table.html',genes = ["S","nsp3","nsp9"],epitopes=data)

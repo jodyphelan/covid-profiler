@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block header %}
+
+{% endblock %}
+
+{% block content %}
+
+
+<div class="pt-4">
+	<div class="row justify-content-md-center">
+		<div class="col-md-6 pb-4">
+			<div class="card">
+				<div class="card-header">
+					Select data
+				</div>
+				<div class="card-body">
+					<p>
+					Use the controls to filter and display epitopes.
+		            </p>
+					<form method="post" enctype=multipart/form-data>
+						<div class="form-row">
+							<div class="form-group col-md-6">
+
+                                <div class="form-group">
+                                    <label for="gene_select">Example select</label>
+                                    <select name="gene_select" class="form-control" id="gene_select">
+                                        {% for gene in genes %}
+                                            <option>{{gene}}</option>
+                                        {% endfor %}
+                                    </select>
+			                     </div>
+						    </div>
+                            <div class="form-group col-md-6">
+                                <label for="binding_affinity">Binding Affinity</label>
+                                <input name = "binding_affinity" type="number" class="form-control" id="binding_affinity" aria-describedby="binding_affinity_help" placeholder="Value in nM">
+                                <small id="binding_affinity_help" class="form-text text-muted">Display results with binding values greater than this number.</small>
+                            </div>
+                        </div>
+						<hr>
+                        <button type="submit" class="btn btn-primary" name="search_epitopes_button">Search</button>
+					</form>
+
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="button_div">
+
+	</div>
+	<hr>
+	<table class="table table-hover" id="results_table">
+		<thead>
+			<tr>
+				<!-- <th scope="col"></th> -->
+				<th scope="col">Gene</th>
+				<th scope="col">Protien CSS Position</th>
+				<th scope="col">HLA-I Allele</th>
+				<th scope="col">Epitope Sequence</th>
+				<th scope="col">Binding Affinity (nM)</th>
+
+			</tr>
+		</thead>
+		<tbody id="resultsTable">
+			{% for epitope in epitopes %}
+				<tr name="{{ epitope['gene'] }}_{{ epitope['cds_pos'] }}">
+				<td>{{ epitope['gene'] }}</td>
+				<td>{{ epitope['cds_pos'] }}</td>
+				<td>{{ epitope["hla_allele"] }}</td>
+				<td>{{ epitope["epitope_seq"] }}</td>
+                <td>{{ epitope["binding_affinity"] }}</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+</div>
+
+
+<script>
+
+$(document).ready( function () {
+        var table = $('#results_table').DataTable( {
+            select: true
+        // dom: 'Blfrtip',
+        })
+        new $.fn.dataTable.Buttons( table, {
+        buttons: [
+                    'selectAll',
+                    'selectNone',
+                    'pdf',
+                    'excelHtml5',
+        ],
+        } );
+
+    table.buttons().container()
+.appendTo( $('.col-md-6:eq(0)', table.table().container() ) )
+} );
+
+</script>
+
+{% endblock %}
