@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+
+{% block header %}
+
+
+    <!-- Bootstrap CSS -->
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4-4.1.1/jq-3.3.1/jszip-2.5.0/dt-1.10.20/af-2.3.4/b-1.6.1/b-colvis-1.6.1/b-flash-1.6.1/b-html5-1.6.1/b-print-1.6.1/cr-1.5.2/fc-3.3.0/fh-3.1.6/kt-2.5.1/r-2.2.3/rg-1.1.1/rr-1.2.6/sc-2.0.1/sp-1.0.1/sl-1.3.1/datatables.min.css"/>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css"/>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css"/>
+<!-- TAB STUFF -->
+ <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+  <!-- teb stuff end -->
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.6.1/js/dataTables.buttons.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.6.1/js/buttons.flash.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.6.1/js/buttons.html5.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/1.6.1/js/buttons.print.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/pdfmake.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.36/vfs_fonts.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/v/bs4-4.1.1/jq-3.3.1/jszip-2.5.0/dt-1.10.20/af-2.3.4/b-1.6.1/b-colvis-1.6.1/b-flash-1.6.1/b-html5-1.6.1/b-print-1.6.1/cr-1.5.2/fc-3.3.0/fh-3.1.6/kt-2.5.1/r-2.2.3/rg-1.1.1/rr-1.2.6/sc-2.0.1/sp-1.0.1/sl-1.3.1/datatables.min.js"></script>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <script src="./biocircos_js/pace.js"></script>
+  <link href="./biocircos_js/loadingbar.css" rel="stylesheet" />
+    <meta name="viewport" content="width=device-width, initial-scale=2">
+
+    <style>
+     body {
+         background-color: #bed1e6;
+     }
+
+    </style>
+{% endblock %}
+
+{% block content %}
+
+  <img src="{{url_for('static',filename='immuno/new_logo-01.svg')}}" class="rounded mx-auto d-block" style="width:70%">
+
+<br>
+<br>
+<br>
+
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+    <div class="alert alert-danger" style="text-align:center">
+   <b>The SARS-CoV-2 Immunoanalytics platform is an online tool for the visulisation and analysis of multiple genomic and immunoinformatic meta-analyses. The tool combines an extensive epitope mapping and prediction meta-analysis, with an updated variant database (55,944 non-synonymous mutations) based on 16,087 whole genome sequences, and an analysis of human coronavirus homology, combined with up-to-date annotations from the UniProt database. With this tool and the data we have generated, we hope researchers can perform their own further research, whatever it may be. </b>
+
+ </div>
+</div>
+</div>
+<br>
+
+
+
+  <div class="row">
+   <div class="col-md-4 ml-md-auto">
+
+     <div class="well" style="text-align:center; background-color:#d9e0ca" ><h3>Step 1</h3><strong>Browse The Plot</strong><br><br> Use the plot to browse the SARS-CoV-2 proteome. We have combined 7 useful analyses on a single medium to make it easier to spot regions that might be of interest to you. More information on how to use the tool is displayed after clicking one of the links below. <br><br><b>Take note of the amino-acid coordinates when you hover over a datapoint, you will need this for the following step!</b> </div>
+     <div class="row justify-content-md-around">
+        <a href="{{ url_for('static', filename='immuno/immunoanalytics-no-hlai.html')}}" target="_blank"  data-toggle="tooltip" title="Lodaing time ~15 seconds" class="btn btn-success btn-md" role="button">Open the SARS-CoV-2 <br>Immunoanalytics tool</a>
+        <div class="row justify-content-md-around">
+        <a href="{{ url_for('static', filename='immuno/immunoanalytics_plot.html')}}" target="_blank"  data-toggle="tooltip" title="Lodaing time ~30 seconds" class="btn btn-success btn-md" role="button">Open the SARS-CoV-2 <br>Immunoanalytics tool + HLA-I Data</a>
+      </div>
+    </div>
+
+  </div>
+  <div class="col-md-4 ml-md-auto">
+
+    <div class="well" style="text-align:center; background-color:#d9e0ca" ><h3>Step 2</h3><strong>Raw Data Table</strong><br><br> You can use this interactive table to find and extract the regions you are most interested in. You can select a protein in the dropdown menu and insert the amino-acid coordinated in the boxes at the top and the table will display all of the raw data used to build the plot.<br><br> <b>You can the copy, print or download the data in CSV, MS Excel.</b></div>
+
+    <div class="row justify-content-md-around">
+       <a href="{{ url_for('static', filename='immuno/immunoanalytics-main-table.html')}}" target="_blank"  data-toggle="tooltip" title="View the raw data used to form the plot. This includes the SNP, B-cell epitope, UniProt, IEDB and HLA-II data" class="btn btn-success btn-md" role="button">Open the Raw Data Table Page</a>
+       <div class="row justify-content-md-around">
+       <a href="{{ url_for('results.hla_I_table')}}" target="_blank"  data-toggle="tooltip" title="In this table, you can query HLA-I epitopes predicted by netMHCpan 4.1" class="btn btn-success btn-md" role="button">Open the HLA-I Data Table</a>
+     </div>
+     </div>
+
+  </div>
+  <div class="col-md-4 ml-md-auto">
+
+    <div class="well" style="text-align:center; background-color:#d9e0ca" ><h3>Step 3</h3><strong>Download and Analyse!</strong><br><br> This tool was devoped by a multi-diciplinary team of bioinformaticians and lab-scientists to inform our own future experiments. We hope this do the same for yours. <br><br> <b>Once you have a sequence you are intereted in, you can copy the amino-acid sequence from the raw data table and express, mutate, or perform further analysis</b>
+      </div>
+      <div class="row justify-content-md-center">
+         <a href="https://doi.org/10.1101/2020.05.11.089409" target="_blank" data-toggle="tooltip" title="We have some intersting examples of analyses in our paper" class="btn btn-success btn-md" role="button">Check out our paper</a>
+       </div>
+
+
+
+      </div>
+      </div>
+<br>
+<br>
+<div class="row justify-content-md-center">
+<h3>It'd be great if you could cite us if you've used this tool: https://doi.org/10.1101/2020.05.11.089409 <h3>
+</div>
+
+
+
+
+      <script>
+      $(document).ready(function(){
+        $('.btn-success').tooltip({title: "Hooray!", delay: {show: 50, hide: 700}});
+      });
+      </script>
+
+
+
+
+
+{% endblock %}
