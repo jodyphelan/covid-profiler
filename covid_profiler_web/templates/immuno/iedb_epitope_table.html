@@ -6,8 +6,9 @@
 
 {% block content %}
 <div class="row justify-content-md-center">
-<h2> HLA-I Raw Data Query Table </h2>
+<h2> IEDB Epitope Mapping Raw Data Query Table </h2>
 </div>
+
 <div class="pt-4">
 	<div class="row justify-content-md-center">
 		<div class="col-md-6 pb-4">
@@ -17,7 +18,7 @@
 				</div>
 				<div class="card-body">
 					<p>
-					Use the controls to filter and display HLA-I epitopes predicted by NetMHCpan. <br> <b> A lower nM value = a higher binding affinity. </b>
+					Use the query form to filter and display IEDB epitopes mapped to individual positions on the SARS-CoV-2 proteome.<b> For more information on the frequency of IEDB epitope mapping, check out the <a href="http://genomics.lshtm.ac.uk/static/immuno/immunoanalytics-main-table.html">main raw data table</a>
 		            </p>
 					<form method="post" enctype=multipart/form-data>
 						<div class="form-row">
@@ -33,8 +34,8 @@
 			                     </div>
 						    </div>
                             <div class="form-group col-md-6">
-                                <label for="binding_affinity">Binding Affinity</label>
-                                <input name = "binding_affinity" type="number" class="form-control" id="binding_affinity" aria-describedby="binding_affinity_help" placeholder="Value in nM">
+                                <label for="binding_affinity">AA Position in Gene</label>
+                                <input name = "aa_pos" type="number" class="form-control" id="aa_pos" aria-describedby="binding_affinity_help" placeholder="AA Position as it apperas on the graph">
                                 <small id="binding_affinity_help" class="form-text text-muted">Display results with binding values greater than this number.</small>
                             </div>
                         </div>
@@ -55,21 +56,17 @@
 			<tr>
 				<!-- <th scope="col"></th> -->
 				<th scope="col">Gene</th>
-				<th scope="col">Protien CDS Position</th>
-				<th scope="col">HLA-I Allele</th>
-				<th scope="col">Epitope Sequence</th>
-				<th scope="col">Binding Affinity (nM)</th>
+				<th scope="col">aa_pos</th>
+				<th scope="col">iedb_epitope</th>
 
 			</tr>
 		</thead>
 		<tbody id="resultsTable">
 			{% for epitope in epitopes %}
-				<tr name="{{ epitope['gene'] }}_{{ epitope['cds_pos'] }}">
-				<td>{{ epitope['gene'] }}</td>
-				<td>{{ epitope['cds_pos'] }}</td>
-				<td>{{ epitope["hla_allele"] }}</td>
-				<td>{{ epitope["epitope_seq"] }}</td>
-                <td>{{ epitope["binding_affinity"] }}</td>
+				<tr name="{{ epitope['gene'] }}_{{ epitope['aa_pos'] }}">
+				<td>{{ epitope['Gene'] }}</td>
+				<td>{{ epitope['aa_pos'] }}</td>
+				<td>{{ epitope["iedb_epitope"] }}</td>
 				</tr>
 			{% endfor %}
 		</tbody>

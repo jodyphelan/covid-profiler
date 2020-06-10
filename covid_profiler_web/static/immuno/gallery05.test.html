@@ -7,13 +7,13 @@
     </head>
 
     <body>
-        <style>
+      <style>
 html {
-   color: #000 !important;
-   font-family: Helvetica !important;
-   font-size: 65%; /* font-size 1em = 10px on default browser settings */
+ color: #000 !important;
+ font-family: Helvetica !important;
+ font-size: 45% !important; /* font-size 1em = 10px on default browser settings */
 }
-        </style>
+      </style>
         <!-- BioCircos.js, Jquery.js and D3.js import -->
         <script src="./lib/jquery.js"></script>
         <script src="./lib/d3.js"></script>
@@ -153,8 +153,9 @@ var BACKGROUND04 = [ "BACKGROUND04" , {
      SNPMouseOverTooltipsHtml03 : "<br>Alt Allele Freq. : ",
      SNPMouseOverTooltipsHtml04 : "<br>Info : ",
      SNPMouseOverTooltipsHtml05 : "",
-     SNPMouseOverTooltipsBorderWidth : 0,
+     SNPMouseOverTooltipsBorderWidth : 0.01,
      SNPMouseOutDisplay : true,
+     SNPMouseOverTooltipsPosition : "absolute",
      SNPMouseOutAnimationTime : 700,
      SNPMouseOutColor : "none",
      SNPMouseOutCircleSize : "none",
@@ -198,7 +199,7 @@ var BACKGROUND04 = [ "BACKGROUND04" , {
      ARCMouseMoveArcOpacity : 1.0,
      ARCMouseMoveArcStrokeColor : "#F26223",
      ARCMouseMoveArcStrokeWidth : 0,
-     ARCMouseOutDisplay : true,
+     ARCMouseOutDisplay : false,
      ARCMouseOutAnimationTime : 500,
      ARCMouseOutColor : "none",
      ARCMouseOutArcOpacity : 1.0,
@@ -217,14 +218,14 @@ var BACKGROUND04 = [ "BACKGROUND04" , {
      ARCMouseOverTooltipsHtml01 : "",
      ARCMouseOverTooltipsHtml02 : "<br>Position: ",
      ARCMouseOverTooltipsHtml03 : "AA - ",
-     ARCMouseOverTooltipsHtml04 : "AA<br>Name: ",
+     ARCMouseOverTooltipsHtml04 : "AA<br> ",
      ARCMouseOverTooltipsHtml05 : "",
      ARCMouseOverTooltipsPosition : "absolute",
      ARCMouseOverTooltipsBackgroundColor : "white",
      ARCMouseOverTooltipsBorderStyle : "solid",
-     ARCMouseOverTooltipsBorderWidth : 0,
-     ARCMouseOverTooltipsPadding : "3px",
-     ARCMouseOverTooltipsBorderRadius : "3px",
+     ARCMouseOverTooltipsBorderWidth : 0.1,
+     ARCMouseOverTooltipsPadding : "1px",
+     ARCMouseOverTooltipsBorderRadius : "1px",
      ARCMouseOverTooltipsOpacity : 0.8,
      HEATMAPMouseEvent : true,
      HEATMAPMouseClickDisplay : false,
@@ -277,9 +278,9 @@ var BACKGROUND04 = [ "BACKGROUND04" , {
      HEATMAPMouseOverTooltipsPosition : "absolute",
      HEATMAPMouseOverTooltipsBackgroundColor : "white",
      HEATMAPMouseOverTooltipsBorderStyle : "solid",
-     HEATMAPMouseOverTooltipsBorderWidth : 0,
-     HEATMAPMouseOverTooltipsPadding : "3px",
-     HEATMAPMouseOverTooltipsBorderRadius : "3px",
+     HEATMAPMouseOverTooltipsBorderWidth : 0.1,
+     HEATMAPMouseOverTooltipsPadding : "1px",
+     HEATMAPMouseOverTooltipsBorderRadius : "1px",
      HEATMAPMouseOverTooltipsOpacity : 0.8,
     LINEMouseEvent : true,
      LINEMouseClickDisplay : true,
@@ -294,7 +295,7 @@ var BACKGROUND04 = [ "BACKGROUND04" , {
      LINEMouseEnterLineOpacity : 1,           //"none"
      LINEMouseEnterLineStrokeColor : "red",   //"none"
      LINEMouseEnterLineStrokeWidth : "none",  //"none"
-     LINEMouseLeaveDisplay : true,
+     LINEMouseLeaveDisplay : false,
      LINEMouseLeaveLineOpacity : 1,           //"none"
      LINEMouseLeaveLineStrokeColor : "none",   //"none"
      LINEMouseLeaveLineStrokeWidth : "none",  //"none"
@@ -315,7 +316,7 @@ var BACKGROUND04 = [ "BACKGROUND04" , {
      LINEMouseOverLineOpacity : 1,           //"none"
      LINEMouseOverLineStrokeColor : "red",   //"none"
      LINEMouseOverLineStrokeWidth : "none",  //"none"
-     LINEMouseOverTooltipsHtml01 : "IEDB Epitope mapping freq.",
+     LINEMouseOverTooltipsHtml01 : "IEDB Epitope mapping freq.<br> See <a href=\"http://genomics.lshtm.ac.uk/immuno/iedb_epitope_table\" target=\"_blank\" >Go to the IEDB Metadata Page for more information</a>",
      LINEMouseOverTooltipsHtml02 : "Pos: ",
      LINEMouseOverTooltipsHtml03 : "AA - ",
      LINEMouseOverTooltipsHtml04 : "AA<br>Name: ",
@@ -324,9 +325,9 @@ var BACKGROUND04 = [ "BACKGROUND04" , {
      LINEMouseOverTooltipsPosition : "absolute",
      LINEMouseOverTooltipsBackgroundColor : "white",
      LINEMouseOverTooltipsBorderStyle : "solid",
-     LINEMouseOverTooltipsBorderWidth : 0,
-     LINEMouseOverTooltipsPadding : "3px",
-     LINEMouseOverTooltipsBorderRadius : "3px",
+     LINEMouseOverTooltipsBorderWidth : 0.1,
+     LINEMouseOverTooltipsPadding : "1px",
+     LINEMouseOverTooltipsBorderRadius : "1px",
      LINEMouseOverTooltipsOpacity : 0.8,
      HISTOGRAMMouseEvent : true,
      HISTOGRAMMouseClickDisplay : false,
@@ -379,9 +380,9 @@ var BACKGROUND04 = [ "BACKGROUND04" , {
      HISTOGRAMMouseOverTooltipsPosition : "absolute",
      HISTOGRAMMouseOverTooltipsBackgroundColor : "white",
      HISTOGRAMMouseOverTooltipsBorderStyle : "solid",
-     HISTOGRAMMouseOverTooltipsBorderWidth : 0,
-     HISTOGRAMMouseOverTooltipsPadding : "3px",
-     HISTOGRAMMouseOverTooltipsBorderRadius : "3px",
+     HISTOGRAMMouseOverTooltipsBorderWidth : 0.1,
+     HISTOGRAMMouseOverTooltipsPadding : "1px",
+     HISTOGRAMMouseOverTooltipsBorderRadius : "1px",
      HISTOGRAMMouseOverTooltipsOpacity : 0.8,
      genomeBorder : {
         display : true,

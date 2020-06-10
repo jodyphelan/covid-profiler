@@ -146,9 +146,9 @@ def hla_I_table():
         gene = request.form["gene_select"]
         binding_affinity = float(request.form["binding_affinity"]) if request.form["binding_affinity"]!="" else 0
         flash((gene,binding_affinity))
-        data = mongo.db.hla.find({"gene":gene,"binding_affinity":{"$gt":binding_affinity}})
+        data = mongo.db.hla.find({"gene":gene,"binding_affinity":{"$lt":binding_affinity}})
 
-    return render_template('immuno/hla_I_table.html',genes = ["S","nsp3","nsp9"],epitopes=data)
+    return render_template('immuno/hla_I_table.html',genes = ["E","M","N","nsp01","nsp10","nsp11","nsp12","nsp13","nsp14","nsp15","nsp16","nsp2","nsp3","nsp4","nsp5","nsp6","nsp7","nsp8","nsp9","orf10","orf3a","orf6","orf7a","orf7b","orf8","S"],epitopes=data)
 
 @bp.route('/immuno/table/<gene>')
 def table(gene):
@@ -156,3 +156,18 @@ def table(gene):
     data = mongo.db.immuno.find({"Gene":gene},{'_id': False})
 
     return render_template('immuno/main_table.html',data=data)
+
+
+
+@bp.route('/immuno/iedb_epitope_table',methods=('GET', 'POST'))
+def iedb_table():
+    mongo = get_mongo_db()
+    data = []
+    if request.method=='POST':
+
+        gene = request.form["gene_select"]
+        aa_pos = int(request.form["aa_pos"]) if request.form["aa_pos"]!="" else 0
+        flash((gene,aa_pos))
+        data = mongo.db.iedb.find({"Gene":gene,"aa_pos":aa_pos})
+
+    return render_template('immuno/iedb_epitope_table.html',genes = ["E","M","N","nsp01","nsp10","nsp11","nsp12","nsp13","nsp14","nsp15","nsp16","nsp2","nsp3","nsp4","nsp5","nsp6","nsp7","nsp8","nsp9","orf10","orf3a","orf6","orf7a","orf7b","orf8","S"],epitopes=data)
