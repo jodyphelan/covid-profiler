@@ -1,20 +1,20 @@
 /**
-* BioCircos.js is an open source interactive Javascript library which 
+* BioCircos.js is an open source interactive Javascript library which
 * provides an easy way to interactive display biological data on the web.
-* It implements a raster-based SVG visualization using the open source 
-* Javascript framework jquery.js. BioCircos.js is multiplatform and works 
-* in all major internet browsers (Internet Explorer, Mozilla Firefox, 
-* Google Chrome, Safari, Opera). Its speed is determined by the client's 
-* hardware and internet browser. For smoothest user experience, we recommend 
+* It implements a raster-based SVG visualization using the open source
+* Javascript framework jquery.js. BioCircos.js is multiplatform and works
+* in all major internet browsers (Internet Explorer, Mozilla Firefox,
+* Google Chrome, Safari, Opera). Its speed is determined by the client's
+* hardware and internet browser. For smoothest user experience, we recommend
 * Google Chrome.
 *
 * Source code, tutorial, documentation, and example data are freely available
 * from BioCircos.js website "http://bioinfo.ibp.ac.cn/biocircos/".
-* 
+*
 * @author <a href="cui_ya@163.com">Ya Cui</a>, <a href="chenxiaowei@moon.ibp.ac.cn">Xiaowei Chen</a>
 * @version 1.1.2
 *
-* @example 
+* @example
 *      var BioCircosGenome = [
 *         ["chr1" , 249250621],
 *         ["chr2" , 243199373]
@@ -974,7 +974,7 @@ var BioCircos;
       var i=genomeLength.length;
       var p=genomeLength.length;
       var genome = new Array();
-      for(var k=0;k<i;k++){ 
+      for(var k=0;k<i;k++){
          genome[k]=new Array();
            for(var j=0;j<p;j++){
               genome[k][j]=0;
@@ -1113,8 +1113,8 @@ var BioCircos;
         function zoom() {
             a=d3.event.translate[0]+width / 2
             b=d3.event.translate[1]+height / 2
-            svg.attr("transform", "translate(" 
-                + a +","+ b 
+            svg.attr("transform", "translate("
+                + a +","+ b
                 + ")scale(" + d3.event.scale + ")");
         }
         var svg = d3.select(self.target).append("svg")
@@ -1161,7 +1161,7 @@ var BioCircos;
           .enter().append("text")
             .style("fill", self.genomeTextColor)
             .style("font-size", self.genomeTextSize)
-	    .each( function(d,i) { 
+	    .each( function(d,i) {
                d.angle = (d.startAngle + d.endAngle) / 2 - self.genomeTextDx;
                d.name = self.genomeLabel[i];
             })
@@ -1186,7 +1186,7 @@ var BioCircos;
             };
           });
         }
-		
+
         var ticks = svg.append("g").selectAll("g")
             .data(chord.groups)
           .enter().append("g").selectAll("g")
@@ -1376,8 +1376,8 @@ var BioCircos;
             if(self.settings.ARCMouseOverDisplay==true){
                    ARCMouseOn.on("mouseover",function(d){
                        ARCMouseOnTooltip.html(self.settings.ARCMouseOverTooltipsHtml01+d.arc_chr+self.settings.ARCMouseOverTooltipsHtml02+d.arc_start+self.settings.ARCMouseOverTooltipsHtml03+d.arc_end+self.settings.ARCMouseOverTooltipsHtml04+d.arc_des+self.settings.ARCMouseOverTooltipsHtml05)
-                              .style("left", (d3.event.pageX) + "px")
-                              .style("top", (d3.event.pageY + 20) + "px")
+                              .style("left", (220) + "px")
+                              .style("top", (275) + "px")
                               .style("position", self.settings.ARCMouseOverTooltipsPosition)
                               .style("background-color", self.settings.ARCMouseOverTooltipsBackgroundColor)
                               .style("border-style", self.settings.ARCMouseOverTooltipsBorderStyle)
@@ -1529,8 +1529,8 @@ var BioCircos;
             if(self.settings.HISTOGRAMMouseOverDisplay==true){
                 HISTOGRAMMouseOn.on("mouseover",function(d){
                       HISTOGRAMMouseOnTooltip.html(self.settings.HISTOGRAMMouseOverTooltipsHtml01+d.histogram_chr+self.settings.HISTOGRAMMouseOverTooltipsHtml02+d.histogram_start+self.settings.HISTOGRAMMouseOverTooltipsHtml03+d.histogram_end+self.settings.HISTOGRAMMouseOverTooltipsHtml04+d.histogram_name+self.settings.HISTOGRAMMouseOverTooltipsHtml05+d.histogram_value+self.settings.HISTOGRAMMouseOverTooltipsHtml06)
-                       .style("left", (d3.event.pageX) + "px")
-                       .style("top", (d3.event.pageY + 20) + "px")
+                       .style("left", (220) + "px")
+                       .style("top", (360) + "px")
                        .style("position", self.settings.HISTOGRAMMouseOverTooltipsPosition)
                        .style("background-color", self.settings.HISTOGRAMMouseOverTooltipsBackgroundColor)
                        .style("border-style", self.settings.HISTOGRAMMouseOverTooltipsBorderStyle)
@@ -1674,8 +1674,8 @@ var BioCircos;
             if(self.settings.LINEMouseOverDisplay==true){
                 LINEMouseOn.on("mouseover",function(d){
                       LINEMouseOnTooltip.html(self.settings.LINEMouseOverTooltipsHtml01)
-                       .style("left", (d3.event.pageX) + "px")
-                       .style("top", (d3.event.pageY + 20) + "px")
+                      .style("left", (230) + "px")
+                      .style("top", (410) + "px")
                        .style("position", self.settings.LINEMouseOverTooltipsPosition)
                        .style("background-color", self.settings.LINEMouseOverTooltipsBackgroundColor)
                        .style("border-style", self.settings.LINEMouseOverTooltipsBorderStyle)
@@ -2041,8 +2041,8 @@ var BioCircos;
             if(self.settings.HEATMAPMouseOverDisplay==true){
                 HEATMAPMouseOn.on("mouseover",function(d){
                       HEATMAPMouseOnTooltip.html(self.settings.HEATMAPMouseOverTooltipsHtml01+d.heatmap_chr+self.settings.HEATMAPMouseOverTooltipsHtml02+d.heatmap_start+self.settings.HEATMAPMouseOverTooltipsHtml03+d.heatmap_end+self.settings.HEATMAPMouseOverTooltipsHtml04+d.heatmap_name+self.settings.HEATMAPMouseOverTooltipsHtml05+d.heatmap_value+self.settings.HEATMAPMouseOverTooltipsHtml06)
-                       .style("left", (d3.event.pageX) + "px")
-                       .style("top", (d3.event.pageY + 20) + "px")
+                      .style("left", (220) + "px")
+                      .style("top", (360) + "px")
                        .style("position", self.settings.HEATMAPMouseOverTooltipsPosition)
                        .style("background-color", self.settings.HEATMAPMouseOverTooltipsBackgroundColor)
                        .style("border-style", self.settings.HEATMAPMouseOverTooltipsBorderStyle)
@@ -2448,8 +2448,8 @@ var BioCircos;
             if(self.settings.SCATTERMouseOverDisplay==true){
                 SCATTERMouseOn.on("mouseover",function(d){
                       SCATTERMouseOnTooltip.html(self.settings.SCATTERMouseOverTooltipsHtml01+d.scatter_chr+self.settings.SCATTERMouseOverTooltipsHtml02+d.scatter_start+self.settings.SCATTERMouseOverTooltipsHtml03+d.scatter_end+self.settings.SCATTERMouseOverTooltipsHtml04+d.scatter_name+self.settings.SCATTERMouseOverTooltipsHtml05+d.scatter_des+self.settings.SCATTERMouseOverTooltipsHtml06)
-                       .style("left", (d3.event.pageX) + "px")
-                       .style("top", (d3.event.pageY + 20) + "px")
+                      .style("left", (220) + "px")
+                      .style("top", (360) + "px")
                        .style("position", self.settings.SCATTERMouseOverTooltipsPosition)
                        .style("background-color", self.settings.SCATTERMouseOverTooltipsBackgroundColor)
                        .style("border-style", self.settings.SCATTERMouseOverTooltipsBorderStyle)
@@ -2718,8 +2718,8 @@ var BioCircos;
             if(self.settings.SNPMouseOverDisplay==true){
                 SNPMouseOn.on("mouseover",function(d){
                       SNPMouseOnTooltip.html(self.settings.SNPMouseOverTooltipsHtml01+d.snp_chr+self.settings.SNPMouseOverTooltipsHtml02+d.snp_pos+self.settings.SNPMouseOverTooltipsHtml03+d.snp_val+self.settings.SNPMouseOverTooltipsHtml04+d.snp_des+self.settings.SNPMouseOverTooltipsHtml05)
-                       .style("left", (d3.event.pageX) + "px")
-                       .style("top", (d3.event.pageY + 20) + "px")
+                       .style("left", (220) + "px")
+                       .style("top", (360) + "px")
                        .style("position", self.settings.SNPMouseOverTooltipsPosition)
                        .style("background-color", self.settings.SNPMouseOverTooltipsBackgroundColor)
                        .style("border-style", self.settings.SNPMouseOverTooltipsBorderStyle)
@@ -2900,7 +2900,7 @@ var BioCircos;
                   .attr("x", d3.event.x )
                   .attr("y", d3.event.y );
             }
-			
+
             var draglinklabel = d3.behavior.drag()
                       .on("drag", draglinkmove);
 

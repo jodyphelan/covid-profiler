@@ -215,7 +215,7 @@ function showPage() {
   <div id="menu4" class="tab-pane fade">
     <h3>HLA Class I Prediction Allele Data</h3>
     <p><div class="alert alert-warning">
-          <b>Click the <a href="./hla_I_table.html" target="_blank">link</a> to open a new window with data on the HLA-I epitope predictions made for this analysis.</b>
+          <b>Click the <a href="http://genomics.lshtm.ac.uk/immuno/hla_I_table" target="_blank">link</a> to open a new window with data on the HLA-I epitope predictions made for this analysis.</b>
         </div>
 </div>
 
@@ -234,27 +234,40 @@ function showPage() {
             <div class="card-header">
                 <b>Try hovering your mouse over a datapoint to find out more information. </b> <br>
             </div>
-          <div class="row justify-content-md-center">
+          <div class="row justify-content-around">
     <button type="button" class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Click this button to open a new window with zoom functionality.(Not available in Firefox)">
   <a href="./zoom_frame.html" style="color: white" target="_blank">Zoom</a>
+</button>
+<button type="button" class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="(Click this button to load a plot with HLA-I data lanes)">
+<a href="./immunoanalytics_plot.html" style="color: white" target="_blank">Load HLA-I Data</a>
+</button>
+<button type="button" class="btn btn-secondary" data-toggle="tooltip" data-placement="top" title="Click this button to load a table with more information on IEDB epitopes)">
+<a href="http://genomics.lshtm.ac.uk/immuno/iedb_epitope_table" style="color: white" target="_blank">IEDB Epitope Metadata</a>
 </button>
 </div>
 <style>
 .toast {
   font-size: 16px;
   width: 100%;
+  background-color: #bed1e6;
 }
 </style>
   <div class="row justify-content-md-start">
- <div class="toast" data-autohide="false">
+ <div class="toast" data-autohide="false" style="position: absolute;">
     <div class="toast-header">
-      <strong class="mr-auto text-primary">Browser Compatibility</strong>
+      <strong class="mr-auto text-primary">New Features!</strong>
       <small class="text-muted"></small>
       <button type="button" class="ml-2 mb-1 close" data-dismiss="toast">&times;</button>
     </div>
     <div class="toast-body">
-      Firefox and Safari users may experience performance issues using the tool.<br> While this page has been optimised for Firefox users best as possible, using Google Chrome will provide a better experience.<b> Zoom functionality is not available for Firefox users.</b>
-</a>
+      <b>We have added some new features to the tool!</b><br>
+      Check out the IEDB Epitope table by clicking the link in the
+      popup when you hover over the IEDB Epitope line graph<br>
+      <b>We have also added links to the data table and UniProt database
+        in the popup when you hove over the outer ring of one of the proteins.<br>
+        <b>Also, check out the green points next to the UniProt annotations:
+          We have added interesting data from <a href=\"https://doi.org/10.1016/j.chom.2020.03.002\" target="_blank">Epitopes featured in Grifoni et. al</a> </b>
+
 </div>
 </div>
 </div>

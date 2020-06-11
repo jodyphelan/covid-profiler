@@ -5,8 +5,9 @@
 {% endblock %}
 
 {% block content %}
-
-
+<div class="row justify-content-md-center">
+<h2> HLA-I Raw Data Query Table </h2>
+</div>
 <div class="pt-4">
 	<div class="row justify-content-md-center">
 		<div class="col-md-6 pb-4">
@@ -16,7 +17,7 @@
 				</div>
 				<div class="card-body">
 					<p>
-					Use the controls to filter and display epitopes.
+					Use the controls to filter and display HLA-I epitopes predicted by NetMHCpan. <br> <b> A lower nM value = a higher binding affinity. </b>
 		            </p>
 					<form method="post" enctype=multipart/form-data>
 						<div class="form-row">
