@@ -10,7 +10,7 @@ from pymongo import MongoClient
 import covid_profiler as cp
 
 
-celery = Celery('tasks', broker='pyamqp://guest@localhost//')
+celery = Celery('tasks', broker='redis://localhost:6379/0')
 
 
 @celery.task
