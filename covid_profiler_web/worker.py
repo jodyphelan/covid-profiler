@@ -7,12 +7,15 @@ import os
 import sys
 from flask import Flask
 from pymongo import MongoClient
+import covid_profiler as cp
+
 
 celery = Celery('tasks', broker='pyamqp://guest@localhost//')
 
 
 @celery.task
 def profile(uniq_id,storage_dir,fasta=None,R1 = None, R2 = None):
+    cp.log("This is the worker. Running %s" % uniq_id)
     if fasta:
         pp.run_cmd("covid-profiler.py profile --fasta %s --prefix %s --dir %s" % (fasta,uniq_id,storage_dir))
     elif R1 and not R2:
@@ -21,7 +24,7 @@ def profile(uniq_id,storage_dir,fasta=None,R1 = None, R2 = None):
         pp.run_cmd("covid-profiler.py profile -1 %s -2 %s --prefix %s --dir %s" % (R1,R2,uniq_id,storage_dir))
     else:
         sys.stderr.write("ERROR!!! Check file inputs to profile worker!")
-        
+
     results = json.load(open("%s/%s.results.json" % (storage_dir,uniq_id)))
 
     print("Updating database")

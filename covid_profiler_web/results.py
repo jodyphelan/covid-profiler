@@ -32,7 +32,6 @@ def run_result(sample_id):
     mongo = get_mongo_db()
 
     run = mongo.db.profiler_results.find_one({"_id":str(sample_id)})
-    print(run)
     if run == None:
         error = "Run does not exist"
         abort(404)
