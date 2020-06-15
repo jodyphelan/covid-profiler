@@ -139,7 +139,7 @@ def main_profile(args):
             ref_file=conf["ref"], prefix=files_prefix,sample_name=args.prefix,
             aligner=args.mapper, platform=args.platform, threads=args.threads
         )
-        wg_vcf_obj = bam_obj.call_variants(conf["ref"],args.caller)
+        wg_vcf_obj = bam_obj.call_variants(conf["ref"],args.caller,remove_missing=True)
         if not args.no_trim:
             pp.run_cmd("rm -f %s" % " ".join(fastq_obj.files))
     refseq = pp.fasta(conf["ref"]).fa_dict
@@ -212,7 +212,7 @@ parser_sub.add_argument('--read2','-2',help='Second read file')
 parser_sub.add_argument('--prefix','-p',help='Prefix for output files',required=True)
 parser_sub.add_argument('--dir',default="covid_profiler_results",help='First read file')
 parser_sub.add_argument('--db',default="cvdb",help='First read file')
-parser_sub.add_argument('--no_trim',action="store_true",help="Don't trim files using trimmomatic")
+parser_sub.add_argument('--no-trim',action="store_true",help="Don't trim files using trimmomatic")
 parser_sub.add_argument('--threads','-t',default=1,help='Threads to use',type=int)
 parser_sub.add_argument('--mapper',default="bwa", choices=["bwa","minimap2","bowtie2"],help="Mapping tool to use. If you are using nanopore data it will default to minimap2",type=str)
 parser_sub.add_argument('--caller',default="bcftools", choices=["bcftools","gatk","freebayes"],help="Variant calling tool to use.",type=str)

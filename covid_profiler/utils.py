@@ -2,7 +2,13 @@ import pathogenprofiler as pp
 from collections import Counter, defaultdict
 import csv
 import re
+import sys
 
+
+def log(string):
+    sys.stderr.write("\n"+"*" * 40+"\n")
+    sys.stderr.write(string+"\n")
+    sys.stderr.write("*" * 40+"\n\n")
 
 def get_codon_num(mutation):
     re_obj = re.search("([\d]+)[A-Z\*]",mutation)

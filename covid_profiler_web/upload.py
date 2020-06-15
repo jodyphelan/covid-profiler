@@ -1,3 +1,4 @@
+import sys
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, url_for, Response
 )
@@ -12,9 +13,12 @@ import os
 from flask import current_app as app
 import datetime
 import re
+import covid_profiler as cp
+
 bp = Blueprint('upload', __name__)
 
 def run_sample(mongo,user_id,uniq_id,sample_name,type,f1,f2=None):
+    cp.log("Running sample with id:%s, file1:%s and file2:%s\n" % (uniq_id,f1,f2 ))
     filename1 = secure_filename(f1.filename)
     server_fname1 = os.path.join(app.config["UPLOAD_FOLDER"], filename1)
     f1.save(server_fname1)
@@ -41,6 +45,7 @@ def run_sample(mongo,user_id,uniq_id,sample_name,type,f1,f2=None):
 def upload():
     mongo = get_mongo_db()
     if request.method == 'POST':
+        cp.log("Recieved POST request with files %s\n" % (", ".join([request.files[x].filename for x in request.files])) )
         error=None
         # username = g.user['username'] if g.user else 'private'
         username = 'private'
