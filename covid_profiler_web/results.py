@@ -170,3 +170,9 @@ def iedb_table():
         data = mongo.db.iedb.find({"Gene":gene,"aa_pos":aa_pos})
 
     return render_template('immuno/iedb_epitope_table.html',genes = ["E","M","N","nsp01","nsp10","nsp11","nsp12","nsp13","nsp14","nsp15","nsp16","nsp2","nsp3","nsp4","nsp5","nsp6","nsp7","nsp8","nsp9","orf10","orf3a","orf6","orf7a","orf7b","orf8","S"],epitopes=data)
+
+
+@bp.route('/test')
+def test():
+    mongo = get_mongo_db()
+    return render_template('test/test.html')

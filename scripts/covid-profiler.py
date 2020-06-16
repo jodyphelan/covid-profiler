@@ -140,6 +140,7 @@ def main_profile(args):
             aligner=args.mapper, platform=args.platform, threads=args.threads
         )
         wg_vcf_obj = bam_obj.call_variants(conf["ref"],args.caller,remove_missing=True)
+        cp.vcf2consensus(bam_obj.bam_file,wg_vcf_obj.filename,conf["ref"],wg_vcf_obj.samples[0],wg_vcf_obj.prefix+".consensus.fasta")
         if not args.no_trim:
             pp.run_cmd("rm -f %s" % " ".join(fastq_obj.files))
     refseq = pp.fasta(conf["ref"]).fa_dict
@@ -154,6 +155,7 @@ def main_profile(args):
 
     variant_data = cp.get_variant_data(wg_vcf_obj.filename,conf["ref"],conf["gff"],conf["proteins"])
     results["variants"] = variant_data
+
     json.dump(results,open("%s.results.json" % files_prefix,"w"))
 
 def main_collate(args):

@@ -24,12 +24,16 @@ def profile(uniq_id,storage_dir,fasta=None,R1 = None, R2 = None):
         pp.run_cmd("covid-profiler.py profile -1 %s -2 %s --prefix %s --dir %s" % (R1,R2,uniq_id,storage_dir))
     else:
         sys.stderr.write("ERROR!!! Check file inputs to profile worker!")
-
+    pp.run_cmd("zip -j %s/%s.zip %s/%s*" % (storage_dir, uniq_id, storage_dir, uniq_id))
     results = json.load(open("%s/%s.results.json" % (storage_dir,uniq_id)))
 
-    print("Updating database")
-    print(uniq_id)
-    print(results)
+    if R1:
+        pp.run_cmd("bcftools view %s/%s.vcf.gz > %s/%s.vcf" % (storage_dir, uniq_id, storage_dir, uniq_id))
+        for l in pp.cmd_out("bedtools genomecov -ibam %s/%s.bam -d | datamash mean 3" % (storage_dir,uniq_id)):
+            cp.log(l)
+            results["mean_depth"] = float(l.strip())
+    results["num_variants"] = len(results["variants"])
+
     client = MongoClient()
     db = client.test_database
     db.profiler_results.find_one_and_update(

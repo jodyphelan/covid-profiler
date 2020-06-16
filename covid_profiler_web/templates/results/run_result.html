@@ -3,22 +3,36 @@
 {% extends 'base.html' %}
 
 {% block header %}
+<script src="{{ url_for('static', filename='pileup.js') }}"></script>
+<link rel="stylesheet" href="{{ url_for('static', filename='pileup.css') }}" >
+
 {% endblock %}
 
 {% block content %}
+
 {% if run['results']=={} %}
 	<div class="alert alert-warning mt-4" role="alert">Your run ID is: <b>{{run["_id"]}}</b>. This run is still processing. Please come back later.</div>
 {% else %}
+
 <div class="row justify-content-md-center">
     <div class="col-md-10">
         <div class="card border-dark mb-3">
     		<div class="card-header">Summary</div>
     		<div class="card-body text-dark">
     			<p class="card-text"><b>Run ID:</b> {{ run["_id"] }}</p>
+                <p class="card-text"><b>Data type:</b> {{ run["data_type"] }}</p>
     			<p class="card-text"><b>Sample name:</b> {{ run["sample_name"] }}</p>
     			<p class="card-text"><b>Date:</b> {{ run["created"] }}</p>
     			<p class="card-text"><b>Strain:</b> {{ run["results"]["clade"] }}</p>
+                <p class="card-text"><b>Number of variants:</b> {{ run["results"]["num_variants"] }}</p>
+                {% if run["data_type"]=="fastq" %}
+                    <p class="card-text"><b>Mean depth:</b> {{ run["results"]["mean_depth"] }}</p>
+                {% endif %}
+
     			<hr>
+                <p>
+                    Download files: <a href="{{ url_for('static', filename='results/') + run['_id']}}.zip"><img src="{{url_for('static', filename='zip-icon.svg')}}" alt="" width="45" height="52"></a>
+                </p>
 
     		</div>
     	</div>
@@ -30,36 +44,113 @@
     <div class="col-md-10">
         <div class="card border-dark mb-3">
             <div class="card-header">Mutations</div>
-            <table class="table table-hover" id="results_table">
-                <thead>
-                    <tr>
-                        <!-- <th scope="col"></th> -->
-                        <th scope="col">Genomic position</th>
-                        <th scope="col">Gene</th>
-                        <th scope="col">Type</th>
-                        <th scope="col">Coding change</th>
-                    </tr>
-                </thead>
-                <tbody id="resultsTable">
-                    {% for mutation in run["results"]["variants"] %}
-                        <tr name="{{ mutation['pos'] }}">
-                            <td><a href="{{ url_for('results.mutation', position=mutation['pos']) }}">{{ mutation['pos'] }}</a></td>
-                            <td>{{ mutation['gene'] }}</td>
-                            <td>{{ mutation['types'] }}</td>
-                            <td>{{ mutation['changes'] }}</td>
+            {% if run["results"]["num_variants"]==0 %}
+                <div class="row">
+                    <div class="col-md-12 text-center">
+                        No mutations found for this sample.
+
+                    </div>
+                </div>
+            {% else %}
+                <table class="table table-hover" id="results_table">
+                    <thead>
+                        <tr>
+                            <!-- <th scope="col"></th> -->
+                            <th scope="col">Genomic position</th>
+                            <th scope="col">Gene</th>
+                            <th scope="col">Type</th>
+                            <th scope="col">Coding change</th>
                         </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                    </thead>
+
+                    <tbody id="resultsTable">
+                        {% for mutation in run["results"]["variants"] %}
+                            <tr name="{{ mutation['pos'] }}">
+                                <td><a href="{{ url_for('results.mutation', position=mutation['pos']) }}">{{ mutation['pos'] }}</a></td>
+                                <td>{{ mutation['gene'] }}</td>
+                                <td>{{ mutation['types'] }}</td>
+                                <td>{{ mutation['changes'] }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
         </div>
     </div>
 </div>
 
+{% if run["data_type"]=="fastq" and run["results"]["mean_depth"]<100 %}
+<div class="row justify-content-md-center">
+    <div class="col-md-10">
+        <div class="card border-dark mb-3">
+    		<div class="card-header">Pileup</div>
+    		<div class="card-body text-dark">
+    			<div id="pileup"></div>
+    		</div>
+    	</div>
+    </div>
+</div>
+{% endif %}
 
-    <script type="text/javascript">
 
 
-    </script>
+
+<script type="text/javascript">
+    json_result = {{ run|tojson|safe }}
+    variants = {}
+    json_result.results.variants.forEach((item, i) => {
+        variants[item.pos] = item
+    });
+
+    var bamSource = pileup.formats.bam({
+        url: "{{ url_for('static', filename='results/') + run['_id']}}.bam",
+        indexUrl: "{{ url_for('static', filename='results/') + run['_id']}}.bam.bai",
+    });
+    var div = document.getElementById('pileup');
+    var p = pileup.create(div, {
+      range: {contig: 'NC_045512.2', start: 1, stop: 250},
+      tracks: [
+        {
+          viz: pileup.viz.genome(),
+          isReference: true,
+          data: pileup.formats.twoBit({
+            url: "{{ url_for('static', filename='cvdb.2bit')}}"
+          }),
+          name: 'Reference'
+        },
+        {
+            viz: pileup.viz.variants(),
+            data: pileup.formats.vcf({
+              url: "{{ url_for('static', filename='results/') + run['_id']}}.vcf"
+            }),
+            options: {
+              onVariantClicked: function(data) {
+                var content="";
+                for (let [key, value] of Object.entries(variants[Number(data[0].vcfLine.split("\t")[1])])) {
+                    content+= `${key}: ${value}`+"\n";
+                }
+                content+="\n"
+                alert(content);
+              },
+            },
+            name: 'Variants'
+          },
+        {
+          viz: pileup.viz.coverage(),
+          data: bamSource,
+          cssClass: 'normal',
+          name: 'Coverage'
+        },
+        {
+            viz: pileup.viz.pileup(),
+            data: bamSource,
+            cssClass: 'normal',
+            name: 'Alignments'
+        },
+        // ...
+      ]
+    });
+</script>
 
 
 {% endif %}

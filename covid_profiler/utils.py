@@ -46,7 +46,7 @@ def get_variant_data(vcf_file,ref_file,gff_file,protein_file):
 
     pp.run_cmd("samtools faidx %s" % ref_file)
     results = defaultdict(list)
-    for l in pp.cmd_out("bcftools view %s | bcftools csq -f %s -g %s  | correct_covid_csq.py | bcftools +fill-tags | bcftools query -f '%%POS\\t%%REF\\t%%ALT\\t%%AF\\t%%BCSQ\\n'" % (vcf_file,ref_file,gff_file)):
+    for l in pp.cmd_out("bcftools view %s | bcftools csq -f %s -g %s -p a  | correct_covid_csq.py | bcftools +fill-tags | bcftools query -f '%%POS\\t%%REF\\t%%ALT\\t%%AF\\t%%BCSQ\\n'" % (vcf_file,ref_file,gff_file)):
         # Replace " " with "N" because if the alt allele contains N then
         # translated consequence will have spaces
         row = l.strip().replace(" ","N").split()
@@ -90,3 +90,10 @@ def get_variant_data(vcf_file,ref_file,gff_file,protein_file):
         else:
             quit("ERROR! more than one variant for a position")
     return final_results
+
+
+def vcf2consensus(bam,vcf,ref,id,consensus):
+    tmp_bed = pp.get_random_file()
+    pp.run_cmd('bedtools genomecov -d -ibam %s | awk \'$3<10\' | awk \'{print $1"\\t"$2"\\t"$2}\' > %s' % (bam,tmp_bed))
+    pp.run_cmd("bcftools consensus -f %s -m %s -M N %s | sed 's/^>.*/>%s/' > %s" % (ref,tmp_bed,vcf,id,consensus))
+    pp.run_cmd("rm %s" % tmp_bed)

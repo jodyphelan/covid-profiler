@@ -32,12 +32,12 @@ def run_sample(mongo,user_id,uniq_id,sample_name,type,f1,f2=None):
     mongo.db.profiler_results.insert_one({
         "_id":uniq_id,"user_id":user_id,"sample_name":sample_name,"results":{},
         "created":datetime.datetime.now().strftime("%d-%M-%Y %H:%M:%S"),
-        "status":"processing"
+        "data_type": type, "status":"processing"
     })
     if type=="fasta":
-        profile.delay(fasta=server_fname1,uniq_id=uniq_id,storage_dir=app.config["UPLOAD_FOLDER"])
+        profile.delay(fasta=server_fname1,uniq_id=uniq_id,storage_dir=app.config["APP_ROOT"]+url_for('static', filename='results'))
     elif type=="fastq":
-        profile.delay(R1=server_fname1, R2=server_fname2, uniq_id=uniq_id,storage_dir=app.config["UPLOAD_FOLDER"])
+        profile.delay(R1=server_fname1, R2=server_fname2, uniq_id=uniq_id,storage_dir=app.config["APP_ROOT"]+url_for('static', filename='results'))
     else:
         sys.stderr.write("ERROR!!! Not fastq or fasta?")
 
