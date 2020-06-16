@@ -31,7 +31,7 @@ def profile(uniq_id,storage_dir,fasta=None,R1 = None, R2 = None):
         pp.run_cmd("bcftools view %s/%s.vcf.gz > %s/%s.vcf" % (storage_dir, uniq_id, storage_dir, uniq_id))
         for l in pp.cmd_out("bedtools genomecov -ibam %s/%s.bam -d | datamash mean 3" % (storage_dir,uniq_id)):
             cp.log(l)
-            results["mean_depth"] = float(l.strip())
+            results["mean_depth"] = round(float(l.strip()),2)
     results["num_variants"] = len(results["variants"])
 
     client = MongoClient()
