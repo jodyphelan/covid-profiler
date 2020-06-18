@@ -33,11 +33,20 @@
                                     </select>
 			                     </div>
 						    </div>
+                        </div>
+                        <div class="form-row">
+
                             <div class="form-group col-md-6">
-                                <label for="binding_affinity">AA Position in Gene</label>
-                                <input name = "aa_pos" type="number" class="form-control" id="aa_pos" aria-describedby="binding_affinity_help" placeholder="AA Position as it apperas on the graph">
-                                <small id="binding_affinity_help" class="form-text text-muted">Display results with binding values greater than this number.</small>
+                                <label for="binding_affinity">AA position range start </label>
+                                <input name = "aa_pos_start" type="number" class="form-control" id="aa_pos_start" aria-describedby="binding_affinity_help" placeholder="">
+                                <small id="binding_affinity_help" class="form-text text-muted"></small>
                             </div>
+                            <div class="form-group col-md-6">
+                                <label for="binding_affinity">AA position range end</label>
+                                <input name = "aa_pos_end" type="number" class="form-control" id="aa_pos_end" aria-describedby="binding_affinity_help" placeholder="">
+                                <small id="binding_affinity_help" class="form-text text-muted"></small>
+                            </div>
+
                         </div>
 						<hr>
                         <button type="submit" class="btn btn-primary" name="search_epitopes_button">Search</button>
@@ -51,6 +60,7 @@
 
 	</div>
 	<hr>
+
 	<table class="table table-hover" id="results_table">
 		<thead>
 			<tr>
@@ -90,7 +100,7 @@ $(document).ready( function () {
         ],
         } );
 
-    table.buttons().container()
+        table.buttons().container()
 			.appendTo( $('.col-md-6:eq(0)', table.table().container() ) )
 		} );
 

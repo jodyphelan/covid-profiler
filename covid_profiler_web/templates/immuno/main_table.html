@@ -23,7 +23,7 @@
                 		</thead>
                 		<tbody id="resultsTable">
                 			{% for row in data %}
-                        <tr name="{{ row['Gene'] }}_{{ row['Protein CDS Position'] }}">
+                        <tr name="{{ row['Gene'] }}_{{ row['Protein AA Position'] }}">
                             {% for key in row %}
                 				        <td>{{ row[key] }}</td>
                             {% endfor %}
