@@ -13,7 +13,7 @@ def main(args):
     immuno_db = db.immuno
 
     for row in tqdm(csv.DictReader(open(args.csv))):
-        row["Protein CDS Position"] = int(row["Protein CDS Position"])
+        row["Protein AA Position"] = int(row["Protein AA Position"])
         id = immuno_db.insert_one(row)
 
 
