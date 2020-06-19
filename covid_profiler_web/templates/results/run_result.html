@@ -102,6 +102,7 @@
                 <div class="">
                     Mutations present proteins and regions that have been structurally
                     characterised can be viewed with there representative structues here.
+                    The chain on which the mutation is placed is highlighted in blue.
                 </div>
                 <hr>
                 {% if structure_variants|length > 0 %}
@@ -216,8 +217,8 @@
                     out[index+0] = 1.0; out[index+1] = 0.0;
                     out[index+2] = 0.0; out[index+3] = 1.0;
                 } else {
-                    out[index+0] = 0.7; out[index+1] = 0.7;
-                    out[index+2] = 0.7; out[index+3] = 1.0;
+                    out[index+0] = 0.6; out[index+1] = 0.6;
+                    out[index+2] = 1; out[index+3] = 1.0;
                 }
           } else {
             out[index+0] = 1; out[index+1] = 1;
@@ -263,7 +264,7 @@
         mutation = tmp[1]
         pos = Number(mutation.match(/\d+/)[0])
         if (structure_info.hasOwnProperty(gene)){
-            document.getElementById('structure-footer').innerHTML = `<b>Mutation:</b> ${gene} ${mutation} - <b>PDB code:</b> <a href='https://www.rcsb.org/structure/${structure_info[gene]["pdb_code"]}'>${structure_info[gene]["pdb_code"]}</a>`
+            document.getElementById('structure-footer').innerHTML = `<b>Mutation:</b> ${gene} ${mutation} - <b>PDB code:</b> <a href='https://www.rcsb.org/structure/${structure_info[gene]["pdb_code"]}'>${structure_info[gene]["pdb_code"]}</a>  <b>Chain:</b> ${structure_info[gene]["chain"]}`
             loadStructure(structure_info[gene]["pdb_file"],structure_info[gene]["chain"],pos)
         }
 
