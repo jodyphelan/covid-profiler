@@ -37,32 +37,29 @@ def run_result(sample_id):
         error = "Run does not exist"
         abort(404)
 
-    pdb_ids = [x.split("/")[-1].split(".")[0] for x in os.listdir(app.config["APP_ROOT"]+url_for('static',filename='pdb')) if x[-4:]==".pdb"]
-    structures = defaultdict(dict)
-    for id in pdb_ids:
-        d = json.load(open(app.config["APP_ROOT"]+url_for('static',filename='pdb/%s.pdb.available_residues.json' % id)))
-        for key,val in d["mapping"].items():
-            structures[val]["pdb_code"] = id
-            structures[val]["pdb_file"] = url_for('static',filename='pdb/%s.pdb' % id)
-            structures[val]["chain"] = key
-            structures[val]["residues"] = d["residues"][val]
+    if run["status"]=="done":
+        pdb_ids = [x.split("/")[-1].split(".")[0] for x in os.listdir(app.config["APP_ROOT"]+url_for('static',filename='pdb')) if x[-4:]==".pdb"]
+        structures = defaultdict(dict)
+        for id in pdb_ids:
+            d = json.load(open(app.config["APP_ROOT"]+url_for('static',filename='pdb/%s.pdb.available_residues.json' % id)))
+            for key,val in d["mapping"].items():
+                structures[val]["pdb_code"] = id
+                structures[val]["pdb_file"] = url_for('static',filename='pdb/%s.pdb' % id)
+                structures[val]["chain"] = key
+                structures[val]["residues"] = d["residues"][val]
 
-    structure_variants = []
-    for mutation in run["results"]["variants"]:
-        if mutation["types"]!="missense": continue
+        structure_variants = []
+        print(run)
+        for mutation in run["results"]["variants"]:
+            if mutation["types"]!="missense": continue
+            residue = int(re.match("(\d+)",mutation["changes"]).group(1))
+            if mutation["gene"] in structures:
+                if residue in structures[mutation["gene"]]["residues"]:
+                    structure_variants.append(mutation)
 
-        residue = int(re.match("(\d+)",mutation["changes"]).group(1))
-        print(mutation)
-        print(mutation["gene"] in structures)
-
-        if mutation["gene"] in structures:
-            print(residue in structures[mutation["gene"]]["residues"])
-            if residue in structures[mutation["gene"]]["residues"]:
-                structure_variants.append(mutation)
-    print(structure_variants)
-
-    return render_template('results/run_result.html',run=run, structures=structures, structure_variants = structure_variants)
-
+        return render_template('results/run_result.html',run=run, structures=structures, structure_variants = structure_variants)
+    else:
+        return render_template('results/run_result.html',run=run)
 
 @bp.route('/mutations/position/<int:position>')
 def mutation(position):
