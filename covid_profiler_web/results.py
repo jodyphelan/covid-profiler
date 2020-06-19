@@ -9,8 +9,8 @@ import tbprofiler as tbp
 bp = Blueprint('results', __name__)
 import os
 from flask import current_app as app
-
-
+from collections import defaultdict
+import re
 
 
 
@@ -32,21 +32,36 @@ def run_result(sample_id):
     mongo = get_mongo_db()
 
     run = mongo.db.profiler_results.find_one({"_id":str(sample_id)})
+
     if run == None:
         error = "Run does not exist"
         abort(404)
 
-    try:
-        tree_text = mongo.db.tree.find_one()["tree"]
-        meta = mongo.db.meta.find_one()
-        del meta["_id"]
-        meta = json.dumps(meta)
+    pdb_ids = [x.split("/")[-1].split(".")[0] for x in os.listdir(app.config["APP_ROOT"]+url_for('static',filename='pdb')) if x[-4:]==".pdb"]
+    structures = defaultdict(dict)
+    for id in pdb_ids:
+        d = json.load(open(app.config["APP_ROOT"]+url_for('static',filename='pdb/%s.pdb.available_residues.json' % id)))
+        for key,val in d["mapping"].items():
+            structures[val]["pdb_code"] = id
+            structures[val]["pdb_file"] = url_for('static',filename='pdb/%s.pdb' % id)
+            structures[val]["chain"] = key
+            structures[val]["residues"] = d["residues"][val]
 
-        tree = {"newick":tree_text, "created":"NA", "meta": meta}
-    except:
-        tree = {"newick":"", "created":"NA", "meta": ""}
+    structure_variants = []
+    for mutation in run["results"]["variants"]:
+        if mutation["types"]!="missense": continue
 
-    return render_template('results/run_result.html',run=run, tree = tree)
+        residue = int(re.match("(\d+)",mutation["changes"]).group(1))
+        print(mutation)
+        print(mutation["gene"] in structures)
+
+        if mutation["gene"] in structures:
+            print(residue in structures[mutation["gene"]]["residues"])
+            if residue in structures[mutation["gene"]]["residues"]:
+                structure_variants.append(mutation)
+    print(structure_variants)
+
+    return render_template('results/run_result.html',run=run, structures=structures, structure_variants = structure_variants)
 
 
 @bp.route('/mutations/position/<int:position>')

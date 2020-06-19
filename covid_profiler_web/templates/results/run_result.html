@@ -5,6 +5,7 @@
 {% block header %}
 <script src="{{ url_for('static', filename='pileup.js') }}"></script>
 <link rel="stylesheet" href="{{ url_for('static', filename='pileup.css') }}" >
+<script type='text/javascript' src='{{ url_for("static", filename="bio-pv.min.js") }} '></script>
 
 {% endblock %}
 
@@ -93,6 +94,38 @@
 {% endif %}
 
 
+<div class="row justify-content-md-center" >
+    <div class="col-md-10">
+        <div class="card border-dark mb-3">
+    		<div class="card-header">Protein Structure</div>
+    		<div class="card-body text-dark">
+                <div class="">
+                    Mutations present proteins and regions that have been structurally
+                    characterised can be viewed with there representative structues here.
+                </div>
+                <hr>
+                {% if structure_variants|length > 0 %}
+                    <div class="row">
+                        <div class="col-md-12" id="structure-mutations">
+                            {% for mutation in structure_variants %}
+                                <button type="button" class="btn btn-outline-primary" onclick="selectAndColourStructure(this)">{{ mutation["gene"] }} {{ mutation["changes"] }}</button>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="">
+                        No eligible mutations found.
+                    </div>
+                {% endif %}
+                <hr>
+    			<div id="structure-viewer" style="height: 500px; overflow:hidden;"></div>
+    		</div>
+            <div id="structure-footer" class="card-footer text-muted text-center">
+                PDB code:
+            </div>
+    	</div>
+    </div>
+</div>
 
 
 <script type="text/javascript">
@@ -101,6 +134,7 @@
     json_result.results.variants.forEach((item, i) => {
         variants[item.pos] = item
     });
+    console.log(variants)
 
     var bamSource = pileup.formats.bam({
         url: "{{ url_for('static', filename='results/') + run['_id']}}.bam",
@@ -150,6 +184,100 @@
         // ...
       ]
     });
+
+
+
+
+    var structure_info = {{ structures|tojson|safe }}
+
+    var parent = document.getElementById('structure-viewer')
+    var options = {
+      width: parent.offsetWidth,
+      height: 500,
+      antialias: true,
+      quality : 'medium'
+    };
+    // insert the viewer under the Dom element with id 'gl'.
+    var viewer
+    var geom;
+    var a
+    function color_residue(chain,num) {
+        console.log("Colouring chain "+chain+" residue "+num)
+        return new pv.color.ColorOp(function(atom, out, index) {
+          // index + 0, index + 1 etc. are the positions in the output array
+          // at which the red (+0), green (+1), blue (+2) and  alpha (+3)
+          // components are to be written.
+
+            if (atom.residue().chain().name()==chain){
+                if (atom.residue().num() == num) {
+            // console.log(atom)
+                    out[index+0] = 1.0; out[index+1] = 0.0;
+                    out[index+2] = 0.0; out[index+3] = 1.0;
+                } else {
+                    out[index+0] = 0.7; out[index+1] = 0.7;
+                    out[index+2] = 0.7; out[index+3] = 1.0;
+                }
+          } else {
+            out[index+0] = 1; out[index+1] = 1;
+            out[index+2] = 1; out[index+3] = 1.0;
+          }
+        });
+    }
+
+    function loadStructure(pdb_file, chain,residue_num) {
+        parent.innerHTML = "";
+        viewer = pv.Viewer(parent, options);
+
+        console.log("Loading structure "+pdb_file)
+      // asynchronously load the PDB file for the dengue methyl transferase
+      // from the server and display it in the viewer.
+
+      pv.io.fetchPdb(pdb_file, function(structure) {
+          // display the protein as cartoon, coloring the secondary structure
+          // elements in a rainbow gradient.
+          geom = viewer.cartoon('protein', structure, { color : color.uniform([0.9,0.9,0.9,1]) });
+
+          // there are two ligands in the structure, the co-factor S-adenosyl
+          // homocysteine and the inhibitor ribavirin-5' triphosphate. They have
+          // the three-letter codes SAH and RVP, respectively. Let's display them
+          // with balls and sticks.
+          viewer.autoZoom();
+          highlight_residue(chain,residue_num)
+      });
+
+
+
+    }
+
+    function highlight_residue(chain,num){
+        geom.colorBy(color_residue(chain,num))
+        viewer.requestRedraw()
+    }
+
+
+    function selectAndColourStructure(objButton){
+        tmp = objButton.innerHTML.split(" ")
+        gene = tmp[0]
+        mutation = tmp[1]
+        pos = Number(mutation.match(/\d+/)[0])
+        if (structure_info.hasOwnProperty(gene)){
+            document.getElementById('structure-footer').innerHTML = `<b>Mutation:</b> ${gene} ${mutation} - <b>PDB code:</b> <a href='https://www.rcsb.org/structure/${structure_info[gene]["pdb_code"]}'>${structure_info[gene]["pdb_code"]}</a>`
+            loadStructure(structure_info[gene]["pdb_file"],structure_info[gene]["chain"],pos)
+        }
+
+    }
+
+    // load the methyl transferase once the DOM has finished loading. That's
+    // the earliest point the WebGL context is available.
+    {% if structure_variants|length > 0 %}
+        document.addEventListener('DOMContentLoaded', function(){
+            document.getElementById("structure-mutations").childNodes[1].click()
+        });
+    {% endif %}
+
+
+
+
 </script>
 
 
