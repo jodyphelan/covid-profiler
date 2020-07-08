@@ -4,7 +4,7 @@
 
 {% block header %}
 <script src="{{ url_for('static', filename='pileup.js') }}"></script>
-<link rel="stylesheet" href="{{ url_for('static', filename='pileup.css') }}" >
+<link rel="stylesheet" href="{{ url_for('static', filename='pileup.css') }}" ></link>
 <script type='text/javascript' src='{{ url_for("static", filename="bio-pv.min.js") }} '></script>
 
 {% endblock %}
@@ -139,59 +139,63 @@
     });
     console.log(variants)
 
-    var bamSource = pileup.formats.bam({
-        url: "{{ url_for('static', filename='results/') + run['_id']}}.bam",
-        indexUrl: "{{ url_for('static', filename='results/') + run['_id']}}.bam.bai",
-    });
-    var div = document.getElementById('pileup');
-    var p = pileup.create(div, {
-      range: {contig: 'NC_045512.2', start: 1, stop: 250},
-      tracks: [
-        {
-          viz: pileup.viz.genome(),
-          isReference: true,
-          data: pileup.formats.twoBit({
-            url: "{{ url_for('static', filename='cvdb.2bit')}}"
-          }),
-          name: 'Reference'
-        },
-        {
-            viz: pileup.viz.variants(),
-            data: pileup.formats.vcf({
-              url: "{{ url_for('static', filename='results/') + run['_id']}}.vcf"
-            }),
-            options: {
-              onVariantClicked: function(data) {
-                var content="";
-                for (let [key, value] of Object.entries(variants[Number(data[0].vcfLine.split("\t")[1])])) {
-                    content+= `${key}: ${value}`+"\n";
-                }
-                content+="\n"
-                alert(content);
-              },
-            },
-            name: 'Variants'
-          },
-        {
-          viz: pileup.viz.coverage(),
-          data: bamSource,
-          cssClass: 'normal',
-          name: 'Coverage'
-        },
-        {
-            viz: pileup.viz.pileup(),
-            data: bamSource,
-            cssClass: 'normal',
-            name: 'Alignments'
-        },
-        // ...
-      ]
-    });
 
+	{% if run["data_type"]=="fastq" and run["results"]["mean_depth"]<100 %}
+
+	    var bamSource = pileup.formats.bam({
+	        url: "{{ url_for('static', filename='results/') + run['_id']}}.bam",
+	        indexUrl: "{{ url_for('static', filename='results/') + run['_id']}}.bam.bai",
+	    });
+	    var div = document.getElementById('pileup');
+	    var p = pileup.create(div, {
+	      range: {contig: 'NC_045512.2', start: 1, stop: 250},
+	      tracks: [
+	        {
+	          viz: pileup.viz.genome(),
+	          isReference: true,
+	          data: pileup.formats.twoBit({
+	            url: "{{ url_for('static', filename='cvdb.2bit')}}"
+	          }),
+	          name: 'Reference'
+	        },
+	        {
+	            viz: pileup.viz.variants(),
+	            data: pileup.formats.vcf({
+	              url: "{{ url_for('static', filename='results/') + run['_id']}}.vcf"
+	            }),
+	            options: {
+	              onVariantClicked: function(data) {
+	                var content="";
+	                for (let [key, value] of Object.entries(variants[Number(data[0].vcfLine.split("\t")[1])])) {
+	                    content+= `${key}: ${value}`+"\n";
+	                }
+	                content+="\n"
+	                alert(content);
+	              },
+	            },
+	            name: 'Variants'
+	          },
+	        {
+	          viz: pileup.viz.coverage(),
+	          data: bamSource,
+	          cssClass: 'normal',
+	          name: 'Coverage'
+	        },
+	        {
+	            viz: pileup.viz.pileup(),
+	            data: bamSource,
+	            cssClass: 'normal',
+	            name: 'Alignments'
+	        },
+	        // ...
+	      ]
+	    });
+	{% endif %}
 
 
 
     var structure_info = {{ structures|tojson|safe }}
+
 
     var parent = document.getElementById('structure-viewer')
     var options = {
