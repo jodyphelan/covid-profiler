@@ -137,10 +137,10 @@ bcftools norm --threads 4 -m - gisaid_hcov-19_2020_07_22_09.meta_filtered.filter
 
     """
     conf = get_conf_dict(sys.base_prefix+"/share/covidprofiler/%s" % args.db)
-    pp.run_cmd("mafft --auto --thread -1 --keeplength --addfragments %s %s  > %s.aln" % (args.fasta,conf["ref"],args.prefix))
+    pp.run_cmd("mafft --auto --thread %s --keeplength --addfragments %s %s  > %s.aln" % (args.threads,args.fasta,conf["ref"],args.prefix))
     pp.run_cmd("covid_profiler_mask_fasta.py  --fasta %s.aln --bed %s --out %s.bed_masked.aln" % (args.prefix,conf["non_coding_bed"],args.prefix))
     pp.run_cmd("covid_profiler_mask_fasta_non_acgt.py --fasta %s.bed_masked.aln --out %s.bed_masked.acgt.aln" % (args.prefix,args.prefix))
-    pp.run_cmd("iqtree -m GTR+F+R2 -s %s.bed_masked.acgt.aln -nt 1 -czb -pre %s" % (args.prefix,args.prefix))
+    pp.run_cmd("iqtree -m GTR+F+R2 -s %s.bed_masked.acgt.aln -nt %s -czb -pre %s" % (args.prefix,args.threads,args.prefix))
 
 
 parser = argparse.ArgumentParser(description='Covid pipeline',formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -185,6 +185,7 @@ parser_sub.set_defaults(func=primer_evaluation)
 parser_sub = subparsers.add_parser('aln', help='Output program version and exit', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser_sub.add_argument('--fasta',help='First read file',required=True)
 parser_sub.add_argument('--prefix',help='First read file',required=True)
+parser_sub.add_argument('--threads',default=1,help='First read file')
 parser_sub.add_argument('--db',default="cvdb",help='First read file')
 parser_sub.set_defaults(func=main_aln)
 
