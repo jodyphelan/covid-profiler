@@ -11,22 +11,8 @@ import json
 import re
 import covid_profiler as cp
 
-def parse_blast_result(result):
-    results = json.load(open(result))["BlastOutput2"][0]["report"]["results"]["bl2seq"][0]["hits"][0]["hsps"]
-    return results
-
-def blast_seq(seq,ref,word_size=4):
-    tmpseqfile = pp.get_random_file()
-    open(tmpseqfile,"w").write(">query\n%s\n" % seq)
-    tmpresult = pp.get_random_file()
-    pp.run_cmd("blastn -task blastn -word_size %s -subject %s -query %s -outfmt 15 -evalue 10000000 -max_hsps 1 > %s" % (word_size,ref,tmpseqfile,tmpresult))
-    blast_results = parse_blast_result(tmpresult)
-    pp.rm_files([tmpresult,tmpseqfile])
-    return blast_results
-
-
 def get_conf_dict(library_prefix):
-    files = {"gff":".gff","ref":".fasta","barcode":".barcode.bed","version":".version.json","proteins":".proteins.csv","msa":".msa.fa"}
+    files = {"gff":".gff","ref":".fasta","barcode":".barcode.bed","version":".version.json","proteins":".proteins.csv","msa":".msa.fa","non_coding_bed":".non_coding.bed"}
     conf = {}
     for key in files:
         sys.stderr.write("Using %s file: %s\n" % (key,library_prefix+files[key]))
@@ -35,58 +21,9 @@ def get_conf_dict(library_prefix):
 
 
 
-def get_sample_meta(samples,debug=False):
-    if not args.debug:
-        pp.run_cmd("esearch -db nucleotide -query '%s' | efetch -format gb  > temp.gb" % ",".join(samples))
-    data = []
-    for seq_record in SeqIO.parse(open("temp.gb"), "gb"):
-        sample = seq_record.id.split(".")[0]
-        source = [feat for feat in seq_record.features if feat.type=="source"][0]
-        country = "NA"
-        date = "NA"
-        if "country" in source.qualifiers:
-            country = source.qualifiers["country"][0].split(":")[0]
-        if "collection_date" in source.qualifiers:
-            date = source.qualifiers["collection_date"][0]
-        data.append({"id":sample,"country":country,"date":date})
-
-    return data
-
-
-
-def main_position_sample(args):
-    os.chdir(args.dir)
-    conf = get_conf(args.db)
-    refseq = pp.fasta(conf["ref"]).fa_dict
-    refseqname = list(refseq.keys())[0]
-
-    tree = ete3.Tree(args.tree, format=1)
-    barcoding_sites = {}
-
-    for l in open(args.barcode_bed):
-        row = l.strip().split()
-        if len(row)<5: continue
-        barcoding_sites[row[4]] = (row[0],int(row[2]),row[3])
-
-    fasta_obj = pp.fasta(args.fasta)
-    sample_name = list(fasta_obj.fa_dict.keys())[0]
-    vcf_obj = pp.vcf(fasta_obj.get_ref_variants(conf["ref"], sample_name))
-    bed_gt = vcf_obj.get_bed_gt(args.barcode_bed,conf["ref"])
-
-    closest_node = None
-    for node in tree.traverse():
-        if node.name in barcoding_sites:
-            tmp = barcoding_sites[node.name]
-            if tmp[2] in bed_gt[tmp[0]][tmp[1]]:
-                closest_node = node
-
-    sys.stdout.write("%s\n" % closest_node.name)
-    open(args.outfile,"w").write("%s\n" % closest_node.get_ascii(attributes=["name"], show_internal=False))
-
-
 def main_load_library(args):
     lib_prefix = args.prefix.split("/")[-1]
-    files = {"gff":".gff","ref":".fasta","barcode":".barcode.bed","version":".version.json","proteins":".proteins.csv"}
+    files = {"gff":".gff","ref":".fasta","barcode":".barcode.bed","version":".version.json","proteins":".proteins.csv","non_coding_bed":".non_coding.bed"}
     if pp.nofolder(sys.base_prefix+"/share/covidprofiler"):
         pp.run_cmd("mkdir %s " % (sys.base_prefix+"/share/covidprofiler/"))
     for key in files:
@@ -187,25 +124,28 @@ def primer_evaluation(args):
         writer.writeheader()
         writer.writerows(rows)
 
-def main_parse_asr(args):
-    mutations = cp.find_ancestral_mutations(args.msa,args.tree,args.states)
-    with open(args.out,"w") as O:
-        writer = csv.DictWriter(O,fieldnames = list(mutations[0].keys()))
-        writer.writeheader()
-        writer.writerows(mutations)
+def main_aln(args):
+    """
+    mafft --auto --thread -1 --keeplength --addfragments gisaid_hcov-19_2020_07_22_09.meta_filtered.filtered.fasta ~/covid/cvdb.fasta > gisaid_hcov-19_2020_07_22_09.meta_filtered.filtered.aln
+python ~/gisaid_scripts/get_fasta_stats.py  --fasta gisaid_hcov-19_2020_07_22_09.meta_filtered.filtered.aln  --bed ~/covid/static/coding.bed --out gisaid_hcov-19_2020_07_22_09.meta_filtered.filtered.stats
+awk '$3<=2.5 && $4<=3 && $5<=50' gisaid_hcov-19_2020_07_22_09.meta_filtered.filtered.aln.stats | cut -f1 > seq_filtered_samples.txt
+seqtk subseq gisaid_hcov-19_2020_07_22_09.meta_filtered.filtered.aln seq_filtered_samples.txt > gisaid_hcov-19_2020_07_22_09.meta_filtered.filtered.site_filtered.aln
+python ~/gisaid_scripts/mask_fasta.py  --fasta gisaid_hcov-19_2020_07_22_09.meta_filtered.filtered.site_filtered.aln --bed ~/covid/static/non_coding_mask.bed --out gisaid_hcov-19_2020_07_22_09.meta_filtered.filtered.site_filtered.bed_masked.aln
+python ~/gisaid_scripts/mask_fasta_non_acgt.py --fasta gisaid_hcov-19_2020_07_22_09.meta_filtered.filtered.site_filtered.bed_masked.aln --out gisaid_hcov-19_2020_07_22_09.meta_filtered.filtered.site_filtered.bed_masked.acgt.aln
+snp-sites -v gisaid_hcov-19_2020_07_22_09.meta_filtered.filtered.site_filtered.bed_masked.acgt.aln  | python ~/gisaid_scripts/vcf_fix_ref.py --ref ~/covid/cvdb.fasta | python ~/gisaid_scripts/vcf_mask_non_acgt.py  | tqdm | bcftools view -a -Oz -o gisaid_hcov-19_2020_07_22_09.meta_filtered.filtered.site_filtered.bed_masked.acgt.vcf.gz
+bcftools norm --threads 4 -m - gisaid_hcov-19_2020_07_22_09.meta_filtered.filtered.site_filtered.bed_masked.acgt.vcf.gz -Oz -o gisaid_hcov-19_2020_07_22_09.meta_filtered.filtered.site_filtered.bed_masked.acgt.multi_split.vcf.gz
+
+    """
+    conf = get_conf_dict(sys.base_prefix+"/share/covidprofiler/%s" % args.db)
+    pp.run_cmd("mafft --auto --thread -1 --keeplength --addfragments %s %s  > %s.aln" % (args.fasta,conf["ref"],args.prefix))
+    pp.run_cmd("covid_profiler_mask_fasta.py  --fasta %s.aln --bed %s --out %s.bed_masked.aln" % (args.prefix,conf["non_coding_bed"],args.prefix))
+    pp.run_cmd("covid_profiler_mask_fasta_non_acgt.py --fasta %s.bed_masked.aln --out %s.bed_masked.acgt.aln" % (args.prefix,args.prefix))
+    pp.run_cmd("iqtree -m GTR+F+R2 -s %s.bed_masked.acgt.aln -nt 1 -czb -pre %s" % (args.prefix,args.prefix))
+
 
 parser = argparse.ArgumentParser(description='Covid pipeline',formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 subparsers = parser.add_subparsers(help="Task to perform")
 
-
-parser_sub = subparsers.add_parser('position_isolate', help='Output program version and exit', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-parser_sub.add_argument('--fasta',help='First read file',required=True)
-parser_sub.add_argument('--tree',default="covid_public.tree",help='First read file')
-parser_sub.add_argument('--barcode-bed',default="covid_public.barcode.bed",help='First read file')
-parser_sub.add_argument('--dir',default="/tmp/",help='First read file')
-parser_sub.add_argument('--db',default="cvdb",help='First read file')
-parser_sub.add_argument('--outfile',default="temp.tree.txt",help='First read file')
-parser_sub.set_defaults(func=main_position_sample)
 
 parser_sub = subparsers.add_parser('profile', help='Output program version and exit', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 parser_sub.add_argument('--fasta','-f',help='Fasta file')
@@ -241,12 +181,12 @@ parser_sub.add_argument('--mismatch',type=int,default=3,help='First read file')
 parser_sub.add_argument('--db',default="cvdb",help='First read file')
 parser_sub.set_defaults(func=primer_evaluation)
 
-parser_sub = subparsers.add_parser('asr', help='Output program version and exit', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-parser_sub.add_argument('--msa',help='First read file',required=True)
-parser_sub.add_argument('--tree',help='First read file',required=True)
-parser_sub.add_argument('--states',help='First read file',required=True)
-parser_sub.add_argument('--out',default="out.csv",help='First read file')
-parser_sub.set_defaults(func=main_parse_asr)
+
+parser_sub = subparsers.add_parser('aln', help='Output program version and exit', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+parser_sub.add_argument('--fasta',help='First read file',required=True)
+parser_sub.add_argument('--prefix',help='First read file',required=True)
+parser_sub.add_argument('--db',default="cvdb",help='First read file')
+parser_sub.set_defaults(func=main_aln)
 
 args = parser.parse_args()
 if vars(args)=={}:

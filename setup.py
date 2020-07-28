@@ -11,10 +11,7 @@ setup(
     ],
     scripts= [
         "scripts/covid-profiler.py",
-        "scripts/update_tree.py",
-        "scripts/list_mutations_by_node.py",
-        "scripts/correct_covid_csq.py",
-        "scripts/process-gisaid.py",
-        "scripts/process_alignment.py"
+        "scripts/covid_profiler_mask_fasta.py",
+        "scripts/covid_profiler_mask_fasta_non_acgt.py"
     ],
 )
