@@ -55,6 +55,8 @@
 <br>
 <br>
 
+
+
 <div class="row">
     <div class="col-md-8 offset-md-2">
     <div class="alert alert-danger" style="text-align:center">
@@ -65,7 +67,24 @@
 </div>
 <br>
 
-
+<div class="position-sticky">
+<div class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-autohide="false">
+  <div class="toast-header">
+    <strong class="mr-auto"><h4>New feature</h4></strong>
+    <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="toast-body">
+    <h5>Check out the beta version of our new Mutation Tracker!<br> Use our dataset to track spatiotemporally individual non-synonymous mutations.<br> <a href="{{ url_for('results.mutation_tracker')}}">Check it out</a></h5>
+</div>
+</div>
+</div>
+<script>
+$(document).ready(function(){
+  $('.toast').toast('show');
+});
+</script>
 
   <div class="row">
    <div class="col-md-4 ml-md-auto">

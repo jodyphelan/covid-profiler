@@ -144,7 +144,11 @@ def result_table(request,user):
 
 
 
-@bp.route('/immuno')
+@bp.route('/immuno/mutation_tracker')
+def mutation_tracker():
+    return render_template('immuno/mutation_tracker.html',tree = tree)
+
+@bp.route('/immuno/')
 def immuno():
     return render_template('immuno/immunoanalytics.html',tree = tree)
 
