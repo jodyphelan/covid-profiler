@@ -1,0 +1,1 @@
+join --nocheck-order -1 1  -2 1 -a1  SNP_delim.tmp SEL_delim.tmp | awk -F '"' '{printf "{chr:\""$2"\",pos:\""$4"\",value:\""$6"\",des:\""$8 "\", color:\""$10"\"\},"}' | sed 's/},{/},\n{/g' | sed 's/color:""},/color:"#807380"},/g'
