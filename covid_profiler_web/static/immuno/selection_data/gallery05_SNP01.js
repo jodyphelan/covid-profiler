@@ -9,7 +9,7 @@ var SNP01 = [ "SNP01" , {
   maxRadius: 234,
   minRadius: 219,
   SNPFillColor: "#9400D3",
-  circleSize: 0.5,
+  circleSize: 0.6,
   displaySNPAxis: true,
   SNPAxisColor: "#000000",
   SNPAxisWidth: 0.5
