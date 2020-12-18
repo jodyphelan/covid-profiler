@@ -12,9 +12,14 @@ import covid_profiler as cp
 
 celery = Celery('tasks', broker='redis://localhost:6379/0')
 
+@celery.task
+def run_phylogeny(file,uniq_id,working_dir="/tmp/"):
+    cp.log("This is the worker. Running %s" % uniq_id)
+    pp.run_cmd("covid_profiler_align_fasta.py --fasta %s --working-dir %s --out %s" % (file,working_dir,uniq_id))
+    return True
 
 @celery.task
-def profile(uniq_id,storage_dir,fasta=None,R1 = None, R2 = None):
+def run_profile(uniq_id,storage_dir,fasta=None,R1 = None, R2 = None):
     cp.log("This is the worker. Running %s" % uniq_id)
     if fasta:
         pp.run_cmd("covid-profiler.py profile --fasta %s --prefix %s --dir %s" % (fasta,uniq_id,storage_dir))
@@ -46,17 +51,7 @@ def profile(uniq_id,storage_dir,fasta=None,R1 = None, R2 = None):
     return True
 
 @celery.task
-def profile_primer(primerF,primerR,probe,uniq_id,save_dir):
-    pp.run_cmd("covid-profiler.py primer --primerF %s --primerR %s --probe %s --out %s/%s.csv" % (primerF,primerR,probe,save_dir,uniq_id))
-    pp.run_cmd("covid_plot_primers.R %s/%s.csv %s %s %s" % (save_dir,uniq_id,primerF,primerR,probe))
-    pp.run_cmd("rm %s/%s.csv" % (save_dir,uniq_id))
-    client = MongoClient()
-    db = client.test_database
-    db.primer_results.find_one_and_update(
-        {"_id":uniq_id},
-        {
-            "$set": {"status":"done"}
-        }
-    )
+def run_primer_conservation(primerF,primerR,probe,uniq_id,save_dir):
+    pp.run_cmd("primer_analysis.py --fp %s --rp %s --probe %s --dir %s --out %s --write-json" % (primerF,primerR,probe,save_dir,uniq_id))
 
     return True

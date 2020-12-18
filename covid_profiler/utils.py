@@ -4,6 +4,13 @@ import csv
 import re
 import sys
 
+def get_conf_dict(library_prefix):
+    files = {"gff":".gff","ref":".fasta","barcode":".barcode.bed","version":".version.json","proteins":".proteins.csv","msa":".msa.fa","non_coding_bed":".non_coding.bed","meta":".msa.meta.csv"}
+    conf = {}
+    for key in files:
+        sys.stderr.write("Using %s file: %s\n" % (key,library_prefix+files[key]))
+        conf[key] = pp.filecheck(library_prefix+files[key])
+    return conf
 
 def log(string):
     sys.stderr.write("\n"+"*" * 40+"\n")
@@ -84,10 +91,12 @@ def get_variant_data(vcf_file,ref_file,gff_file,protein_file):
                 results[pos].append({"pos":pos, "alts":alts_str, "alt_af":alt_af, "types":",".join(types), "changes":",".join(changes),"gene":genes[0], "gene_function":gene_info[genes[0]]["function"], "gene_reference":gene_info[genes[0]]["DOI"]})
     final_results = []
     for res in list(results.values()):
-        if len(res)==1:
-            final_results.append(res[0])
-        else:
-            quit("ERROR! more than one variant for a position")
+        for r in res:
+            final_results.append(r)
+        # if len(res)==1:
+        #     final_results.append(res[0])
+        # else:
+        #     quit("ERROR! more than one variant for a position")
     return final_results
 
 

@@ -1,5 +1,5 @@
 from setuptools import find_packages, setup
-
+import os
 setup(
     name='covid-profiler',
     version='0.2.0',
@@ -9,9 +9,5 @@ setup(
     install_requires=[
         'flask',
     ],
-    scripts= [
-        "scripts/covid-profiler.py",
-        "scripts/covid_profiler_mask_fasta.py",
-        "scripts/covid_profiler_mask_fasta_non_acgt.py"
-    ],
+    scripts= ["scripts/%s" % x for x in os.listdir("scripts")],
 )

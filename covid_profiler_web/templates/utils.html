@@ -22,3 +22,54 @@
 		<span class="badge badge-warning">MDR-TB</span>
 	{% endif %}
 {%- endmacro %}
+
+
+{% macro generic_table(rows,columns,name) -%}
+
+
+	{% set rand_id = range(1, 5000) | random %}
+	<div class="card border-dark">
+		<div class="card-body text-center">
+			<div class="card-title">
+				<h4>{{name}}</h4>
+			</div>
+			<hr>
+			<table class="table table-hover" id="table-{{rand_id}}">
+				<thead>
+					<tr>
+						{% for key in columns %}
+							<th scope="col">{{ columns[key] }}</th>
+						{% endfor %}
+					</tr>
+				</thead>
+				<tbody id="resultsTable">
+					{% for row in rows %}
+						{% for key in columns %}
+							<td>
+								{% if key=="drtype" %}
+									<span style="font-size: 100%" class="badge badge-{{- get_dr_style(row['drtype']).strip().lower() }}">{{row["drtype"]}}</span>
+
+
+								{% else %}
+									{{ row[key]|safe }}
+								{% endif %}
+							</td>
+						{% endfor %}
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</div>
+
+	<script type="text/javascript">
+	var table = $("#table-{{rand_id}}").DataTable( {
+		select: true,
+		"scrollX": true,
+	// dom: 'Blfrtip',
+	})
+
+
+	</script>
+
+{%- endmacro %}

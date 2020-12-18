@@ -5,7 +5,7 @@ from werkzeug.exceptions import abort
 import json
 # from covid_profiler_web.auth import login_required
 from covid_profiler_web.db import get_db, get_mongo_db
-from covid_profiler_web.worker import profile_primer
+from covid_profiler_web.worker import run_primer_conservation
 import tbprofiler as tbp
 bp = Blueprint('diagnostics', __name__)
 import os

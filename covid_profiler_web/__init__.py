@@ -36,8 +36,8 @@ def create_app(test_config=None):
     from . import results
     app.register_blueprint(results.bp)
 
-    from . import upload
-    app.register_blueprint(upload.bp)
+    from . import analyse
+    app.register_blueprint(analyse.bp)
 
     from . import diagnostics
     app.register_blueprint(diagnostics.bp)

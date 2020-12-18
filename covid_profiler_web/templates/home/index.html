@@ -28,89 +28,81 @@
 
 
 
-			<h5 class="">How does it work?</h5>
-			<div class="pb-4 text-justify">
-                This tree has been created using sequences from the
-                <a href="https://www.gisaid.org/">GISAID database</a>. Users
-                upload their own sequences to characterise mutations present compared
-                to the reference genome <a href="https://www.ncbi.nlm.nih.gov/nuccore/1798174254">NC_045512.2</a>.
-				These mutations can then be visualised in the context of a large phylogeny.
-                These mutations are also used to clssify isolates into one of 6
-                different pre-defined clades.
-			</div>
 
-
-
-            <div class="row justify-content-md-center">
-                <div class="col-md-10 pb-4">
-                    <div class="card border-dark text-center">
-                        <div class="card-header">
-                            Phylogenetic tree
-                        </div>
-                            <div class="card-body" style="overflow: hidden;">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <div class="card-title">
+                                <h4>Profile</h4>
+                            </div>
+                            <hr>
+                            <img src="{{url_for('static', filename='example_pileup.png')}}" alt="" class="" height=200px>
+                            <hr>
+                            <div class="card-text">
                                 <div class="">
-                                    <img src="{{ url_for('static', filename='tree_legend.svg') }}" id="legend" alt="" width="50%">
+                                    This tool takes whole genome sequence data
+                                    (NGS or assembled sequence) and produces a report on the
+                                    mutations present.
                                 </div>
-                                <div class="" style="">
-                                    <svg id="tree_display"></svg>
+                                <div class="pt-4">
+                                    <a href="{{url_for('analyse.profile')}}" class="btn btn-outline-primary" role="button" aria-pressed="true">Profile</a>
                                 </div>
                             </div>
-                            <div class="card-footer text-muted">
-                              Last updated: {{ tree["created"] }}
-                            </div>
+
+                        </div>
                     </div>
                 </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <div class="card-title">
+                                <h4>Phylogeny</h4>
+                            </div>
+                            <hr>
+                            <img src="{{url_for('static', filename='example_phylogeny.png')}}" alt="" class="" height=200px>
+                            <hr>
+                            <div class="card-text">
+                                <div class="">
+                                    Align multiple sequence and reconstruct a maximum likelihood
+                                    phylogeny. A tree is produced as well as several intermediate
+                                    files.
+                                </div>
+                                <div class="pt-4">
+                                    <a href="{{url_for('analyse.phylogeny')}}" class="btn btn-outline-primary" role="button" aria-pressed="true">Reconstruct</a>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <div class="card-title">
+                                <h4>Diagnostics</h4>
+                            </div>
+                            <hr>
+                            <img src="{{url_for('static', filename='primer_map.png')}}" alt="" class="" height=200px>
+                            <hr>
+                            <div class="card-text">
+                                <div class="">
+                                    Align multiple sequence and reconstruct a maximum likelihood
+                                    phylogeny. A tree is produced as well as several intermediate
+                                    files.
+                                </div>
+                                <div class="pt-4">
+                                    <a href="{{url_for('analyse.primers')}}" class="btn btn-outline-primary" role="button" aria-pressed="true">Analyse</a>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
             </div>
 
-
-
-			<div class="row justify-content-md-center">
-				<div class="col-md-6 pb-4">
-					<div class="card border-dark text-center">
-					  <div class="card-header">
-					    Step 1
-					  </div>
-					  <div class="card-body">
-					    <h5 class="card-title">Profile your sample</h5>
-
-									<p class="card-text">
-										Upload your sequencing data in <b>fasta</b> format.
-									</p>
-
-
-					    <a class="btn btn-primary" href="{{ url_for('upload.upload') }}">Upload</a>
-					  </div>
-					</div>
-				</div>
-			</div>
-
-
-			<div class="row justify-content-md-center">
-				<div class="col-md-6 pb-4">
-					<div class="card border-dark text-center">
-					  <div class="card-header">
-					    Step 2
-					  </div>
-					  <div class="card-body">
-					    <h5 class="card-title">View the results</h5>
-
-									<p class="card-text">
-										Find your results by entering your unique run ID directly into the search box below.
-                                        Take a look at <a href="{{ url_for('results.run_result' , sample_id="f57c9d40-070d-490a-b0e3-d157583f067c")}}">this example</a>.
-									</p>
-
-							<form method="post" enctype=multipart/form-data>
-								<div class="row justify-content-md-center">
-									<div class="col-md-6">
-										<input type="text" name="sample_id" class="form-control" placeholder="Sample ID">
-									</div>
-									<button type="submit" class="btn btn-primary">Submit</button>
-								</div>
-							</form>
-					  </div>
-					</div>
-				</div>
-			</div>
+            <hr>
 
             <h5 class="">Get in touch</h5>
 			<div class="text-left text-justify">
