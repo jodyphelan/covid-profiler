@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block header %}
+
+
+{% endblock %}
+
+{% block content %}
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <div class="card-title">
+                    <h4>Profile</h4>
+                </div>
+                <hr>
+                <img src="{{url_for('static', filename='example_pileup.png')}}" alt="" class="" height=200px>
+                <hr>
+                <div class="card-text">
+                    <div class="">
+                        This tool takes whole genome sequence data
+                        (NGS or assembled sequence) and produces a report on the
+                        mutations present.
+                    </div>
+                    <div class="pt-4">
+                        <a href="{{url_for('analyse.profile')}}" class="btn btn-outline-primary" role="button" aria-pressed="true">Profile</a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <div class="card-title">
+                    <h4>Phylogeny</h4>
+                </div>
+                <hr>
+                <img src="{{url_for('static', filename='example_phylogeny.png')}}" alt="" class="" height=200px>
+                <hr>
+                <div class="card-text">
+                    <div class="">
+                        Align multiple sequence and reconstruct a maximum likelihood
+                        phylogeny. A tree is produced as well as several intermediate
+                        files.
+                    </div>
+                    <div class="pt-4">
+                        <a href="{{url_for('analyse.phylogeny')}}" class="btn btn-outline-primary" role="button" aria-pressed="true">Reconstruct</a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <div class="card-title">
+                    <h4>Diagnostics</h4>
+                </div>
+                <hr>
+                <img src="{{url_for('static', filename='primer_map.png')}}" alt="" class="" height=200px>
+                <hr>
+                <div class="card-text">
+                    <div class="">
+                        Align multiple sequence and reconstruct a maximum likelihood
+                        phylogeny. A tree is produced as well as several intermediate
+                        files.
+                    </div>
+                    <div class="pt-4">
+                        <a href="{{url_for('analyse.primers')}}" class="btn btn-outline-primary" role="button" aria-pressed="true">Analyse</a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+{% endblock %}

@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+
+{% block header %}
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+{% endblock %}
+
+{% block content %}
+
+
+<div class="mt-4 text-center">
+
+	<h4>Primer conservation result</h4>
+	<div class="">
+		Run: {{run_id}}
+	</div>
+	<hr>
+</div>
+
+{% if data==None %}
+	<div class="alert alert-warning">
+		Results are still being calculated, please come back in a few mins.
+	</div>
+{% else %}
+	<div class="row justify-content-md-center">
+		<div class="col-md-6" >
+			<div class="card border-dark">
+				<div class="card-body text-center">
+					<div class="card-title">
+						<h4>Forward Primer Sequence Logo</h4>
+					</div>
+					<hr>
+					<div class="card-text">
+						{{data["fp_seqlogo"]|safe}}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-6" >
+			<div class="card border-dark">
+				<div class="card-body text-center">
+					<div class="card-title">
+						<h4>Forward Primer Map</h4>
+					</div>
+					<hr>
+					<div class="card-text">
+						{{data["fp_map"]|safe}}
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-6" >
+			<div class="card border-dark">
+				<div class="card-body text-center">
+					<div class="card-title">
+						<h4>Forward Primer Timeline</h4>
+					</div>
+					<hr>
+					<div class="card-text">
+						{{data["fp_time"]|safe}}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<hr>
+
+	<div class="row justify-content-md-center">
+		<div class="col-md-6" >
+			<div class="card border-dark">
+				<div class="card-body text-center">
+					<div class="card-title">
+						<h4>Reverse Primer Sequence Logo</h4>
+					</div>
+					<hr>
+					<div class="card-text">
+						{{data["rp_seqlogo"]|safe}}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-6" >
+			<div class="card border-dark">
+				<div class="card-body text-center">
+					<div class="card-title">
+						<h4>Reverse Primer Map</h4>
+					</div>
+					<hr>
+					<div class="card-text">
+						{{data["rp_map"]|safe}}
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-6" >
+			<div class="card border-dark">
+				<div class="card-body text-center">
+					<div class="card-title">
+						<h4>Reverse Primer Timeline</h4>
+					</div>
+					<hr>
+					<div class="card-text">
+						{{data["rp_time"]|safe}}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<hr>
+
+	<div class="row justify-content-md-center">
+		<div class="col-md-6" >
+			<div class="card border-dark">
+				<div class="card-body text-center">
+					<div class="card-title">
+						<h4>Probe Sequence Logo</h4>
+					</div>
+					<hr>
+					<div class="card-text">
+						{{data["probe_seqlogo"]|safe}}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-6" >
+			<div class="card border-dark">
+				<div class="card-body text-center">
+					<div class="card-title">
+						<h4>Probe Map</h4>
+					</div>
+					<hr>
+					<div class="card-text">
+						{{data["probe_map"]|safe}}
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col-md-6" >
+			<div class="card border-dark">
+				<div class="card-body text-center">
+					<div class="card-title">
+						<h4>Probe Timeline</h4>
+					</div>
+					<hr>
+					<div class="card-text">
+						{{data["probe_time"]|safe}}
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endif %}
+{% endblock %}

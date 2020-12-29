@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+{% import 'utils.html' as utils %}
+{% block header %}
+<script src="https://s3.eu-central-1.amazonaws.com/cdn.bio.sh/msa/latest/msa.min.gz.js"></script>
+
+{% endblock %}
+
+{% block content %}
+
+{% if status["phylogeny"]=="Processing" %}
+    <div class="alert alert-primary" role="alert">
+        The phylogeny is being constructed, please come back later.
+    </div>
+{% else %}
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card border-dark">
+                <div class="card-body text-center">
+                    <div class="card-title">
+                        <h4>Summary</h4>
+                    </div>
+                    <hr>
+                    <div class="card-text pb-4">Your job has completed sucessfully!</div>
+
+                    <div class=""><b>Alignment:</b> <a href="{{url_for('static', filename='results')}}/{{run_id}}.aln">{{run_id}}.aln</a></div>
+                    <div class=""><b>VCF:</b> <a href="{{url_for('static', filename='results')}}/{{run_id}}.vcf.gz">{{run_id}}.vcf.gz</a></div>
+                    <div class=""><b>Variant info:</b> <a href="{{url_for('static', filename='results')}}/{{run_id}}.variant_info.csv">{{run_id}}.variant_info.csv</a></div>
+                    <div class=""><b>Tree:</b> <a href="{{url_for('static', filename='results')}}/{{run_id}}.aln.treefile">{{run_id}}.aln.treefile</a></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card border-dark">
+                <div class="card-body text-center">
+                    <div class="card-title">
+                        <h4>Profile</h4>
+                    </div>
+                    <hr>
+                    <div class="card-text">
+                        <div id="yourDiv"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+        <script type="text/javascript">
+
+        var m = msa({
+             el: document.getElementById("yourDiv"),
+             bootstrapMenu: true
+        });
+        msa.io.fasta.read("{{url_for('static', filename='results')}}/{{run_id}}.aln", function(err, seqs){
+        	m.seqs.reset(seqs);
+        	m.render();
+        });
+    </script>
+
+
+
+    <div class="row">
+        <div class="col-md-6">
+            <div id="table_div">
+                {{utils.generic_table(csv_data,{"pos":"Position","alts":"Alternate alleles", "alt_af":"Alternate allele frequency","types":"Varaint types","changes":"Changes","gene":"Gene"}, "Variants")}}
+            </div>
+
+        </div>
+        <div class="col-md-6" >
+            <div class="card border-dark">
+                <div class="card-body text-center">
+                    <div class="card-title">
+                        <h4>Profile</h4>
+                    </div>
+                    <hr>
+                    <div id="tree_div" class="card-text">
+                           <form>
+                             <label>Radial layout</label>
+                             <input type="checkbox" id="layout" checked/>
+                           </form>
+                        <svg id="tree_display"></svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <script type="text/javascript">
+    d3.text("{{url_for('static', filename='results')}}/{{run_id}}.aln.treefile", function(error, newick) {
+
+      var tree = d3.layout.phylotree()
+        .svg(d3.select("#tree_display"))
+        .radial(true)
+        .options({
+          'left-right-spacing': 'fit-to-size',
+          // fit to given size top-to-bottom
+          'top-bottom-spacing': 'fit-to-size',
+          // fit to given size left-to-right
+          'selectable': false,
+          // make nodes and branches not selectable
+          'collapsible': false,
+          // turn off the menu on internal nodes
+          'transitions': false,
+          // turn off d3 animations
+          zoom: true,
+          // "max-radius":height,
+      }).size([document.getElementById("table_div").offsetHeight*0.7,document.getElementById("table_div").offsetWidth*0.8])
+
+    tree(d3.layout.newick_parser(newick)).layout();
+
+    $("#layout").on("click", function(e) {
+        tree.radial($(this).prop("checked")).placenodes().update();
+    });
+    });
+    </script>
+{% endif %}
+
+{% endblock %}

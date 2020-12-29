@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block header %}
+
+
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-md-center">
+	<div class="col-md-6 pb-4">
+        <div class="pb-4">
+
+        </div>
+    </div>
+</div>
+
+<div class="row justify-content-md-center">
+	<div class="col-md-6 pb-4">
+		<div class="card">
+			<div class="card-header text-center">
+				FASTA input
+			</div>
+			<div class="card-body">
+				<p class="card-text">
+					You can upload a fasta file. When you upload your data,
+                    the run will be be assigned a unique ID. Please take a note
+                    of this ID as you will need to to find your results later.
+                    <b>A maximum of 500 isolates is allowed.</b>
+				</p>
+				<form method="post" enctype=multipart/form-data>
+					{% if g.user %}
+						<input type="text" class="form-control w-50" id="sample_name" name="sample_name" placeholder="Sample name">
+					{% endif %}
+
+					<div class="form-group pt-2">
+						<label for="file1">Fasta file:</label>
+						<input type="file" name="file1" class="form-control-file" id="file1">
+					</div>
+					<hr>
+					<button type="submit" class="btn btn-primary" name="fasta_submit" id="fasta_submit">Submit</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+{% endblock %}
