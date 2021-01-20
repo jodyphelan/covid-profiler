@@ -32,7 +32,7 @@ def main(args):
     print(troublesome_sites)
     with open(args.final_aln,"w") as O:
         for entry in tqdm(pyfastx.Fasta("%(working_dir)s/%(uuid)s.aln" % vars(args), full_name=True)):
-            masked_seq = list(entry.seq)
+            masked_seq = list(entry.seq.upper())
             for start,end in [(1,265),(29675,29903)]:
                 for i in range(start-1,end):
                     masked_seq[i] = "N"
@@ -55,7 +55,7 @@ def main(args):
         writer.writeheader()
         writer.writerows(variant_data)
 
-    pp.run_cmd("iqtree -s %(final_aln)s -m GTR+F+G4 -nt 3" % vars(args)) 
+    pp.run_cmd("iqtree -s %(final_aln)s -m GTR+F+G4 -nt 3" % vars(args))
     sys.stderr.write("\n\n----------------\n")
     sys.stderr.write("Program complete\n")
     sys.stderr.write("----------------\n")

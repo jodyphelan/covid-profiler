@@ -1,6 +1,5 @@
 import pathogenprofiler as pp
 import argparse
-import ete3
 import sys
 from tqdm import tqdm
 from collections import defaultdict
@@ -26,6 +25,8 @@ def main_load_library(args):
     files = {"gff":".gff","ref":".fasta","barcode":".barcode.bed","version":".version.json","proteins":".proteins.csv","non_coding_bed":".non_coding.bed"}
     if pp.nofolder(sys.base_prefix+"/share/covidprofiler"):
         pp.run_cmd("mkdir %s " % (sys.base_prefix+"/share/covidprofiler/"))
+    pp.run_cmd("cp %s %s" % (args.msa,"%s/share/covidprofiler/%s.msa.fa" % (sys.base_prefix,lib_prefix)))
+    pp.run_cmd("cp %s %s" % (args.meta,"%s/share/covidprofiler/%s.msa.meta.csv" % (sys.base_prefix,lib_prefix)))
     for key in files:
         new_file_location = sys.base_prefix+"/share/covidprofiler/"+lib_prefix+files[key]
         pp.run_cmd("cp %s %s" % (args.prefix+files[key],new_file_location))
@@ -84,6 +85,8 @@ def main_profile(args):
     refseqname = list(refseq.keys())[0]
 
     results = {}
+    for l in pp.cmd_out("bedtools genomecov -ibam %s | datamash median 3" % (bam_obj.bam_file)):
+        results["mean_depth"] = int(l.strip())
     barcode_mutations = wg_vcf_obj.get_bed_gt(conf["barcode"], conf["ref"])
     barcode = pp.barcode(barcode_mutations,conf["barcode"])
     clade = ";".join(sorted([d["annotation"] for d in barcode]))
@@ -168,7 +171,9 @@ parser_sub.add_argument('--out',type=str,default="covid_profiler", help='Prefix 
 parser_sub.set_defaults(func=main_collate)
 
 parser_sub = subparsers.add_parser('load_library', help='Load new library', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-parser_sub.add_argument('prefix',type=str,help='Prefix to the library files')
+parser_sub.add_argument('--prefix',type=str,help='Prefix to the library files',required=True)
+parser_sub.add_argument('--msa',type=str,help='Prefix to the MSA file',required=True)
+parser_sub.add_argument('--meta',type=str,help='Prefix to the meta file',required=True)
 parser_sub.set_defaults(func=main_load_library)
 
 

@@ -54,21 +54,8 @@
 <br>
 <br>
 <br>
-
-
-
-<div class="row">
-    <div class="col-md-8 offset-md-2">
-    <div class="alert alert-danger" style="text-align:center">
-   <b>The SARS-CoV-2 Immunoanalytics platform is an online tool for the visulisation and analysis of multiple genomic and immunoinformatic meta-analyses. The tool combines an extensive epitope mapping and prediction meta-analysis, with an updated variant database (55,944 non-synonymous mutations) based on 16,087 whole genome sequences, and an analysis of human coronavirus homology, combined with up-to-date annotations from the UniProt database. With this tool and the data we have generated, we hope researchers can perform their own further research, whatever it may be. </b>
-
- </div>
-</div>
-</div>
-<br>
-
-<div class="position-sticky">
-<div class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-autohide="false">
+<!--
+<div class="toast" role="alert" aria-live="assertive" aria-atomic="true" data-autohide="false" style="position: absolute; top: 100; right: 100">
   <div class="toast-header">
     <strong class="mr-auto"><h4>New feature</h4></strong>
     <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
@@ -79,12 +66,53 @@
     <h5>Check out the beta version of our new Mutation Tracker!<br> Use our dataset to track spatiotemporally individual non-synonymous mutations.<br> <a href="{{ url_for('results.mutation_tracker')}}">Check it out</a></h5>
 </div>
 </div>
-</div>
 <script>
 $(document).ready(function(){
   $('.toast').toast('show');
 });
 </script>
+-->
+
+<div class="row">
+    <div class="col-md-12 offset-md-0">
+    <div class="alert alert-danger" style="text-align:center">
+   <b>The SARS-CoV-2 Immunoanalytics platform is an online tool for the visulisation and analysis of multiple genomic and immunoinformatic meta-analyses. The tool combines an extensive epitope mapping and prediction meta-analysis,  with an weeky updated database of 200,000+ whole genome sequences, and an analysis of human coronavirus homology, combined with up-to-date annotations from the UniProt database. With this tool and the data we have generated, we hope researchers can perform their own further research, whatever it may be. </b>
+
+ </div>
+
+
+
+</div>
+</div>
+<br>
+
+<div class="row">
+    <div class="col-md-10 offset-md-1">
+    <div class="alert alert-warning" style="text-align:center">
+   <h4>SARS-CoV-2 Mutation Tracking Toolkit</h4>
+   <p><b>Follow the link to find a useful set of tools to track SARS-CoV-2 mutations.</b><br>
+     Here you can find analyses on variants updated automatically every week. A pipeline has been designed a pipeline to predict variants of interest (VOI) across the GISAID sequence dataset.<br>
+     We present data tracking each non-synonymous mutation across continents by the week. Alongside this is a table that enables users to scrutinise each using our immunoanalytical metadata. <br>
+     On top of this, we are developing a pipeline to visulise variants on 3D models to enable users to better understand their importnace.<br><br>
+     <a href="{{ url_for('results.mutation_tracker')}}" target="_blank"  data-toggle="tooltip" title="In this table, you can query HLA-I epitopes predicted by netMHCpan 4.1" class="btn btn-primary btn-md" role="button">Open Mutation Tracker</a>
+
+     </p>
+
+ </div>
+
+
+
+</div>
+</div>
+
+
+
+<br>
+
+
+
+
+
 
   <div class="row">
    <div class="col-md-4 ml-md-auto">
@@ -115,7 +143,7 @@ $(document).ready(function(){
     <div class="well" style="text-align:center; background-color:#d9e0ca" ><h3>Step 3</h3><strong>Download and Analyse!</strong><br><br> This tool was devoped by a multi-diciplinary team of bioinformaticians and lab-scientists to inform our own future experiments. We hope this do the same for yours. <br><br> <b>Once you have a sequence you are intereted in, you can copy the amino-acid sequence from the raw data table and express, mutate, or perform further analysis</b>
       </div>
       <div class="row justify-content-md-center">
-         <a href="https://doi.org/10.1101/2020.05.11.089409" target="_blank" data-toggle="tooltip" title="We have some intersting examples of analyses in our paper" class="btn btn-success btn-md" role="button">Check out our paper</a>
+         <a href="https://doi.org/10.1186/s13073-020-00822-6" target="_blank" data-toggle="tooltip" title="We have some intersting examples of analyses in our paper" class="btn btn-success btn-md" role="button">Check out our paper</a>
        </div>
 
 
@@ -125,7 +153,7 @@ $(document).ready(function(){
 <br>
 <br>
 <div class="row justify-content-md-center">
-<h3>It'd be great if you could cite us if you've used this tool: https://doi.org/10.1101/2020.05.11.089409 <h3>
+<h3>It'd be great if you could cite us if you've used this tool:<a href="https://doi.org/10.1186/s13073-020-00822-6"> https://doi.org/10.1186/s13073-020-00822-6</a>  <h3>
 </div>
 
 

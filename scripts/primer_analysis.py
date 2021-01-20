@@ -14,6 +14,8 @@ import pandas as pd
 import plotly.express as px
 from urllib.request import urlopen
 import re
+import os
+
 
 def revcom(s):
         """Return reverse complement of a sequence"""
@@ -68,7 +70,7 @@ def extract_region_from_fasta(fasta,start,end):
     (p1,p2) = (start,end) if start<end else (end,start)
     seqs = []
     for entry in tqdm(pyfastx.Fasta(fasta, full_name=True)):
-        tmp_seq = entry.seq[p1-1:p2]
+        tmp_seq = entry.seq[p1-1:p2].upper()
         if start>end:
             try:
                 tmp_seq = revcom(tmp_seq)
@@ -113,7 +115,7 @@ def get_sequence_logo(seqs):
     tmp_file = "/home/jody/temp/%s.svg" % uuid.uuid4()
     seqlogo.seqlogo(cpm, ic_scale = False, format = 'svg', size = 'medium',filename="%s" %tmp_file)
     svg = open(tmp_file).read()
-
+    os.remove(tmp_file)
     for x in set(re.findall("glyph[0-9]+-[0-9]+",svg)):
         svg = svg.replace(x,str(uuid.uuid4()))
 
