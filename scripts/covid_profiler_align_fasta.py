@@ -55,7 +55,7 @@ def main(args):
         writer.writeheader()
         writer.writerows(variant_data)
 
-    pp.run_cmd("iqtree -s %(final_aln)s -m GTR+F+G4 -nt 3" % vars(args))
+    pp.run_cmd("iqtree -s %(final_aln)s -m GTR+F+G4 -nt 1" % vars(args))
     sys.stderr.write("\n\n----------------\n")
     sys.stderr.write("Program complete\n")
     sys.stderr.write("----------------\n")
