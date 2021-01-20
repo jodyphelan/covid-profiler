@@ -85,8 +85,9 @@ def main_profile(args):
     refseqname = list(refseq.keys())[0]
 
     results = {}
-    for l in pp.cmd_out("bedtools genomecov -ibam %s | datamash median 3" % (bam_obj.bam_file)):
-        results["mean_depth"] = int(l.strip())
+    if not args.fasta:
+        for l in pp.cmd_out("bedtools genomecov -ibam %s | datamash median 3" % (bam_obj.bam_file)):
+            results["mean_depth"] = int(l.strip())
     barcode_mutations = wg_vcf_obj.get_bed_gt(conf["barcode"], conf["ref"])
     barcode = pp.barcode(barcode_mutations,conf["barcode"])
     clade = ";".join(sorted([d["annotation"] for d in barcode]))
