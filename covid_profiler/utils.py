@@ -3,6 +3,7 @@ from collections import Counter, defaultdict
 import csv
 import re
 import sys
+from uuid import uuid4
 
 def get_conf_dict(library_prefix):
     files = {"gff":".gff","ref":".fasta","barcode":".barcode.bed","version":".version.json","proteins":".proteins.csv","msa":".msa.fa","non_coding_bed":".non_coding.bed","meta":".msa.meta.csv"}
@@ -101,7 +102,7 @@ def get_variant_data(vcf_file,ref_file,gff_file,protein_file):
 
 
 def vcf2consensus(bam,vcf,ref,id,consensus):
-    tmp_bed = pp.get_random_file()
+    tmp_bed = f"{str(uuid4())}.bed" 
     pp.run_cmd('bedtools genomecov -d -ibam %s | awk \'$3<10\' | awk \'{print $1"\\t"$2"\\t"$2}\' > %s' % (bam,tmp_bed))
     pp.run_cmd("bcftools consensus -f %s -m %s -M N %s | sed 's/^>.*/>%s/' > %s" % (ref,tmp_bed,vcf,id,consensus))
     pp.run_cmd("rm %s" % tmp_bed)
