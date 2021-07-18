@@ -2,6 +2,7 @@
 
 mongo
 covid_profiler_web/static/results
+dump.rdb 
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
