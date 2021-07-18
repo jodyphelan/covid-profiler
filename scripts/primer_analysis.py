@@ -112,7 +112,7 @@ def get_sequence_logo(seqs):
     ppm = pm.apply(axis=1,func=lambda x: [y/sum(x) for y in x],result_type='broadcast')
     print(ppm)
     cpm = seqlogo.CompletePm(ppm = ppm)
-    tmp_file = "/home/jody/temp/%s.svg" % uuid.uuid4()
+    tmp_file = "/tmp/%s.svg" % uuid.uuid4()
     seqlogo.seqlogo(cpm, ic_scale = False, format = 'svg', size = 'medium',filename="%s" %tmp_file)
     svg = open(tmp_file).read()
     os.remove(tmp_file)
