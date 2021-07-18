@@ -26,7 +26,7 @@ def check_file_type(filename):
         if row[1]!="ASCII" and row[1]!="gzip":
             return "unknown"
         if row[1]=="ASCII":
-            first_char = open(filename).readline([0])
+            first_char = open(filename).readline()[0]
         else:
             first_char =  gzip.open(filename).readline().decode()[0]
         if first_char==">":
