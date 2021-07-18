@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% import 'utils.html' as utils %}
 {% block header %}
-<script src="https://s3.eu-central-1.amazonaws.com/cdn.bio.sh/msa/latest/msa.min.gz.js"></script>
+<script src="{{url_for('static',filename='msa.js')}}"></script>
 
 {% endblock %}
 
@@ -52,6 +52,7 @@
              el: document.getElementById("yourDiv"),
              bootstrapMenu: true
         });
+
         msa.io.fasta.read("{{url_for('static', filename='results')}}/{{run_id}}.aln", function(err, seqs){
         	m.seqs.reset(seqs);
         	m.render();
