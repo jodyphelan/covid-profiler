@@ -27,6 +27,7 @@
 					upload your data, the run will be be assigned a unique ID. Please take
 					a note of this ID as you will need to to find your results later.
 				</p>
+				<p>Need data? Download an example fasta file <a href="{{url_for('static',filename='MZ390410.1.fasta')}}">here</a></p>
 				<form method="post" enctype=multipart/form-data>
 					{% if g.user %}
 						<input type="text" class="form-control w-50" id="sample_name" name="sample_name" placeholder="Sample name">
@@ -53,6 +54,7 @@
 					upload your data, the run will be be assigned a unique ID. Please take
 					a note of this ID as you will need to to find your results later.
 				</p>
+				<p>Need data? Download an example fasta file <a href="{{url_for('static',filename='SRR11621842.fastq.gz')}}">here</a></p>
 				<form method="post" enctype=multipart/form-data>
 					{% if g.user %}
 						<input type="text" class="form-control w-50" id="sample_name" name="sample_name" placeholder="Sample name">

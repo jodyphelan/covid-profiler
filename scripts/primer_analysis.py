@@ -181,7 +181,7 @@ def main(args):
 
 
 
-    with urlopen('https://raw.githubusercontent.com/jodyphelan/tb-profiler-webserver/neo4j/tbprofiler_web/static/custom.geo.json') as response:
+    with urlopen('https://raw.githubusercontent.com/jodyphelan/tbdr/main/tbdr/static/custom.geo.json') as response:
         geojson = json.load(response)
 
     csv_df = pd.DataFrame(data={

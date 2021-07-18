@@ -3,7 +3,7 @@ from flask import (
     Blueprint, flash, g, redirect, render_template, request, url_for, Response
 )
 from werkzeug.exceptions import abort
-import subprocess
+import subprocess as sp
 #from aseantb.auth import login_required
 from covid_profiler_web.db import get_db, get_mongo_db
 from covid_profiler_web.worker import run_profile, run_phylogeny, run_primer_conservation
@@ -16,7 +16,26 @@ import re
 import covid_profiler as cp
 import csv
 import json
+import gzip
+
 bp = Blueprint('analyse', __name__)
+
+def check_file_type(filename):
+    for l in sp.Popen(f"file {filename}",shell=True,stdout=sp.PIPE).stdout:
+        row = l.decode().strip().split()
+        if row[1]!="ASCII" and row[1]!="gzip":
+            return "unknown"
+        if row[1]=="ASCII":
+            first_char = open(filename).readline([0])
+        else:
+            first_char =  gzip.open(filename).readline().decode()[0]
+        if first_char==">":
+            return "fasta"
+        elif first_char=="@":
+            return "fastq"
+        else:
+            return "unknown"
+
 
 def run_sample(mongo,user_id,uniq_id,sample_name,type,f1,f2=None):
     cp.log("Running sample with id:%s, file1:%s and file2:%s\n" % (uniq_id,f1,f2 ))
@@ -29,7 +48,10 @@ def run_sample(mongo,user_id,uniq_id,sample_name,type,f1,f2=None):
         f2.save(server_fname2)
     else:
         server_fname2 = None
-
+    filetype = check_file_type(server_fname1)
+    print(filetype)
+    if filetype!=type:
+        return "Error! File type doesn't look like %s, please check." % type
     mongo.db.profiler_results.insert_one({
         "_id":uniq_id,"user_id":user_id,"sample_name":sample_name,"results":{},
         "created":datetime.datetime.now().strftime("%d-%M-%Y %H:%M:%S"),
@@ -41,6 +63,7 @@ def run_sample(mongo,user_id,uniq_id,sample_name,type,f1,f2=None):
         run_profile.delay(R1=server_fname1, R2=server_fname2, uniq_id=uniq_id,storage_dir=app.config["APP_ROOT"]+url_for('static', filename='results'))
     else:
         sys.stderr.write("ERROR!!! Not fastq or fasta?")
+
 
 @bp.route('/analyse/profile',methods=('GET', 'POST'))
 def profile():
@@ -55,13 +78,14 @@ def profile():
         if request.files['file1'].filename=="":
             error = "No files found, please try again!"
         if "fasta_submit" in request.form and error==None:
-            run_sample(mongo,username,uniq_id,sample_name,"fasta",request.files['file1'])
-            return redirect(url_for('results.run_result', sample_id=uniq_id))
+            error = run_sample(mongo,username,uniq_id,sample_name,"fasta",request.files['file1'])
+            if error==None:
+                return redirect(url_for('results.run_result', sample_id=uniq_id))
         elif "fastq_submit" in request.form and error==None:
-            run_sample(mongo,username,uniq_id,sample_name,"fastq",request.files['file1'],request.files['file2'])
-            return redirect(url_for('results.run_result', sample_id=uniq_id))
+            error = run_sample(mongo,username,uniq_id,sample_name,"fastq",request.files['file1'],request.files['file2'])
+            if error==None:
+                return redirect(url_for('results.run_result', sample_id=uniq_id))
 
-        flash(request.form)
         flash(error)
     return render_template('analyse/profile.html')
 

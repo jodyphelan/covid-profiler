@@ -27,6 +27,8 @@
                     of this ID as you will need to to find your results later.
                     <b>A maximum of 500 isolates is allowed.</b>
 				</p>
+				<p>Need data? Download an example fasta file <a href="{{url_for('static',filename='example_alignment.fasta')}}">here</a></p>
+				
 				<form method="post" enctype=multipart/form-data>
 					{% if g.user %}
 						<input type="text" class="form-control w-50" id="sample_name" name="sample_name" placeholder="Sample name">
