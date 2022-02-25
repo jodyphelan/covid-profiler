@@ -1,3 +1,4 @@
+from uuid import uuid4
 import pathogenprofiler as pp
 import argparse
 import sys
@@ -37,6 +38,11 @@ def main_load_library(args):
     pp.log("Sucessfully imported library")
 
 
+def get_pangolin_lineage(fasta_file):
+    tmpfile = str(uuid4())
+    pp.run_cmd(f"pangolin --outfile {tmpfile} {fasta_file}")
+    for row in csv.DictReader(open(tmpfile)):
+        return row["lineage"]
 
 
 def main_profile(args):
@@ -88,11 +94,10 @@ def main_profile(args):
     if not args.fasta:
         for l in pp.cmd_out("bedtools genomecov -ibam %s | datamash median 3" % (bam_obj.bam_file)):
             results["mean_depth"] = int(l.strip())
-    barcode_mutations = wg_vcf_obj.get_bed_gt(conf["barcode"], conf["ref"])
-    barcode = pp.barcode(barcode_mutations,conf["barcode"])
-    clade = ";".join(sorted([d["annotation"] for d in barcode]))
-    sys.stdout.write("%s\t%s\n" % (args.prefix,clade))
-    results["clade"] = clade
+    # barcode_mutations = wg_vcf_obj.get_bed_gt(conf["barcode"], conf["ref"])
+    # barcode = pp.barcode(barcode_mutations,conf["barcode"])
+    # clade = ";".join(sorted([d["annotation"] for d in barcode]))
+    results["clade"] = get_pangolin_lineage(args.fasta if args.fasta else wg_vcf_obj.prefix+".consensus.fasta")
 
     variant_data = cp.get_variant_data(wg_vcf_obj.filename,conf["ref"],conf["gff"],conf["proteins"])
     results["variants"] = variant_data
