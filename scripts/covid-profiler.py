@@ -43,6 +43,7 @@ def get_pangolin_lineage(fasta_file):
     pp.run_cmd(f"pangolin --outfile {tmpfile} {fasta_file}")
     for row in csv.DictReader(open(tmpfile)):
         return row["lineage"]
+    os.remove(tmpfile)
 
 
 def main_profile(args):

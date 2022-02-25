@@ -123,6 +123,7 @@ def phylogeny_result(run_id):
         "vcf": "OK" if os.path.isfile(file_prefix+".vcf.gz") else "Processing",
         "variant_info": "OK" if os.path.isfile(file_prefix+".variant_info.csv") else "Processing",
         "phylogeny": "OK" if os.path.isfile(file_prefix+".aln.iqtree") else "Processing",
+        "num_seqs": int(open(file_prefix+".numseqs.txt").readline().strip()) if os.path.isfile(file_prefix+".numseqs.txt") else "Processing",
     }
     print(status)
     csv_data = []

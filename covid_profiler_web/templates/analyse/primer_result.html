@@ -19,8 +19,14 @@
 
 {% if data==None %}
 	<div class="alert alert-warning">
-		Results are still being calculated, please come back in a few mins.
+		Results are still being calculated, this usually takes a minute. 
+		The page will refresh autimatically until they are ready.
 	</div>
+	<script>
+		setTimeout(function(){
+			window.location.reload(1);
+		}, 5000);
+	</script>
 {% else %}
 	<div class="row justify-content-md-center">
 		<div class="col-md-6" >

@@ -15,7 +15,15 @@ celery = Celery('tasks', broker='redis://localhost:6379/0')
 @celery.task
 def run_phylogeny(file,uniq_id,working_dir="/tmp/"):
     cp.log("This is the worker. Running %s" % uniq_id)
-    pp.run_cmd("covid_profiler_align_fasta.py --fasta %s --working-dir %s --out %s" % (file,working_dir,uniq_id))
+    count=0
+    for l in open(file):
+        if ">" in l:
+            count+=1
+    cp.log(f"THE COUNT IS {count}")
+    with open(f"{working_dir}/{uniq_id}.numseqs.txt","w") as O:
+        O.write(str(count))
+    if count<=500:
+        pp.run_cmd("covid_profiler_align_fasta.py --fasta %s --working-dir %s --out %s" % (file,working_dir,uniq_id))
     return True
 
 @celery.task

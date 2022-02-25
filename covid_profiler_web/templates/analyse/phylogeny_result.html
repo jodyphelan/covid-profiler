@@ -8,9 +8,39 @@
 {% block content %}
 
 {% if status["phylogeny"]=="Processing" %}
-    <div class="alert alert-primary" role="alert">
-        The phylogeny is being constructed, please come back later.
-    </div>
+    {% if status["num_seqs"]=="Processing" %}
+        <div class="alert alert-primary mt-5" role="alert">
+            The phylogeny is being constructed, please come back later. For an approximate runtime please compare the number of sequences with 
+            the plot below.
+        </div>
+        <div>
+           <img src="{{url_for('static', filename='phylogeny_time.png')}}" alt="">
+        </div>
+        <script>
+            setTimeout(function(){
+                window.location.reload(1);
+            }, 5000);
+        </script>
+
+    {% elif status["num_seqs"]>500 %}
+        <div class="alert alert-danger mt-5" role="alert">
+            The number of sequences exceeds the maximum amount (500), please upload an alinment with fewer sequences.
+        </div>
+    {% else %}
+        <div class="alert alert-primary mt-5" role="alert">
+            The phylogeny is being constructed, please come back later. For an approximate runtime please compare the number of sequences with 
+            the plot below.
+        </div>
+        <div>
+           <img src="{{url_for('static', filename='phylogeny_time.png')}}" alt="" width="50%">
+        </div>
+        <script>
+            setTimeout(function(){
+                window.location.reload(1);
+            }, 5000);
+        </script>
+    {% endif %}
+
 {% else %}
 
     <div class="row">
