@@ -6,7 +6,6 @@ from tqdm import tqdm
 from collections import defaultdict
 import csv
 import os
-from Bio import SeqIO
 import json
 import re
 import covid_profiler as cp
@@ -84,6 +83,10 @@ def main_profile(args):
             ref_file=conf["ref"], prefix=files_prefix,sample_name=args.prefix,
             aligner=args.mapper, platform=args.platform, threads=args.threads
         )
+        tmpfile = str(uuid4())
+        pp.run_cmd(f"samtools view -bF 4 {bam_obj.bam_file} > {tmpfile} && mv {tmpfile} {bam_obj.bam_file}")
+        bam_obj = pp.bam(bam_obj.bam_file,bam_obj.prefix,bam_obj.platform)
+        
         wg_vcf_obj = bam_obj.call_variants(conf["ref"],args.caller,remove_missing=True)
         cp.vcf2consensus(bam_obj.bam_file,wg_vcf_obj.filename,conf["ref"],wg_vcf_obj.samples[0],wg_vcf_obj.prefix+".consensus.fasta")
         if not args.no_trim:
@@ -134,23 +137,23 @@ def primer_evaluation(args):
         writer.writeheader()
         writer.writerows(rows)
 
-def main_aln(args):
-    """
-    mafft --auto --thread -1 --keeplength --addfragments gisaid_hcov-19_2020_07_22_09.meta_filtered.filtered.fasta ~/covid/cvdb.fasta > gisaid_hcov-19_2020_07_22_09.meta_filtered.filtered.aln
-python ~/gisaid_scripts/get_fasta_stats.py  --fasta gisaid_hcov-19_2020_07_22_09.meta_filtered.filtered.aln  --bed ~/covid/static/coding.bed --out gisaid_hcov-19_2020_07_22_09.meta_filtered.filtered.stats
-awk '$3<=2.5 && $4<=3 && $5<=50' gisaid_hcov-19_2020_07_22_09.meta_filtered.filtered.aln.stats | cut -f1 > seq_filtered_samples.txt
-seqtk subseq gisaid_hcov-19_2020_07_22_09.meta_filtered.filtered.aln seq_filtered_samples.txt > gisaid_hcov-19_2020_07_22_09.meta_filtered.filtered.site_filtered.aln
-python ~/gisaid_scripts/mask_fasta.py  --fasta gisaid_hcov-19_2020_07_22_09.meta_filtered.filtered.site_filtered.aln --bed ~/covid/static/non_coding_mask.bed --out gisaid_hcov-19_2020_07_22_09.meta_filtered.filtered.site_filtered.bed_masked.aln
-python ~/gisaid_scripts/mask_fasta_non_acgt.py --fasta gisaid_hcov-19_2020_07_22_09.meta_filtered.filtered.site_filtered.bed_masked.aln --out gisaid_hcov-19_2020_07_22_09.meta_filtered.filtered.site_filtered.bed_masked.acgt.aln
-snp-sites -v gisaid_hcov-19_2020_07_22_09.meta_filtered.filtered.site_filtered.bed_masked.acgt.aln  | python ~/gisaid_scripts/vcf_fix_ref.py --ref ~/covid/cvdb.fasta | python ~/gisaid_scripts/vcf_mask_non_acgt.py  | tqdm | bcftools view -a -Oz -o gisaid_hcov-19_2020_07_22_09.meta_filtered.filtered.site_filtered.bed_masked.acgt.vcf.gz
-bcftools norm --threads 4 -m - gisaid_hcov-19_2020_07_22_09.meta_filtered.filtered.site_filtered.bed_masked.acgt.vcf.gz -Oz -o gisaid_hcov-19_2020_07_22_09.meta_filtered.filtered.site_filtered.bed_masked.acgt.multi_split.vcf.gz
+# def main_aln(args):
+#     """
+#     mafft --auto --thread -1 --keeplength --addfragments gisaid_hcov-19_2020_07_22_09.meta_filtered.filtered.fasta ~/covid/cvdb.fasta > gisaid_hcov-19_2020_07_22_09.meta_filtered.filtered.aln
+# python ~/gisaid_scripts/get_fasta_stats.py  --fasta gisaid_hcov-19_2020_07_22_09.meta_filtered.filtered.aln  --bed ~/covid/static/coding.bed --out gisaid_hcov-19_2020_07_22_09.meta_filtered.filtered.stats
+# awk '$3<=2.5 && $4<=3 && $5<=50' gisaid_hcov-19_2020_07_22_09.meta_filtered.filtered.aln.stats | cut -f1 > seq_filtered_samples.txt
+# seqtk subseq gisaid_hcov-19_2020_07_22_09.meta_filtered.filtered.aln seq_filtered_samples.txt > gisaid_hcov-19_2020_07_22_09.meta_filtered.filtered.site_filtered.aln
+# python ~/gisaid_scripts/mask_fasta.py  --fasta gisaid_hcov-19_2020_07_22_09.meta_filtered.filtered.site_filtered.aln --bed ~/covid/static/non_coding_mask.bed --out gisaid_hcov-19_2020_07_22_09.meta_filtered.filtered.site_filtered.bed_masked.aln
+# python ~/gisaid_scripts/mask_fasta_non_acgt.py --fasta gisaid_hcov-19_2020_07_22_09.meta_filtered.filtered.site_filtered.bed_masked.aln --out gisaid_hcov-19_2020_07_22_09.meta_filtered.filtered.site_filtered.bed_masked.acgt.aln
+# snp-sites -v gisaid_hcov-19_2020_07_22_09.meta_filtered.filtered.site_filtered.bed_masked.acgt.aln  | python ~/gisaid_scripts/vcf_fix_ref.py --ref ~/covid/cvdb.fasta | python ~/gisaid_scripts/vcf_mask_non_acgt.py  | tqdm | bcftools view -a -Oz -o gisaid_hcov-19_2020_07_22_09.meta_filtered.filtered.site_filtered.bed_masked.acgt.vcf.gz
+# bcftools norm --threads 4 -m - gisaid_hcov-19_2020_07_22_09.meta_filtered.filtered.site_filtered.bed_masked.acgt.vcf.gz -Oz -o gisaid_hcov-19_2020_07_22_09.meta_filtered.filtered.site_filtered.bed_masked.acgt.multi_split.vcf.gz
 
-    """
-    conf = get_conf_dict(sys.base_prefix+"/share/covidprofiler/%s" % args.db)
-    pp.run_cmd("mafft --auto --thread %s --keeplength --addfragments %s %s  > %s.aln" % (args.threads,args.fasta,conf["ref"],args.prefix))
-    pp.run_cmd("covid_profiler_mask_fasta.py  --fasta %s.aln --bed %s --out %s.bed_masked.aln" % (args.prefix,conf["non_coding_bed"],args.prefix))
-    pp.run_cmd("covid_profiler_mask_fasta_non_acgt.py --fasta %s.bed_masked.aln --out %s.bed_masked.acgt.aln" % (args.prefix,args.prefix))
-    pp.run_cmd("iqtree -m GTR+F+R2 -s %s.bed_masked.acgt.aln -nt %s -czb -pre %s" % (args.prefix,args.threads,args.prefix))
+#     """
+#     conf = get_conf_dict(sys.base_prefix+"/share/covidprofiler/%s" % args.db)
+#     pp.run_cmd("mafft --auto --thread %s --keeplength --addfragments %s %s  > %s.aln" % (args.threads,args.fasta,conf["ref"],args.prefix))
+#     pp.run_cmd("covid_profiler_mask_fasta.py  --fasta %s.aln --bed %s --out %s.bed_masked.aln" % (args.prefix,conf["non_coding_bed"],args.prefix))
+#     pp.run_cmd("covid_profiler_mask_fasta_non_acgt.py --fasta %s.bed_masked.aln --out %s.bed_masked.acgt.aln" % (args.prefix,args.prefix))
+#     pp.run_cmd("iqtree -m GTR+F+R2 -s %s.bed_masked.acgt.aln -nt %s -czb -pre %s" % (args.prefix,args.threads,args.prefix))
 
 
 parser = argparse.ArgumentParser(description='Covid pipeline',formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -194,12 +197,12 @@ parser_sub.add_argument('--db',default="cvdb",help='First read file')
 parser_sub.set_defaults(func=primer_evaluation)
 
 
-parser_sub = subparsers.add_parser('aln', help='Output program version and exit', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-parser_sub.add_argument('--fasta',help='First read file',required=True)
-parser_sub.add_argument('--prefix',help='First read file',required=True)
-parser_sub.add_argument('--threads',default=1,help='First read file')
-parser_sub.add_argument('--db',default="cvdb",help='First read file')
-parser_sub.set_defaults(func=main_aln)
+# parser_sub = subparsers.add_parser('aln', help='Output program version and exit', formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+# parser_sub.add_argument('--fasta',help='First read file',required=True)
+# parser_sub.add_argument('--prefix',help='First read file',required=True)
+# parser_sub.add_argument('--threads',default=1,help='First read file')
+# parser_sub.add_argument('--db',default="cvdb",help='First read file')
+# parser_sub.set_defaults(func=main_aln)
 
 args = parser.parse_args()
 if vars(args)=={}:

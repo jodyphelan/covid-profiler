@@ -12,7 +12,13 @@
 {% block content %}
 
 {% if run['results']=={} %}
-	<div class="alert alert-warning mt-4" role="alert">Your run ID is: <b>{{run["_id"]}}</b>. This run is still processing, this usually takes a few seconds for a fasta file. Please come back later.</div>
+	<div class="alert alert-warning mt-4" role="alert">
+        Your run ID is: <b>{{run["_id"]}}</b>. This run is still processing, this usually takes a 
+        few seconds for a fasta file. For an approximate runtime using fastq data please compare 
+        the number of sequences with the plot below.</div>
+    <div class="text-center">
+       <img src="{{url_for('static', filename='mapping_time.png')}}" alt="" width="50%">
+    </div>
     <script>
         setTimeout(function(){
             window.location.reload(1);

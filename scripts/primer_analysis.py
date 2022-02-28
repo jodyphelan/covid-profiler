@@ -12,6 +12,7 @@ import seqlogo
 import uuid
 import pandas as pd
 import plotly.express as px
+import plotly.graph_objects as go
 from urllib.request import urlopen
 import re
 import os
@@ -121,6 +122,22 @@ def get_sequence_logo(seqs):
 
     return svg
 
+def plot_mutation_timeline(num_snps,numbers,continents):
+    fig = go.Figure()
+
+    for continent in continents:
+        fig.add_trace(go.Scatter(
+            x = num_snps.index,
+            y = num_snps[continent],
+            hovertemplate =
+            '<b>Date</b>: %{x}'+
+            '<br><b>Percent</b>: %{y:.2f}<br>'+
+            '<b>Num. Seqs</b>:%{text}',
+            text = numbers[continent],
+            showlegend = True,
+            name=continent))
+    fig.update_layout(template="simple_white")
+    return fig
 
 def main(args):
     conf = covid_profiler.get_conf_dict(sys.base_prefix+"/share/covidprofiler/%s" % args.db)
@@ -203,6 +220,10 @@ def main(args):
         freq_continent_time["rp_num_snps"][continent] = csv_df[csv_df["continent"]==continent]["rp_num_snps"].resample("1M").apply(lambda x: sum([1 for d in x if d>0])/len(x)*100 if len(x)>0 else None)
         freq_continent_time["probe_num_snps"][continent] = csv_df[csv_df["continent"]==continent]["probe_num_snps"].resample("1M").apply(lambda x: sum([1 for d in x if d>0])/len(x)*100 if len(x)>0 else None)
 
+        freq_continent_time["fp_numbers"][continent] = csv_df[csv_df["continent"]==continent]["fp_num_snps"].resample("1M").apply(lambda x: len(x))
+        freq_continent_time["rp_numbers"][continent] = csv_df[csv_df["continent"]==continent]["rp_num_snps"].resample("1M").apply(lambda x: len(x))
+        freq_continent_time["probe_numbers"][continent] = csv_df[csv_df["continent"]==continent]["probe_num_snps"].resample("1M").apply(lambda x: len(x))
+
     freq_continent_time["fp_num_snps"]["Total"] = csv_df["fp_num_snps"].resample("1M").apply(lambda x: sum([1 for d in x if d>0])/len(x)*100 if len(x)>0 else None)
     freq_continent_time["rp_num_snps"]["Total"] = csv_df["rp_num_snps"].resample("1M").apply(lambda x: sum([1 for d in x if d>0])/len(x)*100 if len(x)>0 else None)
     freq_continent_time["probe_num_snps"]["Total"] = csv_df["probe_num_snps"].resample("1M").apply(lambda x: sum([1 for d in x if d>0])/len(x)*100 if len(x)>0 else None)
@@ -211,8 +232,12 @@ def main(args):
     freq_continent_time["rp_num_snps"] = pd.DataFrame(freq_continent_time["rp_num_snps"])
     freq_continent_time["probe_num_snps"] = pd.DataFrame(freq_continent_time["probe_num_snps"])
 
-    fig_fp_time = px.line(freq_continent_time["fp_num_snps"], y=freq_continent_time["fp_num_snps"].columns)
-    fig_fp_time.update_xaxes(dtick="M1",tickformat="%b\n%Y")
+    freq_continent_time["fp_numbers"] = pd.DataFrame(freq_continent_time["fp_numbers"])
+    freq_continent_time["rp_numbers"] = pd.DataFrame(freq_continent_time["rp_numbers"])
+    freq_continent_time["probe_numbers"] = pd.DataFrame(freq_continent_time["probe_numbers"])
+
+    fig_fp_time = plot_mutation_timeline(freq_continent_time["fp_num_snps"],freq_continent_time["fp_numbers"],csv_df.continent.unique())
+    # fig_fp_time.update_xaxes(dtick="M1",tickformat="%b\n%Y")
 
 
     df = csv_df.pivot_table(values=["fp_num_snps","probe_num_snps","rp_num_snps"], index="iso_a3", aggfunc=lambda x: sum([1 for d in x if d>0])/len(x)*100)
@@ -225,8 +250,9 @@ def main(args):
                             scope="world",
                             labels={'fp_num_snps':'% samples with SNP'}
                        )
-    fig_fp_time = px.line(freq_continent_time["fp_num_snps"], y=freq_continent_time["fp_num_snps"].columns,template="simple_white")
-    fig_fp_time.update_xaxes(dtick="M1",tickformat="%b\n%Y")
+
+    fig_fp_time = plot_mutation_timeline(freq_continent_time["fp_num_snps"],freq_continent_time["fp_numbers"],csv_df.continent.unique())
+    # fig_fp_time.update_xaxes(dtick="M1",tickformat="%b\n%Y")
 
     json_results["fp_time"] = fig_fp_time.to_html(include_plotlyjs=False,full_html=False)
     json_results["fp_map"] = fig_fp_map.to_html(include_plotlyjs=False,full_html=False)
@@ -238,8 +264,8 @@ def main(args):
                             scope="world",
                             labels={'fp_num_snps':'% samples with SNP'},
                         )
-    fig_rp_time = px.line(freq_continent_time["rp_num_snps"], y=freq_continent_time["rp_num_snps"].columns,template="simple_white")
-    fig_rp_time.update_xaxes(dtick="M1",tickformat="%b\n%Y")
+    fig_rp_time = plot_mutation_timeline(freq_continent_time["rp_num_snps"],freq_continent_time["rp_numbers"],csv_df.continent.unique())
+    # fig_rp_time.update_xaxes(dtick="M1",tickformat="%b\n%Y")
 
     json_results["rp_time"] = fig_rp_time.to_html(include_plotlyjs=False,full_html=False)
     json_results["rp_map"] = fig_rp_map.to_html(include_plotlyjs=False,full_html=False)
@@ -251,8 +277,8 @@ def main(args):
                             scope="world",
                             labels={'fp_num_snps':'% samples with SNP'},
                         )
-    fig_probe_time = px.line(freq_continent_time["probe_num_snps"], y=freq_continent_time["probe_num_snps"].columns,template="simple_white")
-    fig_probe_time.update_xaxes(dtick="M1",tickformat="%b\n%Y")
+    fig_probe_time = plot_mutation_timeline(freq_continent_time["probe_num_snps"],freq_continent_time["probe_numbers"],csv_df.continent.unique())
+    # fig_probe_time.update_xaxes(dtick="M1",tickformat="%b\n%Y")
 
     json_results["probe_time"] = fig_probe_time.to_html(include_plotlyjs=False,full_html=False)
     json_results["probe_map"] = fig_probe_map.to_html(include_plotlyjs=False,full_html=False)
